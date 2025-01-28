@@ -1,7 +1,8 @@
 #include "Character.h"
 
-Character::Character(Texture2D texture, float pos_x, float pos_y, float speed, float attack_rate) {
-	Active_texture = texture;
+Character::Character(Texture2D character_texture, Texture2D projectile_texture, float pos_x, float pos_y, float speed, float attack_rate) {
+	Active_texture = character_texture;
+	Projectile_texture = projectile_texture;
 	X_coordinate = pos_x;
 	Y_coordinate = pos_y;
 	Speed = speed;
@@ -18,6 +19,6 @@ void Character::render() {
 	DrawRectangleLines(X_coordinate, Y_coordinate, Width*1.5, Height*1.5, RED);
 }
 
-Rectangle Character::getCollisionRectangle() {	
-	return Rectangle{};
-}
+Rectangle Character::getCollisionRectangle() {return Rectangle{};}
+void Character::attack(){}
+void Character::tick(float dT){}

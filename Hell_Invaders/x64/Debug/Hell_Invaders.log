@@ -1,0 +1,6 @@
+﻿  Projectile.cpp
+C:\Users\jwcla\OneDrive - Clap Nation\Documents\Businesses\Unemployed Chicken\CPP-Prac\hell-invaders\Projectile.cpp(11,24): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+C:\Users\jwcla\OneDrive - Clap Nation\Documents\Businesses\Unemployed Chicken\CPP-Prac\hell-invaders\Projectile.cpp(12,26): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+  Hell_Invaders.vcxproj -> C:\Users\jwcla\OneDrive - Clap Nation\Documents\Businesses\Unemployed Chicken\CPP-Prac\hell-invaders\x64\Debug\Hell_Invaders.exe
+  'pwsh.exe' is not recognized as an internal or external command,
+  operable program or batch file.

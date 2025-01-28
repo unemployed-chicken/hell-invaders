@@ -19,6 +19,10 @@ const Vector2 background_pos{ -25.0f, 0.0f };
 const Vector2 midground_pos{ 0.0f, -50.0f };
 const Vector2 foreground_pos{ -30.0f, 390 };
 
+// Texture Properties
+constexpr float texure_update_per_second{ 1.0f / 12.0f }; // Make this viewable in all files later
+
+
 
 map<string, Texture2D> generateTexture();
 void drawBackground(map<string, Texture2D> textures);
@@ -33,7 +37,7 @@ int main() {
     map<string, Texture2D> textures = generateTexture();
 
     // Create Character
-    Mage mage{ textures["mage"] };
+    Mage mage{ textures["mage"], textures["magic"]};
 
     while (!WindowShouldClose()) {
         BeginDrawing();
@@ -42,8 +46,7 @@ int main() {
         float dT{ GetFrameTime() };
 
         drawBackground(textures);
-
-        mage.moveCharacter(dT);
+        mage.tick(dT);
         mage.render();
 
         EndDrawing();
@@ -65,5 +68,6 @@ map<string, Texture2D> generateTexture() {
         { "midground", LoadTexture("textures\\Map\\mountains.png") },
         { "foreground", LoadTexture("textures\\Map\\castle.png") },
         { "mage", LoadTexture("textures\\Characters\\MiniArchMage_no_outline.png")},
+        { "magic", LoadTexture("textures\\Projectiles\\HumansProjectiles.png") },
     };
 }
