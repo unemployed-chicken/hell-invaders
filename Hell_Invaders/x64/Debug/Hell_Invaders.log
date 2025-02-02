@@ -1,6 +1,15 @@
-﻿  Projectile.cpp
-C:\Users\jwcla\OneDrive - Clap Nation\Documents\Businesses\Unemployed Chicken\CPP-Prac\hell-invaders\Projectile.cpp(11,24): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-C:\Users\jwcla\OneDrive - Clap Nation\Documents\Businesses\Unemployed Chicken\CPP-Prac\hell-invaders\Projectile.cpp(12,26): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+﻿  GameMap.cpp
+  Hell_Invaders.cpp
+C:\Users\jwcla\OneDrive - Clap Nation\Documents\Businesses\Unemployed Chicken\CPP-Prac\hell-invaders\Hell_Invaders.cpp(27,57): warning C4244: 'argument': conversion from 'const float' to 'int', possible loss of data
+C:\Users\jwcla\OneDrive - Clap Nation\Documents\Businesses\Unemployed Chicken\CPP-Prac\hell-invaders\Hell_Invaders.cpp(27,35): warning C4244: 'argument': conversion from 'const float' to 'int', possible loss of data
+  Projectile.cpp
+C:\Users\jwcla\OneDrive - Clap Nation\Documents\Businesses\Unemployed Chicken\CPP-Prac\hell-invaders\Projectile.cpp(21,49): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+C:\Users\jwcla\OneDrive - Clap Nation\Documents\Businesses\Unemployed Chicken\CPP-Prac\hell-invaders\Projectile.cpp(22,26): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+C:\Users\jwcla\OneDrive - Clap Nation\Documents\Businesses\Unemployed Chicken\CPP-Prac\hell-invaders\Projectile.cpp(62,114): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+C:\Users\jwcla\OneDrive - Clap Nation\Documents\Businesses\Unemployed Chicken\CPP-Prac\hell-invaders\Projectile.cpp(62,87): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+C:\Users\jwcla\OneDrive - Clap Nation\Documents\Businesses\Unemployed Chicken\CPP-Prac\hell-invaders\Projectile.cpp(62,64): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+C:\Users\jwcla\OneDrive - Clap Nation\Documents\Businesses\Unemployed Chicken\CPP-Prac\hell-invaders\Projectile.cpp(62,41): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+  Generating Code...
   Hell_Invaders.vcxproj -> C:\Users\jwcla\OneDrive - Clap Nation\Documents\Businesses\Unemployed Chicken\CPP-Prac\hell-invaders\x64\Debug\Hell_Invaders.exe
   'pwsh.exe' is not recognized as an internal or external command,
   operable program or batch file.

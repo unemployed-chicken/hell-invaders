@@ -2,22 +2,19 @@
 #include<map>
 #include "raylib.h"
 #include "raymath.h"
+#include "GameMap.h"
 #include "Mage.h"
 using std::map;
 using std::string;
+
+
+// DEBUGGING:
+const bool debugging{ true };
 
 // Window Properties
 const float window_dimensions[2]{ 640.0f , 640.0f }; // Width * Height
 const int targetFps{ 60 };
 
-// Backgrounds Properties
-const float background_scale{ 3.0f };
-const float midground_scale{ 3.0f };
-const float foreground_scale{ 1.1f };
-
-const Vector2 background_pos{ -25.0f, 0.0f };
-const Vector2 midground_pos{ 0.0f, -50.0f };
-const Vector2 foreground_pos{ -30.0f, 390 };
 
 // Texture Properties
 constexpr float texure_update_per_second{ 1.0f / 12.0f }; // Make this viewable in all files later
@@ -25,16 +22,14 @@ constexpr float texure_update_per_second{ 1.0f / 12.0f }; // Make this viewable 
 
 
 map<string, Texture2D> generateTexture();
-void drawBackground(map<string, Texture2D> textures);
-
 
 int main() {
     InitWindow(window_dimensions[0], window_dimensions[1], "Hell Invaders");
     SetTargetFPS(targetFps);
 
-
     // Create Textures
     map<string, Texture2D> textures = generateTexture();
+    GameMap map(textures["background"], textures["midground"], textures["foreground"]);
 
     // Create Character
     Mage mage{ textures["mage"], textures["magic"]};
@@ -45,8 +40,13 @@ int main() {
 
         float dT{ GetFrameTime() };
 
-        drawBackground(textures);
+        // Move Character
         mage.tick(dT);
+        
+        // Move and Draw all Projectiles and Demons
+        map.tick(dT, mage);
+
+        // Draw Mate
         mage.render();
 
         EndDrawing();
@@ -56,11 +56,7 @@ int main() {
 }
 
 
-void drawBackground(map<string, Texture2D> textures) {
-    DrawTextureEx(textures["background"], background_pos, 0.0, background_scale, WHITE);
-    DrawTextureEx(textures["midground"], midground_pos, 0.0, midground_scale, WHITE);
-    DrawTextureEx(textures["foreground"], foreground_pos, 0.0, foreground_scale, WHITE);
-}
+
 
 map<string, Texture2D> generateTexture() {
     return map<string, Texture2D> {

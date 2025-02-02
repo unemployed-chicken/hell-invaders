@@ -1,19 +1,18 @@
 #include "Mage.h"
 #include <iostream>
 
-constexpr float mage_speed{ 200.f };
-constexpr float mage_fire_rate{ .25 };
-constexpr int mage_textures_per_row{ 11 };
-constexpr int mage_textures_per_column{ 9 };
-constexpr Vector2 origin{ 43, 70 }; // This offsets the white space in the Mage Texture
-constexpr float collision_rec_white_space_off_set{ 1.5f };
 
-Mage::Mage(Texture2D character_texture, Texture2D projectile_texture) : Character(character_texture, projectile_texture, starting_x_pos, starting_y_pos, mage_speed, mage_fire_rate) {
+
+Mage::Mage(Texture2D character_texture, Texture2D projectile_texture) : 
+	Character(character_texture, projectile_texture, starting_x_pos, starting_y_pos, mage_speed, mage_fire_rate, -1) {
 	Width = static_cast<float>(character_texture.width) / mage_textures_per_row;
 	Height = static_cast<float>(character_texture.width) / mage_textures_per_column;
 };
 
-void Mage::moveCharacter(float dT) {
+bool Mage::getIsProjectileReady() { return Is_projectile_ready; }
+void Mage::setIsProjectileReady(const bool b) { Is_projectile_ready = b; }
+
+void Mage::moveCharacter(const float dT) {
 	if (IsKeyDown(KEY_LEFT)) {
 		Left_Right = -1;
 		if (X_coordinate - Speed * dT < 0) {
@@ -34,7 +33,7 @@ void Mage::moveCharacter(float dT) {
 	};
 }
 
-void Mage::tick(float dT) {
+void Mage::tick(const float dT) {
 	if (!Is_attacking) {
 		Attack_cooldown += dT;
 		moveCharacter(dT);
@@ -57,6 +56,7 @@ void Mage::tick(float dT) {
 	}
 }
 
+
 void Mage::render() {
 	setTexturePosition();
 	Rectangle source{ Texture_position.x, Texture_position.y, Width * Left_Right, Height };
@@ -66,14 +66,18 @@ void Mage::render() {
 	Rectangle collision_rectangle = getCollisionRectangle();
 
 	DrawTexturePro(Active_texture, source, destination, origin, 0.0f, WHITE);
-	DrawRectangleLines(collision_rectangle.x, collision_rectangle.y, collision_rectangle.width, collision_rectangle.height, RED);
+	if (debugging) { 
+		DrawRectangleLines(collision_rectangle.x, collision_rectangle.y, collision_rectangle.width, collision_rectangle.height, RED); 
+	};
 }
 
 void Mage::setTexturePosition() {
 	// Set Texture Position
 	Texture_position.x = Width * Attack_frame; // This works because Attack_frame will be 0 if false 
-	Is_attacking ? Texture_position.y = ( Height * 5) - 3.5 : Texture_position.y = 0; // -3.5 offsets attack mode whitespace with this current setup
+	
+	Is_attacking ? Texture_position.y = ( Height * attack_texture_count) + attack_texture_pixel_offset : Texture_position.y = 0; 
 }
+
 
 Rectangle Mage::getCollisionRectangle(){
 	return Rectangle{ 
@@ -88,7 +92,7 @@ void Mage::attack(){ // To return a projectile and pass an array or vector of pr
 	if (IsKeyPressed(KEY_SPACE) && Attack_cooldown >= Attack_rate) {
 		Attack_cooldown = 0.0f;
 		Is_attacking = true;
-		// return new Projectile();
+		Is_projectile_ready = true;
 	}
 }
 

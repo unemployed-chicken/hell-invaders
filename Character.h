@@ -22,6 +22,7 @@ protected:
 	float Speed;
 	float Attack_rate;
 	float Attack_cooldown{};
+	int Attack_direction{};
 
 	// Texture Properties
 	float Texture_update_rate = texure_update_per_second;
@@ -33,14 +34,22 @@ protected:
 
 
 public:
-	Character(Texture2D character_texture, Texture2D projectile_texture, float pos_x, float pos_y, float speed, float attack_rate);
-	virtual void moveCharacter(float dT);
+	Character(Texture2D character_texture, Texture2D projectile_texture, float pos_x, float pos_y, float speed, float attack_rate, int attack_direction);
+	void render();
+	Texture2D getProjectileTexture();
+	float getXCoordinate();
+	float getYCoordinate();
+	int getAttackDirection();
+
+	
+	//void attack();
 	//virtual void takeDamage();
 
-	//void attack();
-	void render();
+
+
 	virtual Rectangle getCollisionRectangle();
 	virtual void attack();
-	virtual void tick(float dT);
+	virtual void tick(const float dT);
+	virtual void moveCharacter(const float dT);
 };
 
