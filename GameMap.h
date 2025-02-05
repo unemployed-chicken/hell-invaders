@@ -1,5 +1,6 @@
 #pragma once
 
+#include "DoubleLinkedList.h"
 #include "raylib.h"
 #include "Projectile.h"
 #include "Mage.h"
@@ -8,7 +9,9 @@
 #include <memory>
 using std::vector;
 using std::unique_ptr;
+using std::shared_ptr;
 using std::make_unique;
+using std::make_shared;
 
 extern const float window_dimensions[2];
 extern const bool debugging;
@@ -36,16 +39,18 @@ class GameMap {
 	Texture2D Midground;
 	Texture2D Foreground;
 
-	vector<unique_ptr<Projectile>> Active_projectiles{};
+	DoubleLinkedList<Projectile> Projectiles{};
+
+
 
 public:
 	GameMap(Texture2D background, Texture2D midground, Texture2D foreground);
 	//~GameMap();
 
 	void appendProjectile(Mage& mage);
-	//void appendProjectile(Demon demon); // to be created later
+	//void appendProjectile(Demon& demon); // to be created later
 	void tick(float dT, Mage &mage);
 	void drawBackground();
-	void removeProjectile();
+	//void removeProjectile(); // This shouldn't be needed
 };
 

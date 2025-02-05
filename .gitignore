@@ -34,3 +34,7 @@
 *.vcxproj*
 *x64*
 *.vs/*
+*.tlog
+*.log
+*/Debug/*
+Hell_Invaders/x64

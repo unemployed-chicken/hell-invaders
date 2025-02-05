@@ -1,11 +1,13 @@
 #pragma once
 #include "raylib.h"
+#include <iostream>
 
 extern const float texure_update_per_second;
 extern const float window_dimensions[2];
 extern const bool debugging;
 
-constexpr float projectile_speed{ 300.f };
+constexpr float magic_projectile_speed{ 300.f };
+constexpr float fire_projectile_speed{ 150.f };
 constexpr float projectile_scale{ 4.0f };
 
 class Projectile{

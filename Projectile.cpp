@@ -1,5 +1,9 @@
 #include "Projectile.h"
 
+/* 
+    Refactor Opportunity: Options are either Fire or Magic, I shouldn't need to provide all this data
+	Clean this up by removing direction, collision_rec_offsets, collision_rec_scales, and rotation
+*/
 Projectile::Projectile(
 	Texture2D texture, int number_of_objects_in_x, int number_of_objects_in_y, float x_pos, float y_pos, 
 	int direction, float collision_rec_offset_x, float collision_rec_offset_y, float collision_rec_scale_x,
@@ -8,7 +12,7 @@ Projectile::Projectile(
 	Active_texture = texture;
 	X_coordinate = x_pos;
 	Y_coordinate = y_pos;
-	Velocity = projectile_speed * direction;
+	isMagic ? Velocity = magic_projectile_speed * direction : Velocity = magic_projectile_speed * direction;
 	Number_of_objects_in_x = number_of_objects_in_x;
 	Number_of_objects_in_y = number_of_objects_in_y;
 	Rotation = rotation;
@@ -22,7 +26,9 @@ Projectile::Projectile(
 	Height = texture.height / number_of_objects_in_y;
 }
 
-Projectile::~Projectile(){}
+Projectile::~Projectile() {
+	if (debugging) { std::cout << "destroyting projectile\n"; }
+}
 
 void Projectile::setIsActive(bool boolean) { Is_active = boolean; }
 bool Projectile::getIsActive() { return Is_active; }
