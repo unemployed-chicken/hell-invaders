@@ -3,10 +3,12 @@
 #include "raymath.h"
 
 extern const float texure_update_per_second;
+extern const bool debugging;
 
-
-//constexpr float texure_update_per_second{ 1.0f / 12.0f };
 constexpr float character_scale{ 4.0f };
+constexpr float demon_collision_whitespace_offset{ character_scale * .75f };
+constexpr float demon_origin_whitespace_offset_x{ character_scale * .2f };
+constexpr float demon_origin_whitespace_offset_y{ character_scale * .25f };
 
 
 class Character {
@@ -23,6 +25,8 @@ protected:
 	float Attack_rate;
 	float Attack_cooldown{};
 	int Attack_direction{};
+	bool Is_projectile_ready{ false };
+
 
 	// Texture Properties
 	float Texture_update_rate = texure_update_per_second;
@@ -35,18 +39,26 @@ protected:
 
 public:
 	Character(Texture2D character_texture, Texture2D projectile_texture, float pos_x, float pos_y, float speed, float attack_rate, int attack_direction);
-	void render();
 	Texture2D getProjectileTexture();
 	float getXCoordinate();
 	float getYCoordinate();
 	int getAttackDirection();
+	bool getIsProjectileReady();
+	void setIsProjectileReady(const bool b);
+	float getSpeed();
+	float getLeftRight();
+	float getWidth();
 
-	
-	//void attack();
+
+	/* 
+	  These may not need to be virtual, but make based on demon
+	*/
+	virtual void render(); // Doesn't need to be virtual if you call setTexturePosition before calling Render
+	virtual void setTexturePosition(); // Confirmed does need to be virtual
+
+	// --------------------------------------------------------------
+
 	//virtual void takeDamage();
-
-
-
 	virtual Rectangle getCollisionRectangle();
 	virtual void attack();
 	virtual void tick(const float dT);

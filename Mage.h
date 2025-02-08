@@ -15,24 +15,22 @@ constexpr float mage_fire_rate{ .25 }; // seconds per attack
 constexpr int mage_textures_per_row{ 11 }; // number of rows in texture
 constexpr int mage_textures_per_column{ 9 }; // number of columns in texture
 constexpr Vector2 origin{ 43, 70 }; // Offsets the white space for movement
-constexpr float collision_rec_white_space_off_set{ 1.5f }; // Offsets the white space for collision rectangle
+constexpr float collision_rec_white_space_off_set{ character_scale / 2.6666f }; // Offsets the white space for collision rectangle
+
 constexpr float attack_texture_pixel_offset{ 3.5 }; // Offsets whitespace in texture when getting attack animation
 
 class Mage : public Character {
 	double score{};
 	int lives{ 3 };
 	bool Is_attacking{ false };
-	bool Is_projectile_ready{ false };
 	int Attack_frame{ 0 };
 	
 
 public:
 	Mage(Texture2D character_texture, Texture2D projectile_texture);
-	void render();
-	void setTexturePosition();
-	bool getIsProjectileReady();
-	void setIsProjectileReady(const bool b);
 
+	virtual void render();
+	virtual void setTexturePosition();
 	
 	virtual Rectangle getCollisionRectangle() override;
 	virtual void attack() override;

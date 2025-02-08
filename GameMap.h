@@ -40,7 +40,7 @@ class GameMap {
 	Texture2D Foreground;
 
 	DoubleLinkedList<Projectile> Projectiles{};
-
+	
 
 
 public:

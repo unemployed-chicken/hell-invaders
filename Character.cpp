@@ -19,17 +19,35 @@ Texture2D Character::getProjectileTexture() { return Projectile_texture; }
 float Character::getXCoordinate() { return X_coordinate; }
 float Character::getYCoordinate() { return Y_coordinate; }
 int Character::getAttackDirection(){ return Attack_direction; }
-Rectangle Character::getCollisionRectangle() { return Rectangle{}; }
+
+Rectangle Character::getCollisionRectangle() { 
+	return Rectangle{
+		X_coordinate,
+		Y_coordinate,
+		Width * demon_collision_whitespace_offset,
+		Height * demon_collision_whitespace_offset
+	}; 
+}
 
 
 void Character::render() {
     Rectangle source{ Texture_position.x, Texture_position.y, Width, Height };
     Rectangle destination{ X_coordinate, Y_coordinate, Scale * Width, Scale * Height };
-	Vector2 origin{ 0, 0 };
+	Vector2 origin{ Width * demon_origin_whitespace_offset_x, Width * demon_origin_whitespace_offset_y };
+
+	Rectangle collision_rectangle = getCollisionRectangle();
     DrawTexturePro(Active_texture, source, destination, origin, 0.0f, WHITE);
-	DrawRectangleLines(X_coordinate, Y_coordinate, Width*1.5, Height*1.5, RED);
+	if (debugging) {
+		DrawRectangleLines(collision_rectangle.x, collision_rectangle.y, collision_rectangle.width, collision_rectangle.height, RED);
+	};
 }
 
+void Character::setTexturePosition(){}
+bool Character::getIsProjectileReady() { return Is_projectile_ready; }
+void Character::setIsProjectileReady(const bool b) { Is_projectile_ready = b; }
+float Character::getSpeed() { return Speed; }
+float Character::getLeftRight() { return Left_Right; }
+float Character::getWidth() { return Width; }
 
 
 void Character::attack(){}

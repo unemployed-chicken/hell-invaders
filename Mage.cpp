@@ -9,9 +9,6 @@ Mage::Mage(Texture2D character_texture, Texture2D projectile_texture) :
 	Height = static_cast<float>(character_texture.width) / mage_textures_per_column;
 };
 
-bool Mage::getIsProjectileReady() { return Is_projectile_ready; }
-void Mage::setIsProjectileReady(const bool b) { Is_projectile_ready = b; }
-
 void Mage::moveCharacter(const float dT) {
 	if (IsKeyDown(KEY_LEFT)) {
 		Left_Right = -1;
