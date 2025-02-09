@@ -16,6 +16,7 @@ void Demon::attack(){}
 
 void Demon::tick(const float dT) {
 	Last_texture_update += dT;
+	Attack_cooldown += dT;
 	if (Last_texture_update >= Texture_update_rate) {
 		Frame++;
 		Last_texture_update = 0.0f;
@@ -24,13 +25,13 @@ void Demon::tick(const float dT) {
 	// MoveCharacter
 	moveCharacter(dT);
 	
-	// Do Collision check for all projectiles // Performed on map side // This may be changes to just User projectiles 
-	
 	// setTexturePosition
 	setTexturePosition();
 
 	// Render Character
 	render();
+
+
 
 	// Determine if this frame is an attack (applicable to only front demons)
 		// If (attacking)
@@ -59,7 +60,11 @@ void Demon::tick(const float dT) {
 	//}
 }
 
-void Demon::setIsDown(const bool b) { Is_down = b; }
+void Demon::setIsFirstDown(const bool b) { Is_first_down = b; }
+
+float Demon::calculateXCoordinate(const float dT) {
+	return getXCoordinate() + (getSpeed() * getLeftRight() * dT);
+}
 
 void Demon::setYCoordinate() {
 	switch (Frame % 4)
@@ -80,15 +85,17 @@ void Demon::setYCoordinate() {
 }
 
 void Demon::moveCharacter(const float dT) {
+	if (Is_first_down) {
+		Left_Right *= -1;
+		Is_first_down = false;
+		Is_down = true;
+	}
 	if (Is_down) {
 		float height_change = dT * Height * Scale;
 		Y_coordinate += height_change;
 		elevation_change += height_change;
-		if (Is_first_down) {
-			Left_Right *= -1;
-			Is_first_down = false;
-		}
-		else if (elevation_change >= Height * Scale / 2) {
+
+		if (elevation_change >= Height * Scale / 2) {
 			elevation_change = 0;
 			Is_down = false;
 			Is_first_down = true;

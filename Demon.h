@@ -9,17 +9,19 @@ class Demon : public Character {
 	int points{ 100 };
 	int Frame{ 0 };
 	bool Is_down{ false };
-	bool Is_first_down{ true };
+	bool Is_first_down{ false };
 	float elevation_change{};
 
 public:
 	Demon(Texture2D character_texture, Texture2D projectile_texture, int demon_x_pos, int demon_y_pos, int texture_count);
+	//Demon();
 	~Demon();
 
 	void setYCoordinate();
 	void moveCharacter(const float dT);
 	void setTexturePosition();
-	void setIsDown(const bool b);
+	void setIsFirstDown(const bool b);
+	float calculateXCoordinate(const float dT);
 
 	virtual void attack() override;
 	virtual void tick(const float dT) override;

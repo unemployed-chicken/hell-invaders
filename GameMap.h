@@ -4,14 +4,16 @@
 #include "raylib.h"
 #include "Projectile.h"
 #include "Mage.h"
+#include "Demon.h"
 #include <vector>
 #include <iostream>
 #include <memory>
+#include <map>
 using std::vector;
-using std::unique_ptr;
 using std::shared_ptr;
-using std::make_unique;
 using std::make_shared;
+using std::map;
+using std::string;
 
 extern const float window_dimensions[2];
 extern const bool debugging;
@@ -30,6 +32,7 @@ constexpr float mage_projectile_collision_offset_y{ -31.0 };
 constexpr float mage_projectile_collision_scale_x{ 1.5 };
 constexpr float mage_projectile_collision_scale_y{ 2.0 };
 constexpr float mage_projectile_rotation{ -90.0 };
+const float demons_x_range[2]{ 5.0f, window_dimensions[1] - (16.f * character_scale) + 5.f}; // First is Left Limit, Second is Right Limit
 
 
 
@@ -39,18 +42,27 @@ class GameMap {
 	Texture2D Midground;
 	Texture2D Foreground;
 
-	DoubleLinkedList<Projectile> Projectiles{};
-	
+	DoubleLinkedList<Projectile> Mage_projectiles{};
+	DoubleLinkedList<Projectile> Demon_projectiles{};
+	DoubleLinkedList<DoubleLinkedList<Demon>> Demons_columns{};
+
+	void drawBackground();
+	void appendProjectile(Mage& mage);
+	//void appendProjectile(Demon& demon); // to be created later
+	void moveMageProjectiles(const float dT);
+	void moveAllDemons(const float dT);
+	void moveDemonColumn(
+		shared_ptr<Node<DoubleLinkedList<Demon>>> row, 
+		const float dT, 
+		const bool is_down
+	);
 
 
 public:
-	GameMap(Texture2D background, Texture2D midground, Texture2D foreground);
+	GameMap(map<string, Texture2D> textures);
 	//~GameMap();
 
-	void appendProjectile(Mage& mage);
-	//void appendProjectile(Demon& demon); // to be created later
-	void tick(float dT, Mage &mage);
-	void drawBackground();
-	//void removeProjectile(); // This shouldn't be needed
+	void tick(const float dT, Mage &mage);
+	void generateDemonsList(map<string, Texture2D> textures);
 };
 

@@ -5,7 +5,7 @@
 extern const float texure_update_per_second;
 extern const bool debugging;
 
-constexpr float character_scale{ 4.0f };
+constexpr float character_scale{ 3.0f };
 constexpr float demon_collision_whitespace_offset{ character_scale * .75f };
 constexpr float demon_origin_whitespace_offset_x{ character_scale * .2f };
 constexpr float demon_origin_whitespace_offset_y{ character_scale * .25f };
