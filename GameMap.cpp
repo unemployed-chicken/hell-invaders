@@ -27,10 +27,8 @@ void GameMap::appendProjectile(Mage& mage) {
 void GameMap::tick(const float dT, Mage &mage){
 	drawBackground();
 
-	// Move and Render Demons
+	// Move
 	moveAllDemons(dT);
-
-	// Generate Demon Projectiles
 
 	// Generate Mage Projectiles
 	if (mage.getIsProjectileReady()) {
@@ -38,9 +36,10 @@ void GameMap::tick(const float dT, Mage &mage){
 	}
 
 	// Move and Render Mage Projectiles, Check for collisions with demons
-	if (Mage_projectiles.getCount() > 0) {
-		moveMageProjectiles(dT);
-	}
+	if (Mage_projectiles.getCount() > 0) { moveMageProjectiles(dT);	}
+
+	// Check all Demons for collisions, Render, and Generate Projectiles
+	allDemonCollisionCheckAndAppendDemonProjectiles();
 
 	// Move and Render Demon Projectiles, Check for collisions with Mage and Mage Projectiles
 }
@@ -73,6 +72,60 @@ void GameMap::generateDemonsList(map<string, Texture2D> textures) {
 		Demons_columns.insertAtEnd(std::make_shared<Node<DoubleLinkedList<Demon>>>(row));
 		x_pos += (textures["skull"].width / 4) * character_scale;
 	}
+}
+
+void GameMap::allDemonCollisionCheckAndAppendDemonProjectiles() {
+	shared_ptr<Node<DoubleLinkedList<Demon>>> current_column = Demons_columns.getHead();
+	while (current_column) {
+		demonColumnCollisionCheck(current_column);
+		if (current_column->Data.getCount() <= 0) {
+			Demons_columns.popNode(current_column);
+			current_column = current_column->Next;
+		}
+		else {
+			current_column = current_column->Next;
+		}
+		
+		// Append Projectile Here
+	}
+}
+
+void GameMap::demonColumnCollisionCheck(shared_ptr<Node<DoubleLinkedList<Demon>>> column) {
+	shared_ptr<Node<Demon>> current_demon = column->Data.getHead();
+	while (current_demon) {
+		if (hasCollision(current_demon->Data)) {
+			column->Data.popNode(current_demon);
+			current_demon = current_demon->Next;
+		}
+		else {
+			current_demon->Data.render();
+			current_demon = current_demon->Next;
+		}
+	}
+}
+
+bool GameMap::hasCollision(Mage& mage) {
+	shared_ptr<Node<Projectile>> current_projectile = Demon_projectiles.getHead();
+	while (current_projectile) {
+		if (CheckCollisionRecs(current_projectile->Data.getCollisionRectangle(), mage.getCollisionRectangle())) {
+			Demon_projectiles.popNode(current_projectile);
+			return true;
+		}
+		current_projectile = current_projectile->Next;
+	}
+	return false;
+}
+
+bool GameMap::hasCollision(Demon& demon) {
+	shared_ptr<Node<Projectile>> current_projectile = Mage_projectiles.getHead();
+	while (current_projectile) {
+		if (CheckCollisionRecs(current_projectile->Data.getCollisionRectangle(), demon.getCollisionRectangle())) {
+			Mage_projectiles.popNode(current_projectile);
+			return true;
+		}
+		current_projectile = current_projectile->Next;
+	}
+	return false;
 }
 
 void GameMap::moveMageProjectiles(const float dT) {
@@ -122,8 +175,8 @@ void GameMap::moveAllDemons(const float dT) {
 
 }
 
-void GameMap::moveDemonColumn(shared_ptr<Node<DoubleLinkedList<Demon>>> row, const float dT, const bool is_first_down) {
-	shared_ptr<Node<Demon>> current_demon = row->Data.getHead();
+void GameMap::moveDemonColumn(shared_ptr<Node<DoubleLinkedList<Demon>>> column, const float dT, const bool is_first_down) {
+	shared_ptr<Node<Demon>> current_demon = column->Data.getHead();
 	while (current_demon) {
 		current_demon->Data.setIsFirstDown(is_first_down);
 		current_demon->Data.tick(dT);

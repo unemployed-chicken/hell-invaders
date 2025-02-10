@@ -48,14 +48,21 @@ class GameMap {
 
 	void drawBackground();
 	void appendProjectile(Mage& mage);
-	//void appendProjectile(Demon& demon); // to be created later
+	void appendProjectile(Demon& demon); // to be created later
 	void moveMageProjectiles(const float dT);
 	void moveAllDemons(const float dT);
 	void moveDemonColumn(
-		shared_ptr<Node<DoubleLinkedList<Demon>>> row, 
+		shared_ptr<Node<DoubleLinkedList<Demon>>> column,
 		const float dT, 
 		const bool is_down
 	);
+	void allDemonCollisionCheckAndAppendDemonProjectiles();
+	void demonColumnCollisionCheck(
+		shared_ptr<Node<DoubleLinkedList<Demon>>> column
+	);
+	bool hasCollision(Demon& demon);
+	bool hasCollision(Mage& mage);
+
 
 
 public:

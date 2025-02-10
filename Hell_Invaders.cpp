@@ -25,6 +25,7 @@ constexpr float texure_update_per_second{ 1.0f / 12.0f }; // Make this viewable 
 map<string, Texture2D> generateTexture();
 
 int main() {
+    srand(time(0));
     InitWindow(window_dimensions[0], window_dimensions[1], "Hell Invaders");
     SetTargetFPS(targetFps);
 

@@ -18,10 +18,11 @@ public:
 	~Demon();
 
 	void setYCoordinate();
-	void moveCharacter(const float dT);
 	void setTexturePosition();
 	void setIsFirstDown(const bool b);
 	float calculateXCoordinate(const float dT);
+	void moveCharacter(const float dT);
+	void calculateIsProjectileReady();
 
 	virtual void attack() override;
 	virtual void tick(const float dT) override;

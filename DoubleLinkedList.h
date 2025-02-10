@@ -95,8 +95,17 @@ public:
     }
 
     void popNode(shared_ptr<Node<T>> node) {
-        node->pop();
-        --Count;
+        // Checks if Node is Head or Tail and removes appropriately
+        if (node == Head) {
+            deleteHead();
+        }
+        else if (node == Tail) {
+            deleteTail();
+        }
+        else {
+            node->pop();
+            --Count;
+        }
     }
 };
 
