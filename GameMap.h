@@ -50,6 +50,7 @@ class GameMap {
 	void appendProjectile(Mage& mage);
 	void appendProjectile(Demon& demon); // to be created later
 	void moveMageProjectiles(const float dT);
+	void moveDemonProjectiles(const float dT, Mage& mage);
 	void moveAllDemons(const float dT);
 	void moveDemonColumn(
 		shared_ptr<Node<DoubleLinkedList<Demon>>> column,

@@ -12,7 +12,7 @@ Projectile::Projectile(
 	Active_texture = texture;
 	X_coordinate = x_pos;
 	Y_coordinate = y_pos;
-	isMagic ? Velocity = magic_projectile_speed * direction : Velocity = magic_projectile_speed * direction;
+	isMagic ? Velocity = magic_projectile_speed * direction : Velocity = fire_projectile_speed * direction;
 	Number_of_objects_in_x = number_of_objects_in_x;
 	Number_of_objects_in_y = number_of_objects_in_y;
 	Rotation = rotation;
@@ -21,8 +21,9 @@ Projectile::Projectile(
 	Collision_rec_scale_x = collision_rec_scale_x;
 	Collision_rec_scale_y = collision_rec_scale_y;
 	Is_magic = isMagic;
+	isMagic ? Scale = magic_projectile_scale : Scale = fire_projectile_scale;
 
-	Width = texture.width / number_of_objects_in_x - 5;
+	isMagic ? Width = texture.width / number_of_objects_in_x - 5: Width = texture.width / number_of_objects_in_x;
 	Height = texture.height / number_of_objects_in_y;
 }
 
@@ -72,8 +73,12 @@ void Projectile::render() {
 
 void Projectile::setTexturePosition() {
 	// Set Texture Position
-	Texture_position.x = 4.f;
-	frame % 2 == 0 ? Texture_position.x = 4.f : Texture_position.x = Width + 5.f;
+	if (Is_magic) {
+		frame % 2 == 0 ? Texture_position.x = 4.f : Texture_position.x = Width + 5.f;
+	}
+	else {
+		Texture_position.x = Width * (frame % Number_of_objects_in_x);
+	}
 	Texture_position.y = Height;
 }
 

@@ -48,6 +48,7 @@ public:
 	float getSpeed();
 	float getLeftRight();
 	float getWidth();
+	float getHeight();
 
 
 	/* 

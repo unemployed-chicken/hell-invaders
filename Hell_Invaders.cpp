@@ -4,7 +4,7 @@
 #include "raymath.h"
 #include "GameMap.h"
 #include "Mage.h"
-#include "Demon.h" // Remove later as this is moved to GameMap
+//#include "Demon.h" // Remove later as this is moved to GameMap
 using std::map;
 using std::string;
 
@@ -35,12 +35,8 @@ int main() {
 
     // Create Character
     Mage mage{ textures["mage"], textures["magic"]};
-    //Demon test1{ textures["skull"], textures["fire"], 100, 0, 4 }; 
-    //Demon test2{ textures["scamp"], textures["fire"], 100, 50, 4 };
-    //Demon test3{ textures["fledge"], textures["fire"], 100, 100, 4 };
-    //Demon test4{ textures["eye"], textures["fire"], 100, 150, 4 };
 
-    // Too be moved once creating levels
+    // TODO: Too be moved once creating levels
     map.generateDemonsList(textures);
 
     while (!WindowShouldClose()) {
@@ -56,7 +52,7 @@ int main() {
         // Move and Draw all Projectiles and Demons
         map.tick(dT, mage);
 
-        // Draw Mate
+        // Draw Mage
         mage.render();
 
         EndDrawing();
@@ -75,7 +71,7 @@ map<string, Texture2D> generateTexture() {
         { "foreground", LoadTexture("textures\\Map\\castle.png") },
         { "mage", LoadTexture("textures\\Characters\\MiniArchMage_no_outline.png")},
         { "magic", LoadTexture("textures\\Projectiles\\HumansProjectiles.png") },
-        { "fire", LoadTexture("textures\\Projectiles\\Fire_Spreadsheet.png") },
+        { "fire", LoadTexture("textures\\Projectiles\\fire.png") },
         { "skull", LoadTexture("textures\\Enemies\\WarpSkull.png") },
         { "scamp", LoadTexture("textures\\Enemies\\NefariousScamp.png") },
         { "fledge", LoadTexture("textures\\Enemies\\FledglingDemon.png") },

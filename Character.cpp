@@ -48,6 +48,7 @@ void Character::setIsProjectileReady(const bool b) { Is_projectile_ready = b; }
 float Character::getSpeed() { return Speed; }
 float Character::getLeftRight() { return Left_Right; }
 float Character::getWidth() { return Width; }
+float Character::getHeight() { return Height; }
 
 
 void Character::attack(){}

@@ -8,7 +8,15 @@ extern const bool debugging;
 
 constexpr float magic_projectile_speed{ 300.f };
 constexpr float fire_projectile_speed{ 150.f };
-constexpr float projectile_scale{ 4.0f };
+constexpr float magic_projectile_scale{ 4.0f };
+constexpr float fire_projectile_scale{ 2.0f };
+constexpr float fire_white_space_pixels_x{ 1.0f };
+constexpr float fire_white_space_pixels_y{ 0.0f };
+constexpr int demon_attack_direction{ 1 };
+constexpr int fire_projectile_rotation{ 0 };
+constexpr int fire_projectile_count_x{ 4 };
+constexpr int fire_projectile_count_y{ 1 };
+
 
 class Projectile{
 	Texture2D Active_texture;
@@ -24,7 +32,7 @@ class Projectile{
 	float Last_texture_update{};
 	float Width;
 	float Height;
-	float Scale{ projectile_scale };
+	float Scale;
 	float Rotation{};
 
 	float Collision_rec_white_space_offset_x;

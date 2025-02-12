@@ -17,23 +17,18 @@ void Demon::attack(){}
 void Demon::tick(const float dT) {
 	Last_texture_update += dT;
 	Attack_cooldown += dT;
+	attack_pause += dT;
 
 	if (Last_texture_update >= Texture_update_rate) {
 		Frame++;
 		Last_texture_update = 0.0f;
 	}
 
-	calculateIsProjectileReady();
-
 	// MoveCharacter
 	moveCharacter(dT);
 	
 	// setTexturePosition
 	setTexturePosition();
-
-	// No longer rendering during tick. Instead rendering during collision check
-	// Render Character
-	//render();
 }
 
 void Demon::setIsFirstDown(const bool b) { Is_first_down = b; }
@@ -84,13 +79,20 @@ void Demon::moveCharacter(const float dT) {
 
 }
 
-void Demon::calculateIsProjectileReady() {
+bool Demon::isProjectileReady() {
 	if (Attack_cooldown > Attack_rate) {
-		if (rand() % 100 > 75) {
-			Is_projectile_ready = true;
-			Attack_cooldown = 0;
+		if (attack_pause > attack_retry_rate) {
+			int random = rand() % 100;
+			if (random < 20) {
+				Attack_cooldown = 0;
+				return true;
+			}
+			else {
+				attack_pause = 0;
+			}
 		}
 	}
+	return false;
 }
 
 void Demon::setTexturePosition() {

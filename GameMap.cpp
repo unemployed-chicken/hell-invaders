@@ -23,6 +23,21 @@ void GameMap::appendProjectile(Mage& mage) {
 }
 
 
+void GameMap::appendProjectile(Demon& demon) {
+	if (demon.isProjectileReady()) {
+		Demon_projectiles.insertAtEnd(
+			make_shared<Node<Projectile>>(
+				Projectile(
+					demon.getProjectileTexture(), fire_projectile_count_x, fire_projectile_count_y, demon.getXCoordinate(), demon.getYCoordinate() + demon.getHeight(),
+					demon_attack_direction, fire_white_space_pixels_x, fire_white_space_pixels_y, fire_projectile_scale, 
+					fire_projectile_scale, fire_projectile_rotation, false
+				)
+			)
+		);
+	}
+}
+
+
 
 void GameMap::tick(const float dT, Mage &mage){
 	drawBackground();
@@ -31,9 +46,7 @@ void GameMap::tick(const float dT, Mage &mage){
 	moveAllDemons(dT);
 
 	// Generate Mage Projectiles
-	if (mage.getIsProjectileReady()) {
-		appendProjectile(mage);
-	}
+	if (mage.getIsProjectileReady()) { appendProjectile(mage); }
 
 	// Move and Render Mage Projectiles, Check for collisions with demons
 	if (Mage_projectiles.getCount() > 0) { moveMageProjectiles(dT);	}
@@ -42,6 +55,7 @@ void GameMap::tick(const float dT, Mage &mage){
 	allDemonCollisionCheckAndAppendDemonProjectiles();
 
 	// Move and Render Demon Projectiles, Check for collisions with Mage and Mage Projectiles
+	if (Demon_projectiles.getCount() > 0) { moveDemonProjectiles(dT, mage); }
 }
 
 void GameMap::drawBackground() {
@@ -78,15 +92,16 @@ void GameMap::allDemonCollisionCheckAndAppendDemonProjectiles() {
 	shared_ptr<Node<DoubleLinkedList<Demon>>> current_column = Demons_columns.getHead();
 	while (current_column) {
 		demonColumnCollisionCheck(current_column);
+		
 		if (current_column->Data.getCount() <= 0) {
 			Demons_columns.popNode(current_column);
 			current_column = current_column->Next;
 		}
 		else {
+			// Append Projectile to Demon Projectiles if projectile is ready
+			appendProjectile(current_column->Data.getTail()->Data);
 			current_column = current_column->Next;
 		}
-		
-		// Append Projectile Here
 	}
 }
 
@@ -137,20 +152,32 @@ void GameMap::moveMageProjectiles(const float dT) {
 			if (current_node->Data.getYCoordinate() <= 0.0f || current_node->Data.getYCoordinate() >= window_dimensions[1]) {
 				current_node->Data.setIsActive(false);
 			}
-			current_node = current_node->Next; // We render in Tick function so doing this all in one line is not an issue.
-		}
-
-		else if (current_node == Mage_projectiles.getHead()) {
-			current_node = current_node->Next;
-			Mage_projectiles.deleteHead();
-		}
-		else if (current_node == Mage_projectiles.getTail()) {
-			current_node = current_node->Next;
-			Mage_projectiles.deleteTail();
+			current_node = current_node->Next; 
 		}
 		else {
+			Mage_projectiles.popNode(current_node);
 			current_node = current_node->Next;
-			Mage_projectiles.popNode(current_node->Previous);
+		}
+	}
+}
+
+void GameMap::moveDemonProjectiles(const float dT, Mage& mage) {
+	shared_ptr<Node<Projectile>> current_node = Demon_projectiles.getHead();
+	while (current_node) {
+		if (current_node->Data.getIsActive()) {
+			current_node->Data.tick(dT);
+
+			if (current_node->Data.getYCoordinate() <= 0.0f || 
+				current_node->Data.getYCoordinate() >= window_dimensions[1] ||
+				CheckCollisionRecs(current_node->Data.getCollisionRectangle(), mage.getCollisionRectangle()) ) 
+			{
+				current_node->Data.setIsActive(false);
+			}
+			current_node = current_node->Next;
+		}
+		else {
+			Demon_projectiles.popNode(current_node);
+			current_node = current_node->Next;
 		}
 	}
 }
