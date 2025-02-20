@@ -49,6 +49,8 @@ float Character::getSpeed() { return Speed; }
 float Character::getLeftRight() { return Left_Right; }
 float Character::getWidth() { return Width; }
 float Character::getHeight() { return Height; }
+void Character::setTextureUpdateRate(float update_rate) { Texture_update_rate = update_rate; }
+void Character::setTextureUpdateRate() { Texture_update_rate = texure_update_per_second; }
 
 
 void Character::attack(){}

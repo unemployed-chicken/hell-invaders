@@ -7,7 +7,19 @@ Mage::Mage(Texture2D character_texture, Texture2D projectile_texture) :
 	Character(character_texture, projectile_texture, starting_x_pos, starting_y_pos, mage_speed, mage_fire_rate, -1) {
 	Width = static_cast<float>(character_texture.width) / mage_textures_per_row;
 	Height = static_cast<float>(character_texture.width) / mage_textures_per_column;
-};
+}
+
+void Mage::takeDamage() {
+	Last_texture_update = 0.0f;
+	Is_hurt = true;
+	lives--;
+	Attack_frame = 0;
+	Is_attacking = false;
+	setTextureUpdateRate();
+}
+
+int Mage::getLives() { return lives; }
+bool Mage::getIsHurt() { return Is_hurt; }
 
 void Mage::moveCharacter(const float dT) {
 	if (IsKeyDown(KEY_LEFT)) {
@@ -31,7 +43,28 @@ void Mage::moveCharacter(const float dT) {
 }
 
 void Mage::tick(const float dT) {
-	if (!Is_attacking) {
+	if (Is_hurt) {
+		Last_texture_update += dT;
+
+		if (Last_texture_update >= Texture_update_rate) {
+			Death_frame++;
+			Last_texture_update = 0.0f;
+		}
+
+		if (Death_frame == death_frames) {
+			if (Death_count_pause < death_count_frame_pause) {
+				Death_count_pause++;
+				Death_frame--;
+			}
+			else {
+				Death_count_pause = 0;
+				Death_frame = 0;
+				Is_hurt = false;
+			}
+
+		}
+	}
+	else if (!Is_attacking) {
 		Attack_cooldown += dT;
 		moveCharacter(dT);
 		attack();
@@ -49,6 +82,7 @@ void Mage::tick(const float dT) {
 		if (Attack_frame == attack_frames) {
 			Attack_frame = 0;
 			Is_attacking = false;
+			setTextureUpdateRate();
 		}
 	}
 }
@@ -70,9 +104,18 @@ void Mage::render() {
 
 void Mage::setTexturePosition() {
 	// Set Texture Position
-	Texture_position.x = Width * Attack_frame; // This works because Attack_frame will be 0 if false 
-	
-	Is_attacking ? Texture_position.y = ( Height * attack_texture_count) + attack_texture_pixel_offset : Texture_position.y = 0; 
+	if (Is_hurt) {
+		Texture_position.x = Width * Death_frame;
+		Texture_position.y = (Height * death_texture_count) + death_texture_pixel_offset;
+	}
+	else if (Is_attacking) {
+		Texture_position.x = Width * Attack_frame;
+		Texture_position.y = (Height * attack_texture_count) + attack_texture_pixel_offset;
+	}
+	else {
+		Texture_position.x = 0;
+		Texture_position.y = 0;
+	}
 }
 
 
@@ -90,6 +133,7 @@ void Mage::attack(){ // To return a projectile and pass an array or vector of pr
 		Attack_cooldown = 0.0f;
 		Is_attacking = true;
 		Is_projectile_ready = true;
+		setTextureUpdateRate(attack_texture_update_rate_per_second);
 	}
 }
 

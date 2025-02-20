@@ -88,6 +88,11 @@ void GameMap::generateDemonsList(map<string, Texture2D> textures) {
 	}
 }
 
+void GameMap::drawEndGame() {
+	drawBackground();
+	DrawText("GAME OVER", window_dimensions[0] * end_game_coordinates_offset[0], window_dimensions[1] * end_game_coordinates_offset[1], end_game_text_size, RED);
+}
+
 void GameMap::allDemonCollisionCheckAndAppendDemonProjectiles() {
 	shared_ptr<Node<DoubleLinkedList<Demon>>> current_column = Demons_columns.getHead();
 	while (current_column) {
@@ -119,16 +124,16 @@ void GameMap::demonColumnCollisionCheck(shared_ptr<Node<DoubleLinkedList<Demon>>
 	}
 }
 
-bool GameMap::hasCollision(Mage& mage) {
-	shared_ptr<Node<Projectile>> current_projectile = Demon_projectiles.getHead();
-	while (current_projectile) {
-		if (CheckCollisionRecs(current_projectile->Data.getCollisionRectangle(), mage.getCollisionRectangle())) {
-			Demon_projectiles.popNode(current_projectile);
-			return true;
+void GameMap::checkDemonProjectileForMageProjectileCollisions(shared_ptr<Node<Projectile>> demon_projectiles) {
+	shared_ptr<Node<Projectile>> current_mage_projectile = Mage_projectiles.getHead();
+	while (current_mage_projectile) {
+		if (CheckCollisionRecs(current_mage_projectile->Data.getCollisionRectangle(), demon_projectiles->Data.getCollisionRectangle())) {
+			demon_projectiles->Data.setIsActive(false);
+			current_mage_projectile->Data.setIsActive(false);
+			return;
 		}
-		current_projectile = current_projectile->Next;
+		current_mage_projectile = current_mage_projectile->Next;
 	}
-	return false;
 }
 
 bool GameMap::hasCollision(Demon& demon) {
@@ -167,11 +172,15 @@ void GameMap::moveDemonProjectiles(const float dT, Mage& mage) {
 		if (current_node->Data.getIsActive()) {
 			current_node->Data.tick(dT);
 
-			if (current_node->Data.getYCoordinate() <= 0.0f || 
-				current_node->Data.getYCoordinate() >= window_dimensions[1] ||
-				CheckCollisionRecs(current_node->Data.getCollisionRectangle(), mage.getCollisionRectangle()) ) 
-			{
+			if (current_node->Data.getYCoordinate() <= 0.0f || current_node->Data.getYCoordinate() >= window_dimensions[1]) {
 				current_node->Data.setIsActive(false);
+			} 
+			else if ( !mage.getIsHurt() && CheckCollisionRecs(current_node->Data.getCollisionRectangle(), mage.getCollisionRectangle())) {
+				current_node->Data.setIsActive(false);
+				mage.takeDamage();
+			}
+			else {
+				checkDemonProjectileForMageProjectileCollisions(current_node);
 			}
 			current_node = current_node->Next;
 		}
@@ -210,6 +219,7 @@ void GameMap::moveDemonColumn(shared_ptr<Node<DoubleLinkedList<Demon>>> column, 
 		current_demon = current_demon->Next;
 	}
 }
+
 
 
 

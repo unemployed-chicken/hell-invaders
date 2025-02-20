@@ -3,18 +3,24 @@ cpp project recreating space invaders
 
 
 TODO:
-	- Demon Projectiles hurt Mage
-	- Projectiles break Projectiles
-	- Speed Mage attack Frames up
-	- Set Lives for Mage
-	- Create a level and increase as demons are cleared
+	- Display updates
+		- Lives
+		- Magic Uses
+		- Level
+		- Score
 	- Create some barrier magic 
-	- Create special demon to restor barrier magic
-	- end game
-		- if lives are out
-		- if demons touch mage
-	- level count
-	- score count
-	- increase difficulty with each level
+		- Barriers generated on Queue
+		- Revive Barrier sweeps enemy projectiles
+		- Barriers decay over time
+		- Mage Projectiles pass through painlessly
+	- Level updates
+		- Create a level
+		- increase level as demons are cleared
+		- level count
+		- score count
+		- Increase difficulty
+		- end game
+			- if demons touch mage
+	- Create special demon to restore barrier magic
 	- add music
 	- create a brief tutorial screen 

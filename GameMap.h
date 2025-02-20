@@ -32,6 +32,9 @@ constexpr float mage_projectile_collision_offset_y{ -31.0 };
 constexpr float mage_projectile_collision_scale_x{ 1.5 };
 constexpr float mage_projectile_collision_scale_y{ 2.0 };
 constexpr float mage_projectile_rotation{ -90.0 };
+constexpr float end_game_coordinates_offset[2]{.15, .40};
+constexpr float end_game_text_size{ 75 };
+
 const float demons_x_range[2]{ 5.0f, window_dimensions[1] - (16.f * character_scale) + 5.f}; // First is Left Limit, Second is Right Limit
 
 
@@ -62,7 +65,7 @@ class GameMap {
 		shared_ptr<Node<DoubleLinkedList<Demon>>> column
 	);
 	bool hasCollision(Demon& demon);
-	bool hasCollision(Mage& mage);
+	void checkDemonProjectileForMageProjectileCollisions(shared_ptr<Node<Projectile>> demon_projectiles);
 
 
 
@@ -72,5 +75,6 @@ public:
 
 	void tick(const float dT, Mage &mage);
 	void generateDemonsList(map<string, Texture2D> textures);
+	void drawEndGame();
 };
 

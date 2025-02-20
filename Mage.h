@@ -1,14 +1,16 @@
 #pragma once
 #include "Character.h"
 
-//extern float window_dimensions[2];
 extern const bool debugging;
 
 constexpr float starting_x_pos{ 320 };
 constexpr float starting_y_pos{ 582 };
-constexpr int attack_frames{ 9 }; // number of columns in the attack frame
+constexpr int attack_frames{ 9 }; // number of columns in the attack animation
 constexpr int attack_texture_count{ 4 }; // The row of the attack animation
+constexpr int death_frames{ 9 }; // number of columns in the death animation
+constexpr int death_texture_count{ 6 }; // The row of the death animation
 
+constexpr float attack_texture_update_rate_per_second{ 1.0f / 18.0f };
 constexpr float mage_speed{ 200.f }; // pixels per second
 constexpr float mage_fire_rate{ .15 }; // seconds per attack
 
@@ -19,16 +21,25 @@ constexpr Vector2 origin{ 34, 55 }; // Offsets the white space for movement
 constexpr float collision_rec_white_space_off_set{ character_scale / 3.f }; // Offsets the white space for collision rectangle
 
 constexpr float attack_texture_pixel_offset{ 3.5 }; // Offsets whitespace in texture when getting attack animation
+constexpr float death_texture_pixel_offset{ 20.45 }; // Offsets whitespace in texture when getting death animation
+constexpr float death_count_frame_pause{ 9 }; // Number of times to repeat final death stage frames
 
 class Mage : public Character {
 	double score{};
 	int lives{ 3 };
 	bool Is_attacking{ false };
 	int Attack_frame{ 0 };
+	bool Is_hurt{ false };
+	int Death_frame{};
+	int Death_count_pause{ 0 };
 	
 
 public:
 	Mage(Texture2D character_texture, Texture2D projectile_texture);
+
+	void takeDamage();
+	int getLives();
+	bool getIsHurt();
 
 	virtual void render();
 	virtual void setTexturePosition();

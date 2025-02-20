@@ -49,6 +49,8 @@ public:
 	float getLeftRight();
 	float getWidth();
 	float getHeight();
+	void setTextureUpdateRate(float update_rate);
+	void setTextureUpdateRate();
 
 
 	/* 
