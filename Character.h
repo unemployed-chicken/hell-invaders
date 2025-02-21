@@ -40,6 +40,7 @@ protected:
 public:
 	Character(Texture2D character_texture, Texture2D projectile_texture, float pos_x, float pos_y, float speed, float attack_rate, int attack_direction);
 	Texture2D getProjectileTexture();
+	Texture2D getActiveTexture();
 	float getXCoordinate();
 	float getYCoordinate();
 	int getAttackDirection();
@@ -63,7 +64,6 @@ public:
 
 	//virtual void takeDamage();
 	virtual Rectangle getCollisionRectangle();
-	virtual void attack();
 	virtual void tick(const float dT);
 	virtual void moveCharacter(const float dT);
 };

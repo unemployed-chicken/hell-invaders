@@ -9,17 +9,26 @@ Mage::Mage(Texture2D character_texture, Texture2D projectile_texture) :
 	Height = static_cast<float>(character_texture.width) / mage_textures_per_column;
 }
 
+
+int Mage::getLives() { return Lives; }
+bool Mage::getIsHurt() { return Is_hurt; }
+//bool Mage::getIsCastingShield() { return Is_casting_shield; }
+int Mage::getScore() { return Score; }
+int Mage::getShieldCount() { return Shield_count; }
+bool Mage::getIsShieldReady() {	return Is_shield_ready; }
+void Mage::addScore(const int points) { Score += points; }
+void Mage::decrementShieldCount() { --Shield_count; }
+void Mage::setIsShieldReady(bool b) { Is_shield_ready = false; }
+
 void Mage::takeDamage() {
 	Last_texture_update = 0.0f;
 	Is_hurt = true;
-	lives--;
-	Attack_frame = 0;
+	Lives--;
+	Texture_frame = 0;
 	Is_attacking = false;
 	setTextureUpdateRate();
 }
 
-int Mage::getLives() { return lives; }
-bool Mage::getIsHurt() { return Is_hurt; }
 
 void Mage::moveCharacter(const float dT) {
 	if (IsKeyDown(KEY_LEFT)) {
@@ -47,43 +56,49 @@ void Mage::tick(const float dT) {
 		Last_texture_update += dT;
 
 		if (Last_texture_update >= Texture_update_rate) {
-			Death_frame++;
+			Texture_frame++;
 			Last_texture_update = 0.0f;
 		}
 
-		if (Death_frame == death_frames) {
+		if (Texture_frame == death_frames) {
 			if (Death_count_pause < death_count_frame_pause) {
 				Death_count_pause++;
-				Death_frame--;
+				Texture_frame--;
 			}
 			else {
 				Death_count_pause = 0;
-				Death_frame = 0;
+				Texture_frame = 0;
 				Is_hurt = false;
 			}
 
 		}
 	}
-	else if (!Is_attacking) {
-		Attack_cooldown += dT;
-		moveCharacter(dT);
-		attack();
-	}
-	else {
+	else if (Is_attacking || Is_casting_shield) {
 		Last_texture_update += dT;
-		
+
 		// Update Current Character Frame
 		if (Last_texture_update >= Texture_update_rate) {
-			Attack_frame++;
+			Texture_frame++;
 			Last_texture_update = 0.0f;
 		}
 
 		// If attack phase complete, reset all values
-		if (Attack_frame == attack_frames) {
-			Attack_frame = 0;
+		if (Is_attacking && Texture_frame == attack_frames) {
+			Texture_frame = 0;
 			Is_attacking = false;
 			setTextureUpdateRate();
 		}
+		// If casting phase complete, reset all values
+		else if (Is_casting_shield && Texture_frame == casting_frames) {
+			Texture_frame = 0;
+			Is_casting_shield = false;
+		}
+	}
+	else {
+		Attack_cooldown += dT;
+		moveCharacter(dT);
+		attack();
+		castShield();
 	}
 }
 
@@ -93,7 +108,6 @@ void Mage::render() {
 	Rectangle source{ Texture_position.x, Texture_position.y, Width * Left_Right, Height };
 	Rectangle destination{ X_coordinate, Y_coordinate, Scale * Width, Scale * Height };
 	
-	// Temporary for now:
 	Rectangle collision_rectangle = getCollisionRectangle();
 
 	DrawTexturePro(Active_texture, source, destination, origin, 0.0f, WHITE);
@@ -104,16 +118,18 @@ void Mage::render() {
 
 void Mage::setTexturePosition() {
 	// Set Texture Position
+	Texture_position.x = Width * Texture_frame;
+	
 	if (Is_hurt) {
-		Texture_position.x = Width * Death_frame;
 		Texture_position.y = (Height * death_texture_count) + death_texture_pixel_offset;
 	}
 	else if (Is_attacking) {
-		Texture_position.x = Width * Attack_frame;
 		Texture_position.y = (Height * attack_texture_count) + attack_texture_pixel_offset;
 	}
+	else if (Is_casting_shield) {
+		Texture_position.y = (Height * casting_texture_count) + casting_texture_pixel_offset;
+	}
 	else {
-		Texture_position.x = 0;
 		Texture_position.y = 0;
 	}
 }
@@ -128,13 +144,22 @@ Rectangle Mage::getCollisionRectangle(){
 	};
 }
 
-void Mage::attack(){ // To return a projectile and pass an array or vector of projectiles
-	if (IsKeyPressed(KEY_SPACE) && Attack_cooldown >= Attack_rate) {
+void Mage::attack() { 
+	bool wants_to_attack = IsKeyPressed(KEY_SPACE) || IsKeyPressed(KEY_UP);
+	if (wants_to_attack && Attack_cooldown >= Attack_rate) {
 		Attack_cooldown = 0.0f;
 		Is_attacking = true;
 		Is_projectile_ready = true;
 		setTextureUpdateRate(attack_texture_update_rate_per_second);
 	}
+}
+
+void Mage::castShield() {
+	bool wants_to_cast = IsKeyPressed(KEY_DOWN) || IsKeyPressed(KEY_LEFT_SHIFT);
+	if (wants_to_cast && Shield_count > 0) {
+		Is_casting_shield = true;
+		Is_shield_ready = true;
+	};
 }
 
 

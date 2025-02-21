@@ -24,8 +24,8 @@ public:
 	float calculateXCoordinate(const float dT);
 	void moveCharacter(const float dT);
 	bool isProjectileReady();
+	int getPoints();
 
-	virtual void attack() override;
 	virtual void tick(const float dT) override;
 };
 

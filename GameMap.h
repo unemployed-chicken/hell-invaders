@@ -1,19 +1,22 @@
 #pragma once
 
-#include "DoubleLinkedList.h"
-#include "raylib.h"
-#include "Projectile.h"
-#include "Mage.h"
 #include "Demon.h"
+#include "DoubleLinkedList.h"
+#include "Mage.h"
+#include "Projectile.h"
+#include "raylib.h"
+#include "Shield.h"
 #include <vector>
 #include <iostream>
+#include <string>
 #include <memory>
 #include <map>
 using std::vector;
 using std::shared_ptr;
-using std::make_shared;
 using std::map;
 using std::string;
+using std::make_shared;
+using std::to_string;
 
 extern const float window_dimensions[2];
 extern const bool debugging;
@@ -34,38 +37,51 @@ constexpr float mage_projectile_collision_scale_y{ 2.0 };
 constexpr float mage_projectile_rotation{ -90.0 };
 constexpr float end_game_coordinates_offset[2]{.15, .40};
 constexpr float end_game_text_size{ 75 };
+constexpr float shield_starting_x_coordinate{ 50 };
+constexpr float shield_spacing{ 225 };
 
 const float demons_x_range[2]{ 5.0f, window_dimensions[1] - (16.f * character_scale) + 5.f}; // First is Left Limit, Second is Right Limit
-
-
-
 
 class GameMap {
 	Texture2D Background;
 	Texture2D Midground;
 	Texture2D Foreground;
 
+	Texture2D Full_shield;
+	Texture2D Mid_shield;
+	Texture2D Low_shield;
+	Texture2D Revive_shield;
+
+	Mage mage;
+
 	DoubleLinkedList<Projectile> Mage_projectiles{};
 	DoubleLinkedList<Projectile> Demon_projectiles{};
 	DoubleLinkedList<DoubleLinkedList<Demon>> Demons_columns{};
+	DoubleLinkedList<Shield> Shields{};
+
+	int level{ 0 };
 
 	void drawBackground();
-	void appendProjectile(Mage& mage);
-	void appendProjectile(Demon& demon); // to be created later
+	void drawLives();
+	void drawShieldCount();
+	void appendProjectile();
+	void appendProjectile(Demon& demon); 
 	void moveMageProjectiles(const float dT);
 	void moveDemonProjectiles(const float dT, Mage& mage);
 	void moveAllDemons(const float dT);
+	void allDemonCollisionCheckAndAppendDemonProjectiles();
+	bool hasCollision(Demon& demon);
+	void checkDemonProjectileForMageProjectilesCollision(shared_ptr<Node<Projectile>> demon_projectiles);
+	void checkDemonProjectilForShieldCollision(shared_ptr<Node<Projectile>> demon_projectiles);
+	void drawAllShields();
 	void moveDemonColumn(
 		shared_ptr<Node<DoubleLinkedList<Demon>>> column,
 		const float dT, 
 		const bool is_down
 	);
-	void allDemonCollisionCheckAndAppendDemonProjectiles();
 	void demonColumnCollisionCheck(
 		shared_ptr<Node<DoubleLinkedList<Demon>>> column
 	);
-	bool hasCollision(Demon& demon);
-	void checkDemonProjectileForMageProjectileCollisions(shared_ptr<Node<Projectile>> demon_projectiles);
 
 
 
@@ -73,8 +89,11 @@ public:
 	GameMap(map<string, Texture2D> textures);
 	//~GameMap();
 
-	void tick(const float dT, Mage &mage);
+	bool hasDemons();
+	Mage& getMage();
+	void tick(const float dT);
 	void generateDemonsList(map<string, Texture2D> textures);
+	void generateShields();
 	void drawEndGame();
 };
 

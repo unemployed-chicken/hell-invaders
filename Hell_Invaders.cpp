@@ -19,8 +19,6 @@ const int targetFps{ 60 };
 // Texture Properties
 constexpr float texure_update_per_second{ 1.0f / 12.0f };
 
-
-
 map<string, Texture2D> generateTexture();
 
 int main() {
@@ -31,33 +29,25 @@ int main() {
     // Create Textures
     map<string, Texture2D> textures = generateTexture();
     GameMap map(textures);
-
-    // Create Character
-    Mage mage{ textures["mage"], textures["magic"]};
-
-    // TODO: Too be moved once creating levels
-    map.generateDemonsList(textures);
+    map.generateShields();
 
     while (!WindowShouldClose()) {
         BeginDrawing();
         ClearBackground(WHITE);
 
-        if (mage.getLives() == 0) {
+        if (map.getMage().getLives() == 0) {
             // Draw Game Over
             map.drawEndGame();
         }
         else {
+            if (!map.hasDemons()) {
+                map.generateDemonsList(textures);
+            }
             // Create last update time
             float dT{ GetFrameTime() };
 
-            // Move Character
-            mage.tick(dT);
-
-            // Move and Draw all Projectiles and Demons
-            map.tick(dT, mage);
-
-            // Draw Mage
-            mage.render();
+            // Move and Draw all Objects
+            map.tick(dT);
         }
 
         EndDrawing();
@@ -77,9 +67,9 @@ map<string, Texture2D> generateTexture() {
         { "mage", LoadTexture("textures\\Characters\\MiniArchMage_no_outline.png")},
         { "magic", LoadTexture("textures\\Projectiles\\HumansProjectiles.png") },
         { "fire", LoadTexture("textures\\Projectiles\\fire.png") },
-        { "fresh_shield", LoadTexture("textures\\Projectiles\\magic-shield-full.png") },
+        { "full_shield", LoadTexture("textures\\Projectiles\\magic-shield-full.png") },
         { "mid_shield", LoadTexture("textures\\Projectiles\\magic-shield-medium.png") },
-        { "old_shield", LoadTexture("textures\\Projectiles\\magic-shield-end.png") },
+        { "low_shield", LoadTexture("textures\\Projectiles\\magic-shield-end.png") },
         { "revive_shield", LoadTexture("textures\\Projectiles\\magic-shield-revive.png") },
         { "skull", LoadTexture("textures\\Enemies\\WarpSkull.png") },
         { "scamp", LoadTexture("textures\\Enemies\\NefariousScamp.png") },

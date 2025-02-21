@@ -6,13 +6,17 @@ Demon::Demon(Texture2D character_texture, Texture2D projectile_texture, int demo
 	Width = static_cast<float>(character_texture.width) / texture_count;
 	Height = static_cast<float>(character_texture.height);
 	// Temp for testing:
-	Texture_update_rate *= 2;
+	//Texture_update_rate *= 2;
 }
 Demon::~Demon() {
 	std::cout << "Destroying Demon" << '\n';
 }
 
-void Demon::attack(){}
+int Demon::getPoints() { return points; }
+void Demon::setIsFirstDown(const bool b) { Is_first_down = b; }
+float Demon::calculateXCoordinate(const float dT) {
+	return getXCoordinate() + (getSpeed() * getLeftRight() * dT);
+}
 
 void Demon::tick(const float dT) {
 	Last_texture_update += dT;
@@ -31,11 +35,7 @@ void Demon::tick(const float dT) {
 	setTexturePosition();
 }
 
-void Demon::setIsFirstDown(const bool b) { Is_first_down = b; }
 
-float Demon::calculateXCoordinate(const float dT) {
-	return getXCoordinate() + (getSpeed() * getLeftRight() * dT);
-}
 
 void Demon::setYCoordinate() {
 	switch (Frame % 4)
@@ -74,7 +74,6 @@ void Demon::moveCharacter(const float dT) {
 	}
 	else {
 		X_coordinate += Speed * Left_Right * dT;
-		//setYCoordinate();
 	}
 
 }
@@ -94,6 +93,7 @@ bool Demon::isProjectileReady() {
 	}
 	return false;
 }
+
 
 void Demon::setTexturePosition() {
 	// Set Texture Position

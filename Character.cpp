@@ -16,6 +16,7 @@ Character::Character(
 
 void Character::moveCharacter(const float dT){}
 Texture2D Character::getProjectileTexture() { return Projectile_texture; }
+Texture2D Character::getActiveTexture() { return Active_texture; }
 float Character::getXCoordinate() { return X_coordinate; }
 float Character::getYCoordinate() { return Y_coordinate; }
 int Character::getAttackDirection(){ return Attack_direction; }
@@ -52,6 +53,4 @@ float Character::getHeight() { return Height; }
 void Character::setTextureUpdateRate(float update_rate) { Texture_update_rate = update_rate; }
 void Character::setTextureUpdateRate() { Texture_update_rate = texure_update_per_second; }
 
-
-void Character::attack(){}
 void Character::tick(const float dT){}

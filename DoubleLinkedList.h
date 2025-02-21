@@ -52,6 +52,7 @@ public:
     shared_ptr<Node<T>> getHead() { return Head; }
     shared_ptr<Node<T>> getTail() { return Tail; }
     int getCount() { return Count; }
+    
     void insertAtEnd(std::shared_ptr<Node<T>> node) { // If Head and Tail do not exist, this will make the node the head and the tail
         if (!Tail) {
             Head = Tail = node;
@@ -105,6 +106,12 @@ public:
         else {
             node->pop();
             --Count;
+        }
+    }
+
+    void deleteAllNodes() {
+        while (Head) {
+            popNode(Head);
         }
     }
 };
