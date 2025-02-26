@@ -1,10 +1,11 @@
 #include "Demon.h"
 
 
-Demon::Demon(Texture2D character_texture, Texture2D projectile_texture, int demon_x_pos, int demon_y_pos, int texture_count) :
-	Character(character_texture, projectile_texture, demon_x_pos, demon_y_pos, demon_speed, demon_fire_rate, 1) {
+Demon::Demon(Texture2D character_texture, Texture2D projectile_texture, int demon_x_pos, int demon_y_pos, int texture_count, int points, float speed) :
+	Character(character_texture, projectile_texture, demon_x_pos, demon_y_pos, speed, demon_fire_rate, 1) {
 	Width = static_cast<float>(character_texture.width) / texture_count;
 	Height = static_cast<float>(character_texture.height);
+	Points = points;
 	// Temp for testing:
 	//Texture_update_rate *= 2;
 }
@@ -12,8 +13,9 @@ Demon::~Demon() {
 	std::cout << "Destroying Demon" << '\n';
 }
 
-int Demon::getPoints() { return points; }
+int Demon::getPoints() { return Points; }
 void Demon::setIsFirstDown(const bool b) { Is_first_down = b; }
+bool Demon::getIsFirstDown() { return Is_first_down; }
 float Demon::calculateXCoordinate(const float dT) {
 	return getXCoordinate() + (getSpeed() * getLeftRight() * dT);
 }
@@ -78,6 +80,10 @@ void Demon::moveCharacter(const float dT) {
 
 }
 
+void Demon::bumpSpeed() {
+	Speed += 15;
+}
+
 bool Demon::isProjectileReady() {
 	if (Attack_cooldown > Attack_rate) {
 		if (attack_pause > attack_retry_rate) {
@@ -93,7 +99,6 @@ bool Demon::isProjectileReady() {
 	}
 	return false;
 }
-
 
 void Demon::setTexturePosition() {
 	// Set Texture Position

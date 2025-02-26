@@ -10,7 +10,7 @@ Projectile::Projectile(
 	float collision_rec_scale_y, float rotation, bool isMagic
 ) {
 	Active_texture = texture;
-	X_coordinate = x_pos;
+	isMagic ? X_coordinate = x_pos * (1) : X_coordinate = x_pos;
 	Y_coordinate = y_pos;
 	isMagic ? Velocity = magic_projectile_speed * direction : Velocity = fire_projectile_speed * direction;
 	Number_of_objects_in_x = number_of_objects_in_x;

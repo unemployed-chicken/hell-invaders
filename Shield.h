@@ -10,8 +10,10 @@ extern const bool debugging;
 constexpr float Shield_width_scale{ 3 };
 constexpr int Shield_height_scale{ 2 };
 constexpr float Shield_starting_y_position{ 550 }; // ~ Screen Height - (Height of Mage + 5px)
+constexpr float revive_shield_movement_speed{ -400 }; // pixels per second
 
 class Shield {
+protected:
 	Texture2D Full_shield;
 	Texture2D Mid_shield;
 	Texture2D Low_shield;
@@ -27,6 +29,7 @@ class Shield {
 	float Height_scale{ Shield_height_scale };
 	int Damage_count{ 0 };
 	bool Is_active{ true };
+	bool Is_persistent{ false };
 
 
 public:
@@ -34,9 +37,11 @@ public:
 	
 	void takeDamage();
 	void render();
-	Rectangle getCollisionRectangle();
 	bool getIsActive();
+	bool getIsPersistent();
+	Rectangle getCollisionRectangle();
 
 	virtual Texture2D getActiveTexture();
+	virtual void tick(const float dT);
 };
 

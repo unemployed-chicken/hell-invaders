@@ -12,13 +12,18 @@ Mage::Mage(Texture2D character_texture, Texture2D projectile_texture) :
 
 int Mage::getLives() { return Lives; }
 bool Mage::getIsHurt() { return Is_hurt; }
-//bool Mage::getIsCastingShield() { return Is_casting_shield; }
 int Mage::getScore() { return Score; }
 int Mage::getShieldCount() { return Shield_count; }
-bool Mage::getIsShieldReady() {	return Is_shield_ready; }
+int Mage::getTextureFrame() { return Texture_frame; }
+bool Mage::getIsShieldReady() {	return Is_shield_ready && Texture_frame == 5; }
+bool Mage::getIsPostReviveActive() { return Is_post_revive_active; }
+bool Mage::getIsReviveShieldActive() { return Is_revive_shield_active; }
+bool Mage::getIsProjectileReady() { return Is_projectile_ready && Texture_frame == 5; }
 void Mage::addScore(const int points) { Score += points; }
 void Mage::decrementShieldCount() { --Shield_count; }
-void Mage::setIsShieldReady(bool b) { Is_shield_ready = false; }
+void Mage::setIsShieldReady(bool b) { Is_shield_ready = b; }
+
+void Mage::setIsReviveShieldActive(bool b) { Is_revive_shield_active = b; }
 
 void Mage::takeDamage() {
 	Last_texture_update = 0.0f;
@@ -69,9 +74,32 @@ void Mage::tick(const float dT) {
 				Death_count_pause = 0;
 				Texture_frame = 0;
 				Is_hurt = false;
+				Is_post_revive_active = true;
 			}
 
 		}
+	}
+	else if (Is_post_revive_active) {
+		Last_texture_update += dT;
+
+		if (!Is_revive_shield_active && Texture_frame == 0) {
+			Is_revive_shield_active = true;
+			castShield(true);
+		}
+
+		if (!(Texture_frame == 3 && Is_revive_shield_active)) {
+			if (Last_texture_update >= Texture_update_rate) {
+				Texture_frame++;
+				Last_texture_update = 0.0f;
+			}
+			if (Texture_frame == casting_frames) {
+				Texture_frame = 0;
+				Is_casting_shield = false;
+				Is_post_revive_active = false;
+			}
+		}
+
+
 	}
 	else if (Is_attacking || Is_casting_shield) {
 		Last_texture_update += dT;
@@ -119,21 +147,20 @@ void Mage::render() {
 void Mage::setTexturePosition() {
 	// Set Texture Position
 	Texture_position.x = Width * Texture_frame;
-	
+
 	if (Is_hurt) {
 		Texture_position.y = (Height * death_texture_count) + death_texture_pixel_offset;
 	}
 	else if (Is_attacking) {
 		Texture_position.y = (Height * attack_texture_count) + attack_texture_pixel_offset;
 	}
-	else if (Is_casting_shield) {
+	else if (Is_casting_shield || Is_post_revive_active) {
 		Texture_position.y = (Height * casting_texture_count) + casting_texture_pixel_offset;
 	}
 	else {
 		Texture_position.y = 0;
 	}
 }
-
 
 Rectangle Mage::getCollisionRectangle(){
 	return Rectangle{ 
@@ -155,11 +182,15 @@ void Mage::attack() {
 }
 
 void Mage::castShield() {
-	bool wants_to_cast = IsKeyPressed(KEY_DOWN) || IsKeyPressed(KEY_LEFT_SHIFT);
-	if (wants_to_cast && Shield_count > 0) {
+	castShield(IsKeyPressed(KEY_DOWN) || IsKeyPressed(KEY_LEFT_SHIFT));
+
+}
+
+void Mage::castShield(bool wants_to_cast_shield) {
+	if (wants_to_cast_shield && Shield_count > 0) {
 		Is_casting_shield = true;
 		Is_shield_ready = true;
-	};
+	}
 }
 
 

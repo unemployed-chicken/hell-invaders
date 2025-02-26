@@ -35,7 +35,7 @@ int main() {
         BeginDrawing();
         ClearBackground(WHITE);
 
-        if (map.getMage().getLives() == 0) {
+        if (map.getMage().getLives() == 0 || map.hasInvaded()) {
             // Draw Game Over
             map.drawEndGame();
         }

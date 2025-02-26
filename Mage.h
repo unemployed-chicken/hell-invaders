@@ -37,6 +37,8 @@ class Mage : public Character {
 	bool Is_hurt{ false };
 	bool Is_casting_shield{ false };
 	bool Is_shield_ready{ false };
+	bool Is_post_revive_active{ false };
+	bool Is_revive_shield_active{ false };
 	
 
 public:
@@ -45,19 +47,24 @@ public:
 	int getLives();
 	int getScore();
 	int getShieldCount();
+	int getTextureFrame();
 	bool getIsHurt();
-	//bool getIsCastingShield(); 
 	bool getIsShieldReady();
+	bool getIsPostReviveActive();
+	bool getIsReviveShieldActive();
 	void addScore(const int points);
 	void attack();
 	void castShield();
+	void castShield(bool wants_to_cast_shield);
 	void takeDamage();
 	void decrementShieldCount();
 	void setIsShieldReady(bool b);
+	void setIsReviveShieldActive(bool b);
 
 	virtual void render();
 	virtual void setTexturePosition();
 	
+	virtual bool getIsProjectileReady() override;
 	virtual Rectangle getCollisionRectangle() override;
 	virtual void moveCharacter(const float dT) override;
 	virtual void tick(const float dT) override;

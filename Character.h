@@ -41,15 +41,14 @@ public:
 	Character(Texture2D character_texture, Texture2D projectile_texture, float pos_x, float pos_y, float speed, float attack_rate, int attack_direction);
 	Texture2D getProjectileTexture();
 	Texture2D getActiveTexture();
+	int getAttackDirection();
 	float getXCoordinate();
 	float getYCoordinate();
-	int getAttackDirection();
-	bool getIsProjectileReady();
-	void setIsProjectileReady(const bool b);
 	float getSpeed();
 	float getLeftRight();
 	float getWidth();
 	float getHeight();
+	void setIsProjectileReady(const bool b);
 	void setTextureUpdateRate(float update_rate);
 	void setTextureUpdateRate();
 
@@ -62,7 +61,7 @@ public:
 
 	// --------------------------------------------------------------
 
-	//virtual void takeDamage();
+	virtual bool getIsProjectileReady();
 	virtual Rectangle getCollisionRectangle();
 	virtual void tick(const float dT);
 	virtual void moveCharacter(const float dT);

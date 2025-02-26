@@ -5,6 +5,7 @@
 #include "Mage.h"
 #include "Projectile.h"
 #include "raylib.h"
+#include "ReviveShield.h"
 #include "Shield.h"
 #include <vector>
 #include <iostream>
@@ -39,6 +40,14 @@ constexpr float end_game_coordinates_offset[2]{.15, .40};
 constexpr float end_game_text_size{ 75 };
 constexpr float shield_starting_x_coordinate{ 50 };
 constexpr float shield_spacing{ 225 };
+constexpr float demon_base_speed{ 50 }; // pixels per second 
+constexpr float base_demon_points{ 50 };
+constexpr float skull_points{ base_demon_points * 3 };
+constexpr float fledge_points{ base_demon_points * 2 };
+constexpr float scamp_points{ base_demon_points * 1 };
+constexpr float special_demon_points{ base_demon_points * 10 };
+constexpr int number_of_demon_textures{ 4 };
+constexpr int number_of_rows_moved_per_speed_boost{ 3 };
 
 const float demons_x_range[2]{ 5.0f, window_dimensions[1] - (16.f * character_scale) + 5.f}; // First is Left Limit, Second is Right Limit
 
@@ -59,8 +68,11 @@ class GameMap {
 	DoubleLinkedList<DoubleLinkedList<Demon>> Demons_columns{};
 	DoubleLinkedList<Shield> Shields{};
 
+	bool has_invaded{ false };
 	int level{ 0 };
+	int demons_moved_down_count{ 0 };
 
+	bool hasCollision(Demon& demon);
 	void drawBackground();
 	void drawLives();
 	void drawShieldCount();
@@ -70,10 +82,13 @@ class GameMap {
 	void moveDemonProjectiles(const float dT, Mage& mage);
 	void moveAllDemons(const float dT);
 	void allDemonCollisionCheckAndAppendDemonProjectiles();
-	bool hasCollision(Demon& demon);
 	void checkDemonProjectileForMageProjectilesCollision(shared_ptr<Node<Projectile>> demon_projectiles);
 	void checkDemonProjectilForShieldCollision(shared_ptr<Node<Projectile>> demon_projectiles);
 	void drawAllShields();
+	void mageTakesDamage();
+	void generateOrMoveAllShields(const float dT);
+	void generateReviveShield();
+	void moveReviveShield(const float dT);
 	void moveDemonColumn(
 		shared_ptr<Node<DoubleLinkedList<Demon>>> column,
 		const float dT, 
@@ -90,6 +105,7 @@ public:
 	//~GameMap();
 
 	bool hasDemons();
+	bool hasInvaded();
 	Mage& getMage();
 	void tick(const float dT);
 	void generateDemonsList(map<string, Texture2D> textures);

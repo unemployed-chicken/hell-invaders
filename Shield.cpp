@@ -8,6 +8,7 @@ Shield::Shield(Texture2D full_shield, Texture2D mid_shield, Texture2D low_shield
 }
 
 bool Shield::getIsActive() { return Is_active; }
+bool Shield::getIsPersistent() { return Is_persistent; }
 void Shield::takeDamage() {
 	Damage_count++; 
 	if (Damage_count == 6) {
@@ -51,4 +52,11 @@ Texture2D Shield::getActiveTexture() {
 	else {
 		return Low_shield;
 	}
+}
+
+void Shield::tick(const float dT){
+	Y_coordinate += revive_shield_movement_speed * dT;
+	render();
+
+	if (Y_coordinate <= 0) { Is_active = false; }
 }

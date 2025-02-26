@@ -14,14 +14,18 @@ GameMap::GameMap(map<string, Texture2D> textures)
 //}
 
 bool GameMap::hasDemons() { return Demons_columns.getCount() > 0; }
+bool GameMap::hasInvaded() { return has_invaded; }
 Mage& GameMap::getMage() { return mage; }
 
 void GameMap::appendProjectile() {
 	mage.setIsProjectileReady(false);
+	float x_coor{};
+	mage.getLeftRight() == 1 ? x_coor = mage.getXCoordinate() : x_coor = mage.getXCoordinate() - mage.getWidth();
+
 	Mage_projectiles.insertAtEnd(make_shared<Node<Projectile>>(
-		Projectile( mage.getProjectileTexture(), 4, 3, mage.getXCoordinate(), mage.getYCoordinate(),
-			mage.getAttackDirection(), mage_projectile_collision_offset_x, mage_projectile_collision_offset_y, 
-			mage_projectile_collision_scale_x, mage_projectile_collision_scale_y, mage_projectile_rotation, true
+		Projectile( mage.getProjectileTexture(), 4, 3, x_coor, mage.getYCoordinate(), mage.getAttackDirection(), 
+			mage_projectile_collision_offset_x, mage_projectile_collision_offset_y, mage_projectile_collision_scale_x, 
+			mage_projectile_collision_scale_y, mage_projectile_rotation, true
 		)
 	));
 }
@@ -54,8 +58,8 @@ void GameMap::tick(const float dT){
 	// Generate Mage Projectiles
 	if (mage.getIsProjectileReady()) { appendProjectile(); }
 
-	// Generate Shield
-	if (mage.getIsShieldReady()) { generateShields(); }
+	// Generate Regular Shields or Move Revive Shield
+	generateOrMoveAllShields(dT);
 
 	// Move and Render Mage Projectiles, Check for collisions with demons
 	if (Mage_projectiles.getCount() > 0) { moveMageProjectiles(dT);	}
@@ -123,21 +127,29 @@ void GameMap::drawLives() {
 
 void GameMap::generateDemonsList(map<string, Texture2D> textures) {
 	level++;
+	demons_moved_down_count = 0;
+
 	int x_pos{ 5 };
 	for (int i = 0; i < 8; ++i) {
 		DoubleLinkedList<Demon> row{};
 		int y_pos{ 25 };
+		double demon_speed{ demon_base_speed + demon_base_speed * .25 * (level -1) };
 		for (int j = 0; j < 6; ++j) {
 			if (j < 2) {
-				row.insertAtEnd(make_shared<Node<Demon>>(Demon(textures["skull"], textures["fire"], x_pos, y_pos, 4)));
+				row.insertAtEnd(make_shared<Node<Demon>>(
+					Demon(textures["skull"], textures["fire"], x_pos, y_pos, number_of_demon_textures, skull_points * level, demon_speed))
+				);
 			}
 			else if (j < 4) {
-				row.insertAtEnd(make_shared<Node<Demon>>(Demon(textures["fledge"], textures["fire"], x_pos, y_pos, 4)));
+				row.insertAtEnd(make_shared<Node<Demon>>(
+					Demon(textures["fledge"], textures["fire"], x_pos, y_pos, number_of_demon_textures, fledge_points * level, demon_speed))
+				);
 			}
 			else {
-				row.insertAtEnd(make_shared<Node<Demon>>(Demon(textures["scamp"], textures["fire"], x_pos, y_pos, 4)));
+				row.insertAtEnd(make_shared<Node<Demon>>(
+					Demon(textures["scamp"], textures["fire"], x_pos, y_pos, number_of_demon_textures, scamp_points * level, demon_speed))
+				);
 			}
-
 			y_pos += 50;
 		}
 
@@ -211,7 +223,7 @@ void GameMap::checkDemonProjectilForShieldCollision(shared_ptr<Node<Projectile>>
 		while (current_shield) {
 			if (CheckCollisionRecs(demon_projectiles->Data.getCollisionRectangle(), current_shield->Data.getCollisionRectangle())) {
 				demon_projectiles->Data.setIsActive(false);
-				current_shield->Data.takeDamage();
+				if (!current_shield->Data.getIsPersistent()) { current_shield->Data.takeDamage(); }
 				return;
 			}
 
@@ -235,7 +247,44 @@ void GameMap::drawAllShields() {
 	}
 }
 
+void GameMap::mageTakesDamage() {
+	mage.takeDamage();
+	Shields.deleteAllNodes();
+}
+
+void GameMap::generateOrMoveAllShields(const float dT) {
+	if (mage.getIsShieldReady() && mage.getShieldCount() > 0) {
+		generateShields(); 
+	}
+	else if (mage.getIsPostReviveActive()) {
+		if (mage.getIsReviveShieldActive()) {
+			moveReviveShield(dT);
+		}
+		else if (!mage.getIsReviveShieldActive() && mage.getTextureFrame() == 0) {
+			generateReviveShield();
+		}
+	}
+}
+
+void GameMap::moveReviveShield(const float dT) {
+	// Revive Shield should be only shield at this point. 
+	Shields.getHead()->Data.tick(dT);
+	if (!Shields.getHead()->Data.getIsActive()) {
+		mage.setIsReviveShieldActive(false);
+	}
+}
+
+
+void GameMap::generateReviveShield() {
+	Shields.insertAtEnd(make_shared<Node<Shield>>(ReviveShield(Revive_shield)));
+}
+
 bool GameMap::hasCollision(Demon& demon) {
+	if (CheckCollisionRecs(mage.getCollisionRectangle(), demon.getCollisionRectangle())) {
+		has_invaded = true;
+		return false;
+	}
+
 	shared_ptr<Node<Projectile>> current_projectile = Mage_projectiles.getHead();
 	while (current_projectile) {
 		if (CheckCollisionRecs(current_projectile->Data.getCollisionRectangle(), demon.getCollisionRectangle())) {
@@ -267,6 +316,7 @@ void GameMap::moveMageProjectiles(const float dT) {
 
 void GameMap::moveDemonProjectiles(const float dT, Mage& mage) {
 	shared_ptr<Node<Projectile>> current_node = Demon_projectiles.getHead();
+	bool is_mage_invulnerable{ mage.getIsPostReviveActive() && mage.getIsHurt() };
 	while (current_node) {
 		if (current_node->Data.getIsActive()) {
 			current_node->Data.tick(dT);
@@ -274,9 +324,9 @@ void GameMap::moveDemonProjectiles(const float dT, Mage& mage) {
 			if (current_node->Data.getYCoordinate() <= 0.0f || current_node->Data.getYCoordinate() >= window_dimensions[1]) {
 				current_node->Data.setIsActive(false);
 			} 
-			else if ( !mage.getIsHurt() && CheckCollisionRecs(current_node->Data.getCollisionRectangle(), mage.getCollisionRectangle())) {
+			else if (!is_mage_invulnerable && CheckCollisionRecs(current_node->Data.getCollisionRectangle(), mage.getCollisionRectangle())) {
 				current_node->Data.setIsActive(false);
-				mage.takeDamage();
+				mageTakesDamage();
 			}
 			else {
 				checkDemonProjectileForMageProjectilesCollision(current_node);
@@ -294,14 +344,20 @@ void GameMap::moveDemonProjectiles(const float dT, Mage& mage) {
 void GameMap::moveAllDemons(const float dT) {
 	shared_ptr<Node<DoubleLinkedList<Demon>>> current_column = Demons_columns.getHead();
 	bool is_first_down{ false };
+	
 	while (current_column) {
 		if (current_column == Demons_columns.getHead()) {
 			if (Demons_columns.getHead()->Data.getHead()->Data.calculateXCoordinate(dT) < demons_x_range[0]) {
 				is_first_down = true;
+
 			}
 			// getTail() grabs the last column, the getHead() gets the first demon in the column. Could grab any demon here 
 			else if (Demons_columns.getTail()->Data.getHead()->Data.calculateXCoordinate(dT) > demons_x_range[1]) {
 				is_first_down = true;
+			}
+
+			if (!Demons_columns.getHead()->Data.getHead()->Data.getIsFirstDown() && is_first_down) { 
+				++demons_moved_down_count; 
 			}
 		}
 
@@ -314,6 +370,9 @@ void GameMap::moveAllDemons(const float dT) {
 void GameMap::moveDemonColumn(shared_ptr<Node<DoubleLinkedList<Demon>>> column, const float dT, const bool is_first_down) {
 	shared_ptr<Node<Demon>> current_demon = column->Data.getHead();
 	while (current_demon) {
+		//if (demons_moved_down_count % (number_of_rows_moved_per_speed_boost - 1) == 0) {
+		//	current_demon->Data.bumpSpeed();
+		//}
 		current_demon->Data.setIsFirstDown(is_first_down);
 		current_demon->Data.tick(dT);
 		current_demon = current_demon->Next;
