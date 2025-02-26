@@ -370,6 +370,7 @@ void GameMap::moveAllDemons(const float dT) {
 void GameMap::moveDemonColumn(shared_ptr<Node<DoubleLinkedList<Demon>>> column, const float dT, const bool is_first_down) {
 	shared_ptr<Node<Demon>> current_demon = column->Data.getHead();
 	while (current_demon) {
+		// CURRENTLY NOT WORKING. I NEED TO ADJUST LOGIC SO THAT demons_moved_down_count INCREASES UNTIL IT HITS THREE WHERE IT DECREASES AND CAUSES SPEED BUMP TO OCCUR
 		//if (demons_moved_down_count % (number_of_rows_moved_per_speed_boost - 1) == 0) {
 		//	current_demon->Data.bumpSpeed();
 		//}
