@@ -3,8 +3,6 @@ cpp project recreating space invaders
 
 
 TODO:
-	- Level updates
-		- Increase difficulty
 	- Create special demon to restore barrier magic
 	- add music
 	- create a brief tutorial screen 

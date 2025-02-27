@@ -5,11 +5,11 @@ using std::shared_ptr;
 
 template < class T>
 struct Node : public std::enable_shared_from_this<Node<T>> {
-    T Data;
+    shared_ptr<T> Data;
     shared_ptr<Node<T>> Previous = nullptr;
     shared_ptr<Node<T>> Next = nullptr;
 
-    Node(T data) : Data(data) {}
+    Node(shared_ptr<T> data) : Data(data) {}
     ~Node() {
         Previous = nullptr;
         Next = nullptr;

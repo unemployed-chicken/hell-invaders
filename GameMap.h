@@ -48,6 +48,8 @@ constexpr float scamp_points{ base_demon_points * 1 };
 constexpr float special_demon_points{ base_demon_points * 10 };
 constexpr int number_of_demon_textures{ 4 };
 constexpr int number_of_rows_moved_per_speed_boost{ 3 };
+constexpr int number_of_demon_columns{ 8 };
+constexpr float speed_increase{ 10.0f };
 
 const float demons_x_range[2]{ 5.0f, window_dimensions[1] - (16.f * character_scale) + 5.f}; // First is Left Limit, Second is Right Limit
 
@@ -56,12 +58,11 @@ class GameMap {
 	Texture2D Midground;
 	Texture2D Foreground;
 
-	Texture2D Full_shield;
-	Texture2D Mid_shield;
-	Texture2D Low_shield;
+	Texture2D Regular_shield;
 	Texture2D Revive_shield;
 
 	Mage mage;
+	shared_ptr<Demon> Special_demon; // Can this be a unique_ptr?
 
 	DoubleLinkedList<Projectile> Mage_projectiles{};
 	DoubleLinkedList<Projectile> Demon_projectiles{};
@@ -69,15 +70,16 @@ class GameMap {
 	DoubleLinkedList<Shield> Shields{};
 
 	bool has_invaded{ false };
+	bool has_special_demon_spawned{ false };
 	int level{ 0 };
 	int demons_moved_down_count{ 0 };
-
-	bool hasCollision(Demon& demon);
+	
+	bool hasCollision(shared_ptr<Demon> demon);
 	void drawBackground();
 	void drawLives();
 	void drawShieldCount();
 	void appendProjectile();
-	void appendProjectile(Demon& demon); 
+	void appendProjectile(shared_ptr<Demon> demon); 
 	void moveMageProjectiles(const float dT);
 	void moveDemonProjectiles(const float dT, Mage& mage);
 	void moveAllDemons(const float dT);
@@ -92,7 +94,8 @@ class GameMap {
 	void moveDemonColumn(
 		shared_ptr<Node<DoubleLinkedList<Demon>>> column,
 		const float dT, 
-		const bool is_down
+		const bool is_first_down,
+		const bool is_speed_bump
 	);
 	void demonColumnCollisionCheck(
 		shared_ptr<Node<DoubleLinkedList<Demon>>> column
@@ -106,10 +109,13 @@ public:
 
 	bool hasDemons();
 	bool hasInvaded();
+	bool getHasSpecialDemonInvaded();
 	Mage& getMage();
 	void tick(const float dT);
 	void generateDemonsList(map<string, Texture2D> textures);
 	void generateShields();
 	void drawEndGame();
+	void generateSpecialDemon(map<string, Texture2D> textures);
+
 };
 

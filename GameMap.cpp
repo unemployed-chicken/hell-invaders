@@ -2,8 +2,8 @@
 
 GameMap::GameMap(map<string, Texture2D> textures)
 	: Background(textures["background"]), Midground(textures["midground"]), Foreground(textures["foreground"]), 
-	  mage(textures["mage"], textures["magic"]), Full_shield(textures["full_shield"]), Mid_shield(textures["mid_shield"]),
-	  Low_shield(textures["low_shield"]), Revive_shield(textures["revive_shield"]) { }
+	  mage(textures["mage"], textures["magic"]), Regular_shield(textures["full_shield"]), Revive_shield(textures["revive_shield"]) 
+{ }
 
 // per Chatgpt this is only necessary if we need to manage the individual pionter because std::vector manages this for us
 //GameMap::~GameMap() {
@@ -15,6 +15,7 @@ GameMap::GameMap(map<string, Texture2D> textures)
 
 bool GameMap::hasDemons() { return Demons_columns.getCount() > 0; }
 bool GameMap::hasInvaded() { return has_invaded; }
+bool GameMap::getHasSpecialDemonInvaded() {	return has_special_demon_spawned; }
 Mage& GameMap::getMage() { return mage; }
 
 void GameMap::appendProjectile() {
@@ -22,30 +23,34 @@ void GameMap::appendProjectile() {
 	float x_coor{};
 	mage.getLeftRight() == 1 ? x_coor = mage.getXCoordinate() : x_coor = mage.getXCoordinate() - mage.getWidth();
 
-	Mage_projectiles.insertAtEnd(make_shared<Node<Projectile>>(
-		Projectile( mage.getProjectileTexture(), 4, 3, x_coor, mage.getYCoordinate(), mage.getAttackDirection(), 
-			mage_projectile_collision_offset_x, mage_projectile_collision_offset_y, mage_projectile_collision_scale_x, 
-			mage_projectile_collision_scale_y, mage_projectile_rotation, true
-		)
-	));
+	shared_ptr<Projectile> projectile = make_shared<Projectile>(Projectile(mage.getProjectileTexture(), 4, 3, x_coor, mage.getYCoordinate(), mage.getAttackDirection(),
+		mage_projectile_collision_offset_x, mage_projectile_collision_offset_y, mage_projectile_collision_scale_x,
+		mage_projectile_collision_scale_y, mage_projectile_rotation, true));
+	
+	Mage_projectiles.insertAtEnd(make_shared<Node<Projectile>>(projectile));
 }
 
 
-void GameMap::appendProjectile(Demon& demon) {
-	if (demon.isProjectileReady()) {
-		Demon_projectiles.insertAtEnd(
-			make_shared<Node<Projectile>>(
-				Projectile(
-					demon.getProjectileTexture(), fire_projectile_count_x, fire_projectile_count_y, demon.getXCoordinate(), demon.getYCoordinate() + demon.getHeight(),
-					demon_attack_direction, fire_white_space_pixels_x, fire_white_space_pixels_y, fire_projectile_scale, 
-					fire_projectile_scale, fire_projectile_rotation, false
-				)
-			)
+void GameMap::appendProjectile(shared_ptr<Demon> demon) {
+	if (demon->isProjectileReady()) {
+		shared_ptr<Projectile> projectile = make_shared<Projectile>(demon->getProjectileTexture(), fire_projectile_count_x, fire_projectile_count_y, demon->getXCoordinate(), demon->getYCoordinate() + demon->getHeight(),
+			demon_attack_direction, fire_white_space_pixels_x, fire_white_space_pixels_y, fire_projectile_scale,
+			fire_projectile_scale, fire_projectile_rotation, false
 		);
+
+		Demon_projectiles.insertAtEnd( make_shared<Node<Projectile>>(projectile) );
 	}
 }
 
 void GameMap::tick(const float dT){
+	/* TODO: 
+	* CHECK FOR IF SPECIAL DEMON IS GENERATED,
+	* IF GENERATED, MOVE AND RENDER
+	* IF COLLISION WITH MAGE PROJECTILE, DESTROY SPECIAL DEMON AND PROVIDE NEW SHIELD
+	* IF NO COLLISION OCCURS AND DEMON OFF MAP, DESPAWN, NO SHIELD PROVIDED
+	* FINE TUNE HOW OFTEN THE SPECIAL DEMON SPAWNS AND WHEN THE DEMON APPEARS
+	*/
+
 	// Move Character // Always First
 	mage.tick(dT);
 	
@@ -99,9 +104,9 @@ void GameMap::drawShieldCount() {
 
 	for (int i = 0; i < mage.getShieldCount(); ++i) {
 		DrawTexturePro(
-			Full_shield,
-			Rectangle{ 0, 0, static_cast<float>(Full_shield.width), static_cast<float>(Full_shield.height) },
-			Rectangle{ starting_x + Full_shield.width * i, 20, static_cast<float>(Full_shield.width), static_cast<float>(Full_shield.height) },
+			Regular_shield,
+			Rectangle{ 0, 0, static_cast<float>(Regular_shield.width), static_cast<float>(Regular_shield.height) },
+			Rectangle{ starting_x + Regular_shield.width * i, 20, static_cast<float>(Regular_shield.width), static_cast<float>(Regular_shield.height) },
 			Vector2{ 0,0 },
 			0.0f, 
 			WHITE
@@ -128,32 +133,29 @@ void GameMap::drawLives() {
 void GameMap::generateDemonsList(map<string, Texture2D> textures) {
 	level++;
 	demons_moved_down_count = 0;
+	has_special_demon_spawned = false;
 
 	int x_pos{ 5 };
-	for (int i = 0; i < 8; ++i) {
+	for (int i = 0; i < number_of_demon_columns; ++i) {
 		DoubleLinkedList<Demon> row{};
 		int y_pos{ 25 };
 		double demon_speed{ demon_base_speed + demon_base_speed * .25 * (level -1) };
 		for (int j = 0; j < 6; ++j) {
+			shared_ptr<Demon> demon;
 			if (j < 2) {
-				row.insertAtEnd(make_shared<Node<Demon>>(
-					Demon(textures["skull"], textures["fire"], x_pos, y_pos, number_of_demon_textures, skull_points * level, demon_speed))
-				);
+				demon = make_shared<Demon>(Demon(textures["skull"], textures["fire"], x_pos, y_pos, number_of_demon_textures, skull_points * level, demon_speed));
 			}
 			else if (j < 4) {
-				row.insertAtEnd(make_shared<Node<Demon>>(
-					Demon(textures["fledge"], textures["fire"], x_pos, y_pos, number_of_demon_textures, fledge_points * level, demon_speed))
-				);
+				demon = make_shared<Demon>(Demon(textures["fledge"], textures["fire"], x_pos, y_pos, number_of_demon_textures, fledge_points * level, demon_speed));
 			}
 			else {
-				row.insertAtEnd(make_shared<Node<Demon>>(
-					Demon(textures["scamp"], textures["fire"], x_pos, y_pos, number_of_demon_textures, scamp_points * level, demon_speed))
-				);
+				demon = make_shared<Demon>(Demon(textures["scamp"], textures["fire"], x_pos, y_pos, number_of_demon_textures, scamp_points * level, demon_speed));
 			}
+			row.insertAtEnd(make_shared<Node<Demon>>(demon));
 			y_pos += 50;
 		}
 
-		Demons_columns.insertAtEnd(make_shared<Node<DoubleLinkedList<Demon>>>(row));
+		Demons_columns.insertAtEnd(make_shared<Node<DoubleLinkedList<Demon>>>(make_shared<DoubleLinkedList<Demon>>(row)));
 		x_pos += (textures["skull"].width / 4) * character_scale;
 	}
 }
@@ -163,7 +165,8 @@ void GameMap::generateShields() {
 	mage.setIsShieldReady(false);
 	Shields.deleteAllNodes();
 	for (int i = 0; i < 3; ++i) {
-		Shields.insertAtEnd(make_shared<Node<Shield>>(Shield(Full_shield, Mid_shield, Low_shield, Revive_shield, shield_starting_x_coordinate + shield_spacing * i)));
+		shared_ptr<Shield> shield = make_shared<Shield>(Shield(Regular_shield, shield_starting_x_coordinate + shield_spacing * i));
+		Shields.insertAtEnd(make_shared<Node<Shield>>(shield));
 	}
 }
 
@@ -178,12 +181,12 @@ void GameMap::allDemonCollisionCheckAndAppendDemonProjectiles() {
 	while (current_column) {
 		demonColumnCollisionCheck(current_column);
 		
-		if (current_column->Data.getCount() <= 0) {
+		if (current_column->Data->getCount() <= 0) {
 			Demons_columns.popNode(current_column);
 		}
 		else {
 			// Append Projectile to Demon Projectiles if projectile is ready
-			appendProjectile(current_column->Data.getTail()->Data);
+			appendProjectile(current_column->Data->getTail()->Data);
 		}
 
 		current_column = current_column->Next;
@@ -191,14 +194,14 @@ void GameMap::allDemonCollisionCheckAndAppendDemonProjectiles() {
 }
 
 void GameMap::demonColumnCollisionCheck(shared_ptr<Node<DoubleLinkedList<Demon>>> column) {
-	shared_ptr<Node<Demon>> current_demon = column->Data.getHead();
+	shared_ptr<Node<Demon>> current_demon = column->Data->getHead();
 	while (current_demon) {
 		if (hasCollision(current_demon->Data)) {
-			mage.addScore(current_demon->Data.getPoints());
-			column->Data.popNode(current_demon);
+			mage.addScore(current_demon->Data->getPoints());
+			column->Data->popNode(current_demon);
 		}
 		else {
-			current_demon->Data.render();
+			current_demon->Data->render();
 		}
 		
 		current_demon = current_demon->Next;
@@ -208,9 +211,9 @@ void GameMap::demonColumnCollisionCheck(shared_ptr<Node<DoubleLinkedList<Demon>>
 void GameMap::checkDemonProjectileForMageProjectilesCollision(shared_ptr<Node<Projectile>> demon_projectiles) {
 	shared_ptr<Node<Projectile>> current_mage_projectile = Mage_projectiles.getHead();
 	while (current_mage_projectile) {
-		if (CheckCollisionRecs(current_mage_projectile->Data.getCollisionRectangle(), demon_projectiles->Data.getCollisionRectangle())) {
-			demon_projectiles->Data.setIsActive(false);
-			current_mage_projectile->Data.setIsActive(false);
+		if (CheckCollisionRecs(current_mage_projectile->Data->getCollisionRectangle(), demon_projectiles->Data->getCollisionRectangle())) {
+			demon_projectiles->Data->setIsActive(false);
+			current_mage_projectile->Data->setIsActive(false);
 			return;
 		}
 		current_mage_projectile = current_mage_projectile->Next;
@@ -219,11 +222,11 @@ void GameMap::checkDemonProjectileForMageProjectilesCollision(shared_ptr<Node<Pr
 
 void GameMap::checkDemonProjectilForShieldCollision(shared_ptr<Node<Projectile>> demon_projectiles) {
 	shared_ptr<Node<Shield>> current_shield = Shields.getHead();
-	if (demon_projectiles->Data.getIsActive()) {
+	if (demon_projectiles->Data->getIsActive()) {
 		while (current_shield) {
-			if (CheckCollisionRecs(demon_projectiles->Data.getCollisionRectangle(), current_shield->Data.getCollisionRectangle())) {
-				demon_projectiles->Data.setIsActive(false);
-				if (!current_shield->Data.getIsPersistent()) { current_shield->Data.takeDamage(); }
+			if (CheckCollisionRecs(demon_projectiles->Data->getCollisionRectangle(), current_shield->Data->getCollisionRectangle())) {
+				demon_projectiles->Data->setIsActive(false);
+				if (!current_shield->Data->getIsPersistent()) { current_shield->Data->takeDamage(); }
 				return;
 			}
 
@@ -236,8 +239,8 @@ void GameMap::checkDemonProjectilForShieldCollision(shared_ptr<Node<Projectile>>
 void GameMap::drawAllShields() {
 	shared_ptr<Node<Shield>> current_shield = Shields.getHead();
 	while (current_shield) {
-		if (current_shield->Data.getIsActive()) {
-			current_shield->Data.render();
+		if (current_shield->Data->getIsActive()) {
+			current_shield->Data->render();
 		}
 		else {
 			Shields.popNode(current_shield);
@@ -268,26 +271,27 @@ void GameMap::generateOrMoveAllShields(const float dT) {
 
 void GameMap::moveReviveShield(const float dT) {
 	// Revive Shield should be only shield at this point. 
-	Shields.getHead()->Data.tick(dT);
-	if (!Shields.getHead()->Data.getIsActive()) {
+	Shields.getHead()->Data->tick(dT);
+	if (!Shields.getHead()->Data->getIsActive()) {
 		mage.setIsReviveShieldActive(false);
 	}
 }
 
 
 void GameMap::generateReviveShield() {
-	Shields.insertAtEnd(make_shared<Node<Shield>>(ReviveShield(Revive_shield)));
+	shared_ptr<Shield> shield = make_shared<Shield>(ReviveShield(Revive_shield));
+	Shields.insertAtEnd(make_shared<Node<Shield>>(shield));
 }
 
-bool GameMap::hasCollision(Demon& demon) {
-	if (CheckCollisionRecs(mage.getCollisionRectangle(), demon.getCollisionRectangle())) {
+bool GameMap::hasCollision(shared_ptr<Demon> demon) {
+	if (CheckCollisionRecs(mage.getCollisionRectangle(), demon->getCollisionRectangle())) {
 		has_invaded = true;
 		return false;
 	}
 
 	shared_ptr<Node<Projectile>> current_projectile = Mage_projectiles.getHead();
 	while (current_projectile) {
-		if (CheckCollisionRecs(current_projectile->Data.getCollisionRectangle(), demon.getCollisionRectangle())) {
+		if (CheckCollisionRecs(current_projectile->Data->getCollisionRectangle(), demon->getCollisionRectangle())) {
 			Mage_projectiles.popNode(current_projectile);
 			return true;
 		}
@@ -299,11 +303,11 @@ bool GameMap::hasCollision(Demon& demon) {
 void GameMap::moveMageProjectiles(const float dT) {
 	shared_ptr<Node<Projectile>> current_node = Mage_projectiles.getHead();
 	while (current_node) {
-		if (current_node->Data.getIsActive()) {
-			current_node->Data.tick(dT);
+		if (current_node->Data->getIsActive()) {
+			current_node->Data->tick(dT);
 
-			if (current_node->Data.getYCoordinate() <= 0.0f || current_node->Data.getYCoordinate() >= window_dimensions[1]) {
-				current_node->Data.setIsActive(false);
+			if (current_node->Data->getYCoordinate() <= 0.0f || current_node->Data->getYCoordinate() >= window_dimensions[1]) {
+				current_node->Data->setIsActive(false);
 			}
 			current_node = current_node->Next; 
 		}
@@ -318,14 +322,14 @@ void GameMap::moveDemonProjectiles(const float dT, Mage& mage) {
 	shared_ptr<Node<Projectile>> current_node = Demon_projectiles.getHead();
 	bool is_mage_invulnerable{ mage.getIsPostReviveActive() && mage.getIsHurt() };
 	while (current_node) {
-		if (current_node->Data.getIsActive()) {
-			current_node->Data.tick(dT);
+		if (current_node->Data->getIsActive()) {
+			current_node->Data->tick(dT);
 
-			if (current_node->Data.getYCoordinate() <= 0.0f || current_node->Data.getYCoordinate() >= window_dimensions[1]) {
-				current_node->Data.setIsActive(false);
+			if (current_node->Data->getYCoordinate() <= 0.0f || current_node->Data->getYCoordinate() >= window_dimensions[1]) {
+				current_node->Data->setIsActive(false);
 			} 
-			else if (!is_mage_invulnerable && CheckCollisionRecs(current_node->Data.getCollisionRectangle(), mage.getCollisionRectangle())) {
-				current_node->Data.setIsActive(false);
+			else if (!is_mage_invulnerable && CheckCollisionRecs(current_node->Data->getCollisionRectangle(), mage.getCollisionRectangle())) {
+				current_node->Data->setIsActive(false);
 				mageTakesDamage();
 			}
 			else {
@@ -344,42 +348,42 @@ void GameMap::moveDemonProjectiles(const float dT, Mage& mage) {
 void GameMap::moveAllDemons(const float dT) {
 	shared_ptr<Node<DoubleLinkedList<Demon>>> current_column = Demons_columns.getHead();
 	bool is_first_down{ false };
-	
+	bool is_speed_bump_row = false;
+
 	while (current_column) {
 		if (current_column == Demons_columns.getHead()) {
-			if (Demons_columns.getHead()->Data.getHead()->Data.calculateXCoordinate(dT) < demons_x_range[0]) {
+			if (Demons_columns.getHead()->Data->getHead()->Data->calculateXCoordinate(dT) < demons_x_range[0] ||
+				Demons_columns.getTail()->Data->getHead()->Data->calculateXCoordinate(dT) > demons_x_range[1] ) 
+			{
 				is_first_down = true;
-
-			}
-			// getTail() grabs the last column, the getHead() gets the first demon in the column. Could grab any demon here 
-			else if (Demons_columns.getTail()->Data.getHead()->Data.calculateXCoordinate(dT) > demons_x_range[1]) {
-				is_first_down = true;
-			}
-
-			if (!Demons_columns.getHead()->Data.getHead()->Data.getIsFirstDown() && is_first_down) { 
-				++demons_moved_down_count; 
+				if (demons_moved_down_count < number_of_rows_moved_per_speed_boost - 1) {
+					++demons_moved_down_count;
+				}
+				else {
+					is_speed_bump_row = true;
+					demons_moved_down_count = 0;
+				}
 			}
 		}
 
-		moveDemonColumn(current_column, dT, is_first_down);
+		moveDemonColumn(current_column, dT, is_first_down, is_speed_bump_row);
 		current_column = current_column->Next;
 	}
-
 }
 
-void GameMap::moveDemonColumn(shared_ptr<Node<DoubleLinkedList<Demon>>> column, const float dT, const bool is_first_down) {
-	shared_ptr<Node<Demon>> current_demon = column->Data.getHead();
+void GameMap::moveDemonColumn(shared_ptr<Node<DoubleLinkedList<Demon>>> column, const float dT, const bool is_first_down, const bool is_speed_bump) {
+	shared_ptr<Node<Demon>> current_demon = column->Data->getHead();
 	while (current_demon) {
-		// CURRENTLY NOT WORKING. I NEED TO ADJUST LOGIC SO THAT demons_moved_down_count INCREASES UNTIL IT HITS THREE WHERE IT DECREASES AND CAUSES SPEED BUMP TO OCCUR
-		//if (demons_moved_down_count % (number_of_rows_moved_per_speed_boost - 1) == 0) {
-		//	current_demon->Data.bumpSpeed();
-		//}
-		current_demon->Data.setIsFirstDown(is_first_down);
-		current_demon->Data.tick(dT);
+		if (is_speed_bump) { current_demon->Data->setSpeed(current_demon->Data->getSpeed() + speed_increase); }
+		current_demon->Data->setIsFirstDown(is_first_down);
+		current_demon->Data->tick(dT);
 		current_demon = current_demon->Next;
 	}
 }
 
 
-
+void GameMap::generateSpecialDemon(map<string, Texture2D> textures) {
+	has_special_demon_spawned = true;
+	Special_demon = make_shared<Demon>(Demon(textures["eye"], textures["fire"], 0, 10, 4, 500, 100));
+}
 

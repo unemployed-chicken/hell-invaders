@@ -21,7 +21,7 @@ public:
 	void setTexturePosition();
 	void setIsFirstDown(const bool b);
 	void moveCharacter(const float dT);
-	void bumpSpeed();
+	//void bumpSpeed();
 	bool isProjectileReady();
 	bool getIsFirstDown();
 	int getPoints();
@@ -29,4 +29,5 @@ public:
 
 	virtual void tick(const float dT) override;
 };
+
 

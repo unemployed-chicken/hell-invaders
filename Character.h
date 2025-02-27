@@ -1,6 +1,7 @@
 #pragma once
 #include "raylib.h"
 #include "raymath.h"
+#include <iostream>
 
 extern const float texure_update_per_second;
 extern const bool debugging;
@@ -48,6 +49,8 @@ public:
 	float getLeftRight();
 	float getWidth();
 	float getHeight();
+	//void bumpSpeed();
+	void setSpeed(const float speed);
 	void setIsProjectileReady(const bool b);
 	void setTextureUpdateRate(float update_rate);
 	void setTextureUpdateRate();

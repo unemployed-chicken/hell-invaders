@@ -43,6 +43,13 @@ int main() {
             if (!map.hasDemons()) {
                 map.generateDemonsList(textures);
             }
+
+            if (!map.getHasSpecialDemonInvaded()) {
+                int x = rand() % 1000;
+                if (x <= 5) { map.generateSpecialDemon(textures); }
+                std::cout << "Random Number % 1000: " << x << '\n';
+            }
+
             // Create last update time
             float dT{ GetFrameTime() };
 
@@ -68,8 +75,6 @@ map<string, Texture2D> generateTexture() {
         { "magic", LoadTexture("textures\\Projectiles\\HumansProjectiles.png") },
         { "fire", LoadTexture("textures\\Projectiles\\fire.png") },
         { "full_shield", LoadTexture("textures\\Projectiles\\magic-shield-full.png") },
-        { "mid_shield", LoadTexture("textures\\Projectiles\\magic-shield-medium.png") },
-        { "low_shield", LoadTexture("textures\\Projectiles\\magic-shield-end.png") },
         { "revive_shield", LoadTexture("textures\\Projectiles\\magic-shield-revive.png") },
         { "skull", LoadTexture("textures\\Enemies\\WarpSkull.png") },
         { "scamp", LoadTexture("textures\\Enemies\\NefariousScamp.png") },
