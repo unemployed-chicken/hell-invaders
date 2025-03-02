@@ -10,7 +10,7 @@ Demon::Demon(Texture2D character_texture, Texture2D projectile_texture, int demo
 	//Texture_update_rate *= 2;
 }
 Demon::~Demon() {
-	std::cout << "Destroying Demon" << '\n';
+	if (debugging) { std::cout << "Destroying Demon" << '\n'; }
 }
 
 int Demon::getPoints() { return Points; }

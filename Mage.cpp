@@ -21,6 +21,7 @@ bool Mage::getIsReviveShieldActive() { return Is_revive_shield_active; }
 bool Mage::getIsProjectileReady() { return Is_projectile_ready && Texture_frame == 5; }
 void Mage::addScore(const int points) { Score += points; }
 void Mage::decrementShieldCount() { --Shield_count; }
+void Mage::incrementShieldCount() { ++Shield_count; }
 void Mage::setIsShieldReady(bool b) { Is_shield_ready = b; }
 
 void Mage::setIsReviveShieldActive(bool b) { Is_revive_shield_active = b; }

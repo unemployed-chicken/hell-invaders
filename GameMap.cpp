@@ -5,18 +5,12 @@ GameMap::GameMap(map<string, Texture2D> textures)
 	  mage(textures["mage"], textures["magic"]), Regular_shield(textures["full_shield"]), Revive_shield(textures["revive_shield"]) 
 { }
 
-// per Chatgpt this is only necessary if we need to manage the individual pionter because std::vector manages this for us
-//GameMap::~GameMap() {
-//    for (Projectile* projectile : Active_projectiles) { // No longer using vector Active_projectiles
-//        delete projectile;
-//    }
-//    Active_projectiles.clear(); // No longer using vector Active_projectiles
-//}
-
 bool GameMap::hasDemons() { return Demons_columns.getCount() > 0; }
 bool GameMap::hasInvaded() { return has_invaded; }
 bool GameMap::getHasSpecialDemonInvaded() {	return has_special_demon_spawned; }
 Mage& GameMap::getMage() { return mage; }
+void GameMap::setHasSpecialDemonInvaded(bool b) { has_special_demon_spawned = false; }
+int GameMap::getDemonsMovedDownCount() { return demons_moved_down_count; }
 
 void GameMap::appendProjectile() {
 	mage.setIsProjectileReady(false);
@@ -44,10 +38,6 @@ void GameMap::appendProjectile(shared_ptr<Demon> demon) {
 
 void GameMap::tick(const float dT){
 	/* TODO: 
-	* CHECK FOR IF SPECIAL DEMON IS GENERATED,
-	* IF GENERATED, MOVE AND RENDER
-	* IF COLLISION WITH MAGE PROJECTILE, DESTROY SPECIAL DEMON AND PROVIDE NEW SHIELD
-	* IF NO COLLISION OCCURS AND DEMON OFF MAP, DESPAWN, NO SHIELD PROVIDED
 	* FINE TUNE HOW OFTEN THE SPECIAL DEMON SPAWNS AND WHEN THE DEMON APPEARS
 	*/
 
@@ -57,7 +47,7 @@ void GameMap::tick(const float dT){
 	// Draw Background and Supplemental Data
 	drawBackground();
 
-	// Move
+	// Move All Demons
 	moveAllDemons(dT);
 
 	// Generate Mage Projectiles
@@ -71,6 +61,9 @@ void GameMap::tick(const float dT){
 
 	// Check all Demons for collisions, Render, and Generate Projectiles
 	allDemonCollisionCheckAndAppendDemonProjectiles();
+
+	// Render Special Demon
+	if (Special_demon) { Special_demon->render(); }
 
 	// Move and Render Demon Projectiles, Check for collisions with Mage and Mage Projectiles
 	if (Demon_projectiles.getCount() > 0) { moveDemonProjectiles(dT, mage); }
@@ -277,6 +270,14 @@ void GameMap::moveReviveShield(const float dT) {
 	}
 }
 
+void GameMap::destroySpecialDemon(const bool is_killed) {
+	Special_demon = nullptr;
+	
+	if (is_killed) {
+		mage.incrementShieldCount();
+	}
+}
+
 
 void GameMap::generateReviveShield() {
 	shared_ptr<Shield> shield = make_shared<Shield>(ReviveShield(Revive_shield));
@@ -308,13 +309,16 @@ void GameMap::moveMageProjectiles(const float dT) {
 
 			if (current_node->Data->getYCoordinate() <= 0.0f || current_node->Data->getYCoordinate() >= window_dimensions[1]) {
 				current_node->Data->setIsActive(false);
+			} 
+			else if (Special_demon && CheckCollisionRecs(current_node->Data->getCollisionRectangle(), Special_demon->getCollisionRectangle())) {
+				current_node->Data->setIsActive(false);
+				destroySpecialDemon(true);
 			}
-			current_node = current_node->Next; 
 		}
 		else {
 			Mage_projectiles.popNode(current_node);
-			current_node = current_node->Next;
 		}
+		current_node = current_node->Next;
 	}
 }
 
@@ -346,6 +350,8 @@ void GameMap::moveDemonProjectiles(const float dT, Mage& mage) {
 }
 
 void GameMap::moveAllDemons(const float dT) {
+	if (Special_demon) { Special_demon->moveCharacter(dT); }
+
 	shared_ptr<Node<DoubleLinkedList<Demon>>> current_column = Demons_columns.getHead();
 	bool is_first_down{ false };
 	bool is_speed_bump_row = false;
@@ -356,13 +362,11 @@ void GameMap::moveAllDemons(const float dT) {
 				Demons_columns.getTail()->Data->getHead()->Data->calculateXCoordinate(dT) > demons_x_range[1] ) 
 			{
 				is_first_down = true;
-				if (demons_moved_down_count < number_of_rows_moved_per_speed_boost - 1) {
-					++demons_moved_down_count;
-				}
-				else {
+				++demons_moved_down_count;
+				if (demons_moved_down_count % (number_of_rows_moved_per_speed_boost) == 0) {
 					is_speed_bump_row = true;
-					demons_moved_down_count = 0;
 				}
+				
 			}
 		}
 
@@ -384,6 +388,18 @@ void GameMap::moveDemonColumn(shared_ptr<Node<DoubleLinkedList<Demon>>> column, 
 
 void GameMap::generateSpecialDemon(map<string, Texture2D> textures) {
 	has_special_demon_spawned = true;
-	Special_demon = make_shared<Demon>(Demon(textures["eye"], textures["fire"], 0, 10, 4, 500, 100));
+	float x_coordinate{};
+	int left_right{ 1 };
+	if (level % 2 == 1) {
+		x_coordinate = 0;
+	}
+	else {
+		x_coordinate = window_dimensions[0];
+		left_right *= -1;
+	}
+
+	Special_demon = make_shared<Demon>(Demon(textures["eye"], textures["fire"], x_coordinate, 20, 4, 500, 75));
+	Special_demon->setLeftRight(left_right);
 }
+
 

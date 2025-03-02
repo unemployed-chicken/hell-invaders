@@ -41,13 +41,14 @@ int main() {
         }
         else {
             if (!map.hasDemons()) {
+                map.setHasSpecialDemonInvaded(false);
                 map.generateDemonsList(textures);
             }
 
-            if (!map.getHasSpecialDemonInvaded()) {
-                int x = rand() % 1000;
-                if (x <= 5) { map.generateSpecialDemon(textures); }
-                std::cout << "Random Number % 1000: " << x << '\n';
+            if (!map.getHasSpecialDemonInvaded() && map.getDemonsMovedDownCount() > 2 ) {
+                int x = rand() % 10000;
+                if (x <= 10) { map.generateSpecialDemon(textures); }
+                if (debugging) { std::cout << "Random Number % 10000: " << x << '\n'; }
             }
 
             // Create last update time

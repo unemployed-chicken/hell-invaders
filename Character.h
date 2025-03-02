@@ -54,6 +54,7 @@ public:
 	void setIsProjectileReady(const bool b);
 	void setTextureUpdateRate(float update_rate);
 	void setTextureUpdateRate();
+	void setLeftRight(int left_right);
 
 
 	/* 

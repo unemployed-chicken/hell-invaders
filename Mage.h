@@ -58,6 +58,7 @@ public:
 	void castShield(bool wants_to_cast_shield);
 	void takeDamage();
 	void decrementShieldCount();
+	void incrementShieldCount();
 	void setIsShieldReady(bool b);
 	void setIsReviveShieldActive(bool b);
 

@@ -21,6 +21,7 @@ using std::to_string;
 
 extern const float window_dimensions[2];
 extern const bool debugging;
+extern const bool debuggingSpeedBump;
 
 // Backgrounds Properties
 const float background_scale{ 3.0f };
@@ -48,7 +49,7 @@ constexpr float scamp_points{ base_demon_points * 1 };
 constexpr float special_demon_points{ base_demon_points * 10 };
 constexpr int number_of_demon_textures{ 4 };
 constexpr int number_of_rows_moved_per_speed_boost{ 3 };
-constexpr int number_of_demon_columns{ 8 };
+constexpr int number_of_demon_columns{ 6 };
 constexpr float speed_increase{ 10.0f };
 
 const float demons_x_range[2]{ 5.0f, window_dimensions[1] - (16.f * character_scale) + 5.f}; // First is Left Limit, Second is Right Limit
@@ -91,6 +92,7 @@ class GameMap {
 	void generateOrMoveAllShields(const float dT);
 	void generateReviveShield();
 	void moveReviveShield(const float dT);
+	void destroySpecialDemon(const bool is_killed);
 	void moveDemonColumn(
 		shared_ptr<Node<DoubleLinkedList<Demon>>> column,
 		const float dT, 
@@ -116,6 +118,8 @@ public:
 	void generateShields();
 	void drawEndGame();
 	void generateSpecialDemon(map<string, Texture2D> textures);
+	void setHasSpecialDemonInvaded(bool b);
+	int getDemonsMovedDownCount();
 
 };
 

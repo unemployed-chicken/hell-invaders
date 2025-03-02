@@ -53,5 +53,5 @@ float Character::getHeight() { return Height; }
 void Character::setSpeed(const float speed) { Speed = speed; }
 void Character::setTextureUpdateRate(float update_rate) { Texture_update_rate = update_rate; }
 void Character::setTextureUpdateRate() { Texture_update_rate = texure_update_per_second; }
-
+void Character::setLeftRight(int left_right) { Left_Right = left_right; }
 void Character::tick(const float dT){}

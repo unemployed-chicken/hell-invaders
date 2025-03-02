@@ -28,7 +28,7 @@ Projectile::Projectile(
 }
 
 Projectile::~Projectile() {
-	if (debugging) { std::cout << "destroyting projectile\n"; }
+	//if (debugging) { std::cout << "destroyting projectile\n"; }
 }
 
 void Projectile::setIsActive(bool boolean) { Is_active = boolean; }
