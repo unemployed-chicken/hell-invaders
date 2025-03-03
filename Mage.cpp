@@ -22,9 +22,9 @@ bool Mage::getIsProjectileReady() { return Is_projectile_ready && Texture_frame 
 void Mage::addScore(const int points) { Score += points; }
 void Mage::decrementShieldCount() { --Shield_count; }
 void Mage::incrementShieldCount() { ++Shield_count; }
-void Mage::setIsShieldReady(bool b) { Is_shield_ready = b; }
-
-void Mage::setIsReviveShieldActive(bool b) { Is_revive_shield_active = b; }
+void Mage::setShieldCountToStartingAmount() { Shield_count = number_of_starting_shields; }
+void Mage::setIsShieldReady(const bool b) { Is_shield_ready = b; }
+void Mage::setIsReviveShieldActive(const bool b) { Is_revive_shield_active = b; }
 
 void Mage::takeDamage() {
 	Last_texture_update = 0.0f;
@@ -37,7 +37,7 @@ void Mage::takeDamage() {
 
 
 void Mage::moveCharacter(const float dT) {
-	if (IsKeyDown(KEY_LEFT)) {
+	if (IsKeyDown(KEY_LEFT) || IsKeyDown(KEY_A)) {
 		Left_Right = -1;
 		if (X_coordinate - Speed * dT < 0) {
 			X_coordinate = 0;
@@ -46,7 +46,7 @@ void Mage::moveCharacter(const float dT) {
 			X_coordinate -= Speed * dT;
 		}
 	};
-	if (IsKeyDown(KEY_RIGHT)) {
+	if (IsKeyDown(KEY_RIGHT) || IsKeyDown(KEY_D)) {
 		Left_Right = 1;
 		if (X_coordinate + Speed * dT > 625 - Width) { // TODO: 625 offsets the witespace of the texture
 			X_coordinate = 625 - Width;
@@ -173,7 +173,7 @@ Rectangle Mage::getCollisionRectangle(){
 }
 
 void Mage::attack() { 
-	bool wants_to_attack = IsKeyPressed(KEY_SPACE) || IsKeyPressed(KEY_UP);
+	bool wants_to_attack = IsKeyPressed(KEY_SPACE) || IsKeyPressed(KEY_UP) || IsKeyPressed(KEY_W);
 	if (wants_to_attack && Attack_cooldown >= Attack_rate) {
 		Attack_cooldown = 0.0f;
 		Is_attacking = true;
@@ -183,8 +183,7 @@ void Mage::attack() {
 }
 
 void Mage::castShield() {
-	castShield(IsKeyPressed(KEY_DOWN) || IsKeyPressed(KEY_LEFT_SHIFT));
-
+	castShield(IsKeyPressed(KEY_DOWN) || IsKeyPressed(KEY_LEFT_SHIFT) || IsKeyPressed(KEY_S));
 }
 
 void Mage::castShield(bool wants_to_cast_shield) {

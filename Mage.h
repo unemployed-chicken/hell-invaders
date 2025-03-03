@@ -20,6 +20,9 @@ constexpr int mage_textures_per_row{ 11 }; // number of rows in texture
 constexpr int mage_textures_per_column{ 9 }; // number of columns in texture
 constexpr Vector2 origin{ 34, 55 }; // Offsets the white space for movement
 
+constexpr int number_of_starting_shields{ 3 };
+constexpr int number_of_starting_lives{ 3 };
+
 constexpr float collision_rec_white_space_off_set{ character_scale / 3.f }; // Offsets the white space for collision rectangle
 
 constexpr float casting_texture_pixel_offset{ -3.5 }; // Offsets whitespace in texture when getting casting animation
@@ -29,8 +32,8 @@ constexpr float death_count_frame_pause{ 9 }; // Number of times to repeat final
 
 class Mage : public Character {
 	int Score{};
-	int Lives{ 3 };
-	int Shield_count{ 3 };
+	int Lives{ number_of_starting_lives };
+	int Shield_count{ number_of_starting_shields };
 	int Texture_frame{ 0 };
 	int Death_count_pause{ 0 };
 	bool Is_attacking{ false };
@@ -59,8 +62,9 @@ public:
 	void takeDamage();
 	void decrementShieldCount();
 	void incrementShieldCount();
-	void setIsShieldReady(bool b);
-	void setIsReviveShieldActive(bool b);
+	void setShieldCountToStartingAmount();
+	void setIsShieldReady(const bool b);
+	void setIsReviveShieldActive(const bool b);
 
 	virtual void render();
 	virtual void setTexturePosition();

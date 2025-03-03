@@ -9,7 +9,7 @@ using std::string;
 
 
 // DEBUGGING:
-const bool debugging{ true };
+const bool debugging{ false };
 
 // Window Properties
 const float window_dimensions[2]{ 640.0f , 640.0f }; // Width * Height
@@ -29,7 +29,8 @@ int main() {
     // Create Textures
     map<string, Texture2D> textures = generateTexture();
     GameMap map(textures);
-    map.generateShields();
+
+    bool is_intro{ true };
 
     while (!WindowShouldClose()) {
         BeginDrawing();
@@ -38,6 +39,19 @@ int main() {
         if (map.getMage().getLives() == 0 || map.hasInvaded()) {
             // Draw Game Over
             map.drawEndGame();
+        }
+        else if (is_intro) {
+            // Run Intro Screen
+            float practice_dT{ GetFrameTime() };
+            map.tick(practice_dT);
+
+            map.drawInstructions();
+
+            if (IsKeyPressed(KEY_ENTER)) {
+                map.getMage().setShieldCountToStartingAmount();
+                map.generateShields();
+                is_intro = false;
+            }
         }
         else {
             if (!map.hasDemons()) {
@@ -69,7 +83,7 @@ int main() {
 
 map<string, Texture2D> generateTexture() {
     return map<string, Texture2D> {
-        { "background", LoadTexture("textures\\Map\\space_background_pack\\Assets\\Blue Version\\layered\\blue-with-stars.png") },
+        { "background", LoadTexture("textures\\Map\\blue-with-stars.png") },
         { "midground", LoadTexture("textures\\Map\\mountains.png") },
         { "foreground", LoadTexture("textures\\Map\\castle.png") },
         { "mage", LoadTexture("textures\\Characters\\MiniArchMage_no_outline.png")},
@@ -81,6 +95,5 @@ map<string, Texture2D> generateTexture() {
         { "scamp", LoadTexture("textures\\Enemies\\NefariousScamp.png") },
         { "fledge", LoadTexture("textures\\Enemies\\FledglingDemon.png") },
         { "eye", LoadTexture("textures\\Enemies\\FloatingEye.png") },
-
     };
 }

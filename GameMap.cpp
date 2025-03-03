@@ -37,10 +37,6 @@ void GameMap::appendProjectile(shared_ptr<Demon> demon) {
 }
 
 void GameMap::tick(const float dT){
-	/* TODO: 
-	* FINE TUNE HOW OFTEN THE SPECIAL DEMON SPAWNS AND WHEN THE DEMON APPEARS
-	*/
-
 	// Move Character // Always First
 	mage.tick(dT);
 	
@@ -121,6 +117,18 @@ void GameMap::drawLives() {
 			WHITE
 		);
 	}
+}
+
+void GameMap::drawInstructions() {
+	string move_instructions{ "Move left and right with 'A' and 'D' or LEFT and RIGHT arrows." };
+	string attack_instructions{ "Attack with 'Space Bar', 'W', or the UP Arrow." };
+	string shield_instructions{ "Cast shield with 'LEFT SHIFT', 'S', or the DOWN Arrow." };
+	string end_instructions{ "Press 'ENTER' when you are ready to begin!" };
+	
+	DrawText(move_instructions.c_str(), 5, 50, 19, WHITE);
+	DrawText(attack_instructions.c_str(), 5, 100, 20, WHITE);
+	DrawText(shield_instructions.c_str(), 5, 150, 20, WHITE);
+	DrawText(end_instructions.c_str(), 5, 200, 20, WHITE);
 }
 
 void GameMap::generateDemonsList(map<string, Texture2D> textures) {
