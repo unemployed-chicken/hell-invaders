@@ -25,6 +25,7 @@ void Mage::incrementShieldCount() { ++Shield_count; }
 void Mage::setShieldCountToStartingAmount() { Shield_count = number_of_starting_shields; }
 void Mage::setIsShieldReady(const bool b) { Is_shield_ready = b; }
 void Mage::setIsReviveShieldActive(const bool b) { Is_revive_shield_active = b; }
+void Mage::setIsCastingShield(bool b) { Is_casting_shield = false; }
 
 void Mage::takeDamage() {
 	Last_texture_update = 0.0f;

@@ -120,6 +120,7 @@ public:
 	void generateSpecialDemon(map<string, Texture2D> textures);
 	void setHasSpecialDemonInvaded(bool b);
 	void drawInstructions();
+	void displayHomeMenu();
 	int getDemonsMovedDownCount();
 };
 

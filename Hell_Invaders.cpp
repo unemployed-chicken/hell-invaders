@@ -30,13 +30,18 @@ int main() {
     map<string, Texture2D> textures = generateTexture();
     GameMap map(textures);
 
-    bool is_intro{ true };
+    bool is_main_screen{ true };
+    bool is_intro{ false };
+    bool is_new_high_score_screen{ false };
 
     while (!WindowShouldClose()) {
         BeginDrawing();
         ClearBackground(WHITE);
 
-        if (map.getMage().getLives() == 0 || map.hasInvaded()) {
+        if (is_main_screen) {
+            map.displayHomeMenu();
+        }
+        else if (map.getMage().getLives() == 0 || map.hasInvaded()) {
             // Draw Game Over
             map.drawEndGame();
         }

@@ -65,6 +65,7 @@ public:
 	void setShieldCountToStartingAmount();
 	void setIsShieldReady(const bool b);
 	void setIsReviveShieldActive(const bool b);
+	void setIsCastingShield(bool b);
 
 	virtual void render();
 	virtual void setTexturePosition();

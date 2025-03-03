@@ -131,6 +131,17 @@ void GameMap::drawInstructions() {
 	DrawText(end_instructions.c_str(), 5, 200, 20, WHITE);
 }
 
+void GameMap::displayHomeMenu() {
+	/*
+	* TODO: Create home screen: 
+	* Play music on home screen
+	* random demons run around randomly
+	* user has option for start, game properties, exit
+	* If start, set intro to true and display to false
+	* If properties, open up properties menu and have user adjust as they would like
+	*/
+}
+
 void GameMap::generateDemonsList(map<string, Texture2D> textures) {
 	level++;
 	demons_moved_down_count = 0;
@@ -252,8 +263,11 @@ void GameMap::drawAllShields() {
 }
 
 void GameMap::mageTakesDamage() {
+	mage.setIsCastingShield(false);
+	mage.setIsShieldReady(false);
 	mage.takeDamage();
 	Shields.deleteAllNodes();
+
 }
 
 void GameMap::generateOrMoveAllShields(const float dT) {
@@ -265,6 +279,7 @@ void GameMap::generateOrMoveAllShields(const float dT) {
 			moveReviveShield(dT);
 		}
 		else if (!mage.getIsReviveShieldActive() && mage.getTextureFrame() == 0) {
+
 			generateReviveShield();
 		}
 	}
@@ -332,7 +347,7 @@ void GameMap::moveMageProjectiles(const float dT) {
 
 void GameMap::moveDemonProjectiles(const float dT, Mage& mage) {
 	shared_ptr<Node<Projectile>> current_node = Demon_projectiles.getHead();
-	bool is_mage_invulnerable{ mage.getIsPostReviveActive() && mage.getIsHurt() };
+	bool is_mage_invulnerable{ mage.getIsPostReviveActive() || mage.getIsHurt() };
 	while (current_node) {
 		if (current_node->Data->getIsActive()) {
 			current_node->Data->tick(dT);
