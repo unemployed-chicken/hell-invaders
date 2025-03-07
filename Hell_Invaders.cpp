@@ -29,23 +29,21 @@ int main() {
     // Create Textures
     map<string, Texture2D> textures = generateTexture();
     GameMap map(textures);
-
-    bool is_main_screen{ true };
-    bool is_intro{ false };
-    bool is_new_high_score_screen{ false };
+        
 
     while (!WindowShouldClose()) {
         BeginDrawing();
         ClearBackground(WHITE);
 
-        if (is_main_screen) {
-            map.displayHomeMenu();
+        if (map.getIsMainScreen()) {
+            float menu_dT{ GetFrameTime() };
+            map.displayHomeMenu(textures, menu_dT);
         }
         else if (map.getMage().getLives() == 0 || map.hasInvaded()) {
             // Draw Game Over
             map.drawEndGame();
         }
-        else if (is_intro) {
+        else if (map.getIsIntro()) {
             // Run Intro Screen
             float practice_dT{ GetFrameTime() };
             map.tick(practice_dT);
@@ -55,7 +53,7 @@ int main() {
             if (IsKeyPressed(KEY_ENTER)) {
                 map.getMage().setShieldCountToStartingAmount();
                 map.generateShields();
-                is_intro = false;
+                map.setIsIntro(false);
             }
         }
         else {
@@ -91,6 +89,9 @@ map<string, Texture2D> generateTexture() {
         { "background", LoadTexture("textures\\Map\\blue-with-stars.png") },
         { "midground", LoadTexture("textures\\Map\\mountains.png") },
         { "foreground", LoadTexture("textures\\Map\\castle.png") },
+        { "main_background_1", LoadTexture("textures\\Map\\home-background-1.png") },
+        { "main_background_2", LoadTexture("textures\\Map\\home-background-2.png") },
+        { "main_background_3", LoadTexture("textures\\Map\\home-background-3.png") },
         { "mage", LoadTexture("textures\\Characters\\MiniArchMage_no_outline.png")},
         { "magic", LoadTexture("textures\\Projectiles\\HumansProjectiles.png") },
         { "fire", LoadTexture("textures\\Projectiles\\fire.png") },

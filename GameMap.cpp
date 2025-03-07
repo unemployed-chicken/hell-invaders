@@ -1,15 +1,19 @@
 #include "GameMap.h"
 
 GameMap::GameMap(map<string, Texture2D> textures)
-	: Background(textures["background"]), Midground(textures["midground"]), Foreground(textures["foreground"]), 
+	: Background(textures["main_background_1"]), Midground(textures["main_background_2"]), Foreground(textures["main_background_3"]), 
 	  mage(textures["mage"], textures["magic"]), Regular_shield(textures["full_shield"]), Revive_shield(textures["revive_shield"]) 
 { }
+
+// textures["background"]), Midground(textures["midground"]), Foreground(textures["foreground"])
 
 bool GameMap::hasDemons() { return Demons_columns.getCount() > 0; }
 bool GameMap::hasInvaded() { return has_invaded; }
 bool GameMap::getHasSpecialDemonInvaded() {	return has_special_demon_spawned; }
+bool GameMap::getIsMainScreen(){ return Is_main_screen; }
+bool GameMap::getIsIntro() { return Is_intro; }
 Mage& GameMap::getMage() { return mage; }
-void GameMap::setHasSpecialDemonInvaded(bool b) { has_special_demon_spawned = false; }
+void GameMap::setHasSpecialDemonInvaded(const bool b) { has_special_demon_spawned = false; }
 int GameMap::getDemonsMovedDownCount() { return demons_moved_down_count; }
 
 void GameMap::appendProjectile() {
@@ -88,6 +92,18 @@ void GameMap::drawBackground() {
 	drawShieldCount();
 }
 
+void GameMap::drawMainScreen(map<string, Texture2D> textures, const float dT) {
+	drawMainScreenBackground();
+
+	// Move or Generate Demons at random
+	generateRandomDemon(textures); 
+
+	if (Demons_columns.getCount() > 0) { moveAllDemons(dT, true); }
+
+	drawPlayerOptions();
+
+}
+
 void GameMap::drawShieldCount() {
 	float starting_x{ 115 };
 
@@ -101,6 +117,25 @@ void GameMap::drawShieldCount() {
 			WHITE
 		);
 	}
+}
+
+void GameMap::drawMainScreenBackground() {
+	DrawTextureEx(Background, Vector2{-250, 0}, 0.0, 4.0, WHITE);
+	DrawTextureEx(Midground, Vector2{}, 0.0, 4.0, WHITE);
+	DrawTextureEx(Midground, Vector2{-200, 200}, 0.0, 4.0, WHITE);
+	DrawTextureEx(Foreground, Vector2{}, 0.0, 2.5, WHITE);
+	DrawTextureEx(Foreground, Vector2{300, 175}, 0.0, 4.0, WHITE);
+	DrawTextureEx(Foreground, Vector2{100, 350}, 0.0, 2.0, WHITE);
+}
+
+void GameMap::drawPlayerOptions() {
+	string start_game{ "Start Game" };
+	string game_options{ "Game Options" };
+	string exit_game_display{ "Exit" };
+
+	DrawText(start_game.c_str(), 175, 200, 50, WHITE);
+	DrawText(game_options.c_str(), 175, 300, 50, WHITE);
+	DrawText(exit_game_display.c_str(), 175, 400, 50, WHITE);
 }
 
 void GameMap::drawLives() {
@@ -131,9 +166,11 @@ void GameMap::drawInstructions() {
 	DrawText(end_instructions.c_str(), 5, 200, 20, WHITE);
 }
 
-void GameMap::displayHomeMenu() {
+void GameMap::displayHomeMenu(map<string, Texture2D> textures, const float dT) {
+	drawMainScreen(textures, dT);
+
 	/*
-	* TODO: Create home screen: 
+	* TODO: 
 	* Play music on home screen
 	* random demons run around randomly
 	* user has option for start, game properties, exit
@@ -141,6 +178,8 @@ void GameMap::displayHomeMenu() {
 	* If properties, open up properties menu and have user adjust as they would like
 	*/
 }
+
+void GameMap::setIsIntro(const bool b) { Is_intro = b; }
 
 void GameMap::generateDemonsList(map<string, Texture2D> textures) {
 	level++;
@@ -301,6 +340,45 @@ void GameMap::destroySpecialDemon(const bool is_killed) {
 	}
 }
 
+void GameMap::generateRandomDemon(map<string, Texture2D> textures) {
+	int random = rand();
+	if (Demons_columns.getCount() < 1 && random % 2500 <= 10) {
+		// Generate a new column and populate with a demon
+		DoubleLinkedList<Demon> random_demons{};
+		//shared_ptr<Demon>demon = generateDemonWithRandomTexture(textures, random);
+		random_demons.insertAtEnd(make_shared<Node<Demon>>(generateDemonWithRandomTexture(textures, random)));
+		Demons_columns.insertAtEnd(make_shared<Node<DoubleLinkedList<Demon>>>(make_shared<DoubleLinkedList<Demon>>(random_demons)));
+	}
+	else if (Demons_columns.getCount() > 0 && Demons_columns.getHead()->Data->getCount() < 7 && random % 2500 <= 10) {
+		shared_ptr<Demon> demon = generateDemonWithRandomTexture(textures, random);
+		Demons_columns.getHead()->Data->insertAtEnd(make_shared<Node<Demon>>(generateDemonWithRandomTexture(textures, random)));
+	}
+}
+
+shared_ptr<Demon> GameMap::generateDemonWithRandomTexture(map<string, Texture2D> textures, const int random) {
+	Texture2D texture;
+	float x_pos;
+	float y_pos{ static_cast<float>( random % 590 )}; // y_pos is range of 0 to 589
+	float speed{ 50.f + random % 100 }; // Base speed is 50 pix/sec
+	float left_right{ 1 };
+	
+	if (random % 2 == 0) {
+		x_pos = 0;
+	}
+	else {
+		x_pos = window_dimensions[0];
+		left_right *= -1;
+	}
+
+	if (random % 8 <= 1) { texture = textures["skull"];	}
+	else if (random % 8 <= 3) { texture = textures["fledge"];	}
+	else if (random % 8 <= 5) { texture = textures["scamp"]; }
+	else { texture = textures["eye"];	}
+
+	shared_ptr<Demon> demon = make_shared<Demon>(Demon(texture, textures["fire"], x_pos, y_pos, number_of_demon_textures, 0, speed));
+	demon->setLeftRight(left_right);
+	return demon;
+}
 
 void GameMap::generateReviveShield() {
 	shared_ptr<Shield> shield = make_shared<Shield>(ReviveShield(Revive_shield));
@@ -372,7 +450,7 @@ void GameMap::moveDemonProjectiles(const float dT, Mage& mage) {
 	}
 }
 
-void GameMap::moveAllDemons(const float dT) {
+void GameMap::moveAllDemons(const float dT, const bool is_main_screen) {
 	if (Special_demon) { Special_demon->moveCharacter(dT); }
 
 	shared_ptr<Node<DoubleLinkedList<Demon>>> current_column = Demons_columns.getHead();
@@ -380,7 +458,7 @@ void GameMap::moveAllDemons(const float dT) {
 	bool is_speed_bump_row = false;
 
 	while (current_column) {
-		if (current_column == Demons_columns.getHead()) {
+		if (current_column == Demons_columns.getHead() && !is_main_screen) {
 			if (Demons_columns.getHead()->Data->getHead()->Data->calculateXCoordinate(dT) < demons_x_range[0] ||
 				Demons_columns.getTail()->Data->getHead()->Data->calculateXCoordinate(dT) > demons_x_range[1] ) 
 			{
@@ -393,17 +471,23 @@ void GameMap::moveAllDemons(const float dT) {
 			}
 		}
 
-		moveDemonColumn(current_column, dT, is_first_down, is_speed_bump_row);
+		moveDemonColumn(current_column, dT, is_first_down, is_speed_bump_row, is_main_screen);
 		current_column = current_column->Next;
 	}
 }
 
-void GameMap::moveDemonColumn(shared_ptr<Node<DoubleLinkedList<Demon>>> column, const float dT, const bool is_first_down, const bool is_speed_bump) {
+void GameMap::moveDemonColumn(shared_ptr<Node<DoubleLinkedList<Demon>>> column, const float dT, const bool is_first_down, const bool is_speed_bump, const bool is_main_screen) {
 	shared_ptr<Node<Demon>> current_demon = column->Data->getHead();
 	while (current_demon) {
 		if (is_speed_bump) { current_demon->Data->setSpeed(current_demon->Data->getSpeed() + speed_increase); }
 		current_demon->Data->setIsFirstDown(is_first_down);
 		current_demon->Data->tick(dT);
+
+		if (is_main_screen) {
+			if (current_demon->Data->getXCoordinate() <= -50.0 || current_demon->Data->getXCoordinate() > 650) { column->Data->popNode(current_demon); }
+			else { current_demon->Data->render(); }
+		}
+
 		current_demon = current_demon->Next;
 	}
 }

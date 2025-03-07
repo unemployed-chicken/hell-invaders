@@ -74,16 +74,23 @@ class GameMap {
 	bool has_special_demon_spawned{ false };
 	int level{ 0 };
 	int demons_moved_down_count{ 0 };
+
+	bool Is_main_screen{ true };
+	bool Is_intro{ false };
+	bool Is_new_high_score_screen{ false };
 	
 	bool hasCollision(shared_ptr<Demon> demon);
 	void drawBackground();
 	void drawLives();
 	void drawShieldCount();
+	void drawMainScreenBackground();
+	void drawMainScreen(map<string, Texture2D> textures, const float dT);
+	void drawPlayerOptions();
 	void appendProjectile();
 	void appendProjectile(shared_ptr<Demon> demon); 
 	void moveMageProjectiles(const float dT);
 	void moveDemonProjectiles(const float dT, Mage& mage);
-	void moveAllDemons(const float dT);
+	void moveAllDemons(const float dT, const bool is_main_screen = false);
 	void allDemonCollisionCheckAndAppendDemonProjectiles();
 	void checkDemonProjectileForMageProjectilesCollision(shared_ptr<Node<Projectile>> demon_projectiles);
 	void checkDemonProjectilForShieldCollision(shared_ptr<Node<Projectile>> demon_projectiles);
@@ -93,11 +100,14 @@ class GameMap {
 	void generateReviveShield();
 	void moveReviveShield(const float dT);
 	void destroySpecialDemon(const bool is_killed);
+	void generateRandomDemon(map<string, Texture2D> textures);
+	shared_ptr<Demon> generateDemonWithRandomTexture(map<string, Texture2D> textures, const int random);
 	void moveDemonColumn(
 		shared_ptr<Node<DoubleLinkedList<Demon>>> column,
 		const float dT, 
 		const bool is_first_down,
-		const bool is_speed_bump
+		const bool is_speed_bump,
+		const bool is_main_screen = false
 	);
 	void demonColumnCollisionCheck(
 		shared_ptr<Node<DoubleLinkedList<Demon>>> column
@@ -112,15 +122,18 @@ public:
 	bool hasDemons();
 	bool hasInvaded();
 	bool getHasSpecialDemonInvaded();
+	bool getIsMainScreen();
+	bool getIsIntro();
 	Mage& getMage();
 	void tick(const float dT);
 	void generateDemonsList(map<string, Texture2D> textures);
 	void generateShields();
 	void drawEndGame();
 	void generateSpecialDemon(map<string, Texture2D> textures);
-	void setHasSpecialDemonInvaded(bool b);
+	void setHasSpecialDemonInvaded(const bool b);
 	void drawInstructions();
-	void displayHomeMenu();
+	void displayHomeMenu(map<string, Texture2D> textures, const float dT);
+	void setIsIntro(const bool b);
 	int getDemonsMovedDownCount();
 };
 
