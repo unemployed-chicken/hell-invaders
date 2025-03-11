@@ -5,14 +5,14 @@
 	Clean this up by removing direction, collision_rec_offsets, collision_rec_scales, and rotation
 */
 Projectile::Projectile(
-	Texture2D texture, int number_of_objects_in_x, int number_of_objects_in_y, float x_pos, float y_pos, 
+	Texture2D texture, Properties& properties, int number_of_objects_in_x, int number_of_objects_in_y, float x_pos, float y_pos, 
 	int direction, float collision_rec_offset_x, float collision_rec_offset_y, float collision_rec_scale_x,
 	float collision_rec_scale_y, float rotation, bool isMagic
 ) {
 	Active_texture = texture;
 	isMagic ? X_coordinate = x_pos * (1) : X_coordinate = x_pos;
 	Y_coordinate = y_pos;
-	isMagic ? Velocity = magic_projectile_speed * direction : Velocity = fire_projectile_speed * direction;
+	isMagic ? Velocity = properties.getMageProjectileSpeedInPixelsPerSecond() * direction : Velocity = properties.getDemonProjectileSpeedInPixelsPerSecond() * direction;
 	Number_of_objects_in_x = number_of_objects_in_x;
 	Number_of_objects_in_y = number_of_objects_in_y;
 	Rotation = rotation;
@@ -25,6 +25,8 @@ Projectile::Projectile(
 
 	isMagic ? Width = texture.width / number_of_objects_in_x - 5: Width = texture.width / number_of_objects_in_x;
 	Height = texture.height / number_of_objects_in_y;
+	Texture_update_rate = properties.getNumberOfTexureUpdatesRatePerSecond();
+
 }
 
 Projectile::~Projectile() {

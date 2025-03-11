@@ -1,6 +1,7 @@
 #pragma once
 #include "raylib.h"
 #include "raymath.h"
+#include "Properties.h"
 #include <iostream>
 
 extern const bool debugging;
@@ -29,16 +30,16 @@ protected:
 
 
 	// Texture Properties
-	float Texture_update_rate = texure_update_per_second;
+	float Texture_update_rate;
 	float Last_texture_update{}; 
-	float Width;
-	float Height;
+	float Width{};
+	float Height{};
 	float Scale{ character_scale };
 	float Left_Right{ 1 }; 
 
 
 public:
-	Character(Texture2D character_texture, Texture2D projectile_texture, float pos_x, float pos_y, float speed, float attack_rate, int attack_direction);
+	Character(Texture2D character_texture, Texture2D projectile_texture, float pos_x, float pos_y, float speed, float attack_rate, int attack_direction, float texture_update_rate);
 	Texture2D getProjectileTexture();
 	Texture2D getActiveTexture();
 	int getAttackDirection();
@@ -51,7 +52,6 @@ public:
 	void setSpeed(const float speed);
 	void setIsProjectileReady(const bool b);
 	void setTextureUpdateRate(float update_rate);
-	void setTextureUpdateRate();
 	void setLeftRight(int left_right);
 
 

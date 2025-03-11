@@ -1,6 +1,5 @@
 #pragma once
 #include "Character.h"
-#include "Properties.h"
 #include <iostream>
 
 
@@ -29,6 +28,7 @@ constexpr float death_count_frame_pause{ 9 }; // Number of times to repeat final
 class Mage : public Character {
 	float Attack_texture_update_rate_per_second;
 	float Casting_texture_update_rate_per_second;
+	float Base_Texture_update_rate;
 	int Lives;
 	int Shield_count;
 	int Score{};
@@ -44,7 +44,7 @@ class Mage : public Character {
 	
 
 public:
-	Mage(Texture2D character_texture, Texture2D projectile_texture, Properties properties);
+	Mage(Texture2D character_texture, Texture2D projectile_texture, Properties& properties);
 
 	int getLives();
 	int getScore();

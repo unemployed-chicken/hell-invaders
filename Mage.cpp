@@ -1,14 +1,16 @@
 #include "Mage.h"
 
 
-Mage::Mage(Texture2D character_texture, Texture2D projectile_texture, Properties properties) : 
-	Character(character_texture, projectile_texture, starting_x_pos, starting_y_pos, 
-		properties.getMageSpeedInPixelsPerSecond(), properties.getMageAttackRatePerSecond(), -1) 
+Mage::Mage(Texture2D character_texture, Texture2D projectile_texture, Properties& properties) : 
+	Character(character_texture, projectile_texture, starting_x_pos, starting_y_pos,
+		properties.getMageSpeedInPixelsPerSecond(), properties.getMageAttackRatePerSecond(), -1, properties.getNumberOfTexureUpdatesRatePerSecond()
+	)
 {
 	Width = static_cast<float>(character_texture.width) / mage_textures_per_row;
 	Height = static_cast<float>(character_texture.width) / mage_textures_per_column;
 	Lives = properties.getNumberOfStartingLives();
 	Shield_count = properties.getNumberOfStartingShields();
+	Base_Texture_update_rate = properties.getNumberOfTexureUpdatesRatePerSecond();
 	Attack_texture_update_rate_per_second = properties.getAttackTextureUpdateRatePerSecond();
 	Casting_texture_update_rate_per_second = properties.getCastingShieldTexutreUpdateRatePerSecond();
 }
@@ -37,7 +39,7 @@ void Mage::takeDamage() {
 	Lives--;
 	Texture_frame = 0;
 	Is_attacking = false;
-	setTextureUpdateRate();
+	setTextureUpdateRate(Base_Texture_update_rate);
 }
 
 
@@ -120,13 +122,13 @@ void Mage::tick(const float dT) {
 		if (Is_attacking && Texture_frame == attack_frames) {
 			Texture_frame = 0;
 			Is_attacking = false;
-			setTextureUpdateRate();
+			setTextureUpdateRate(Base_Texture_update_rate);
 		}
 		// If casting phase complete, reset all values
 		else if (Is_casting_shield && Texture_frame == casting_frames) {
 			Texture_frame = 0;
 			Is_casting_shield = false;
-			setTextureUpdateRate();
+			setTextureUpdateRate(Base_Texture_update_rate);
 		}
 	}
 	else {

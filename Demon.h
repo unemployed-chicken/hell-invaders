@@ -12,14 +12,13 @@ class Demon : public Character {
 	float attack_retry_rate{ 1.5 };
 
 public:
-	Demon(Texture2D character_texture, Texture2D projectile_texture, int demon_x_pos, int demon_y_pos, int texture_count, int points, float speed);
+	Demon(Texture2D character_texture, Texture2D projectile_texture, Properties& properties, int demon_x_pos, int demon_y_pos, int texture_count, int points, float speed);
 	~Demon();
 
 	void setYCoordinate();
 	void setTexturePosition();
 	void setIsFirstDown(const bool b);
 	void moveCharacter(const float dT);
-	//void bumpSpeed();
 	bool isProjectileReady();
 	bool getIsFirstDown();
 	int getPoints();

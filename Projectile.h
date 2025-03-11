@@ -1,8 +1,8 @@
 #pragma once
 #include "raylib.h"
+#include "Properties.h"
 #include <iostream>
 
-extern const float texure_update_per_second;
 extern const float window_dimensions[2];
 extern const bool debugging;
 
@@ -26,7 +26,7 @@ class Projectile{
 	float X_coordinate;
 	float Y_coordinate;
 
-	float Texture_update_rate = texure_update_per_second;
+	float Texture_update_rate;
 	float Last_texture_update{};
 	float Width;
 	float Height;
@@ -45,7 +45,7 @@ class Projectile{
 
 public:
 	Projectile(
-		Texture2D texture, int number_of_objects_in_x, int number_of_objects_in_y, float x_pos, 
+		Texture2D texture, Properties& properties, int number_of_objects_in_x, int number_of_objects_in_y, float x_pos, 
 		float y_pos, int direction, float collision_rec_offset_x, float collision_rec_offset_y, 
 		float collision_rec_scale_x, float collision_rec_scale_y, float rotation = 0.0f, bool isMagic = false);
 	~Projectile();

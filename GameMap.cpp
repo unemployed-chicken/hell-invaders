@@ -1,10 +1,16 @@
 #include "GameMap.h"
 
-GameMap::GameMap(map<string, Texture2D> textures)
-	: Background(textures["main_background_1"]), Midground(textures["main_background_2"]), Foreground(textures["main_background_3"]), 
-	  mage(textures["mage"], textures["magic"]), Regular_shield(textures["full_shield"]), Revive_shield(textures["revive_shield"]) 
-{ }
+//GameMap::GameMap(map<string, Texture2D> textures)
+//	: Background(textures["main_background_1"]), Midground(textures["main_background_2"]), Foreground(textures["main_background_3"]), 
+//	  mage(textures["mage"], textures["magic"], Props), Regular_shield(textures["full_shield"]), Revive_shield(textures["revive_shield"]) 
+//{ }
 
+
+GameMap::GameMap(map<string, Texture2D> textures)
+	: Background(textures["background"]), Midground(textures["midground"]), Foreground(textures["foreground"]),
+	mage(textures["mage"], textures["magic"], Props), Regular_shield(textures["full_shield"]), Revive_shield(textures["revive_shield"])
+{
+}
 // textures["background"]), Midground(textures["midground"]), Foreground(textures["foreground"])
 
 bool GameMap::hasDemons() { return Demons_columns.getCount() > 0; }
@@ -15,15 +21,15 @@ bool GameMap::getIsIntro() { return Is_intro; }
 Mage& GameMap::getMage() { return mage; }
 void GameMap::setHasSpecialDemonInvaded(const bool b) { has_special_demon_spawned = false; }
 int GameMap::getDemonsMovedDownCount() { return demons_moved_down_count; }
-
 void GameMap::resetProperties() { Props = Properties(); }
+void GameMap::setResetShieldCountToStartingAmount() { mage.setShieldCountToStartingAmount(Props.getNumberOfStartingShields()); }
 
 void GameMap::appendProjectile() {
 	mage.setIsProjectileReady(false);
 	float x_coor{};
 	mage.getLeftRight() == 1 ? x_coor = mage.getXCoordinate() : x_coor = mage.getXCoordinate() - mage.getWidth();
 
-	shared_ptr<Projectile> projectile = make_shared<Projectile>(Projectile(mage.getProjectileTexture(), 4, 3, x_coor, mage.getYCoordinate(), mage.getAttackDirection(),
+	shared_ptr<Projectile> projectile = make_shared<Projectile>(Projectile(mage.getProjectileTexture(), Props, 4, 3, x_coor, mage.getYCoordinate(), mage.getAttackDirection(),
 		mage_projectile_collision_offset_x, mage_projectile_collision_offset_y, mage_projectile_collision_scale_x,
 		mage_projectile_collision_scale_y, mage_projectile_rotation, true));
 	
@@ -33,7 +39,7 @@ void GameMap::appendProjectile() {
 
 void GameMap::appendProjectile(shared_ptr<Demon> demon) {
 	if (demon->isProjectileReady()) {
-		shared_ptr<Projectile> projectile = make_shared<Projectile>(demon->getProjectileTexture(), fire_projectile_count_x, fire_projectile_count_y, demon->getXCoordinate(), demon->getYCoordinate() + demon->getHeight(),
+		shared_ptr<Projectile> projectile = make_shared<Projectile>(demon->getProjectileTexture(), Props, fire_projectile_count_x, fire_projectile_count_y, demon->getXCoordinate(), demon->getYCoordinate() + demon->getHeight(),
 			demon_attack_direction, fire_white_space_pixels_x, fire_white_space_pixels_y, fire_projectile_scale,
 			fire_projectile_scale, fire_projectile_rotation, false
 		);
@@ -200,13 +206,13 @@ void GameMap::generateDemonsList(map<string, Texture2D> textures) {
 		for (int j = 0; j < 6; ++j) {
 			shared_ptr<Demon> demon;
 			if (j < 2) {
-				demon = make_shared<Demon>(Demon(textures["skull"], textures["fire"], x_pos, y_pos, number_of_demon_textures, skull_points * level, demon_speed));
+				demon = make_shared<Demon>(Demon(textures["skull"], textures["fire"], Props, x_pos, y_pos, number_of_demon_textures, skull_points * level, demon_speed));
 			}
 			else if (j < 4) {
-				demon = make_shared<Demon>(Demon(textures["fledge"], textures["fire"], x_pos, y_pos, number_of_demon_textures, fledge_points * level, demon_speed));
+				demon = make_shared<Demon>(Demon(textures["fledge"], textures["fire"], Props, x_pos, y_pos, number_of_demon_textures, fledge_points * level, demon_speed));
 			}
 			else {
-				demon = make_shared<Demon>(Demon(textures["scamp"], textures["fire"], x_pos, y_pos, number_of_demon_textures, scamp_points * level, demon_speed));
+				demon = make_shared<Demon>(Demon(textures["scamp"], textures["fire"], Props, x_pos, y_pos, number_of_demon_textures, scamp_points * level, demon_speed));
 			}
 			row.insertAtEnd(make_shared<Node<Demon>>(demon));
 			y_pos += 50;
@@ -381,13 +387,13 @@ shared_ptr<Demon> GameMap::generateDemonWithRandomTexture(map<string, Texture2D>
 	else if (random % 8 <= 5) { texture = textures["scamp"]; }
 	else { texture = textures["eye"];	}
 
-	shared_ptr<Demon> demon = make_shared<Demon>(Demon(texture, textures["fire"], x_pos, y_pos, number_of_demon_textures, 0, speed));
+	shared_ptr<Demon> demon = make_shared<Demon>(Demon(texture, textures["fire"], Props, x_pos, y_pos, number_of_demon_textures, 0, speed));
 	demon->setLeftRight(left_right);
 	return demon;
 }
 
 void GameMap::generateReviveShield() {
-	shared_ptr<Shield> shield = make_shared<Shield>(ReviveShield(Revive_shield));
+	shared_ptr<Shield> shield = make_shared<Shield>(ReviveShield(Revive_shield, Props));
 	Shields.insertAtEnd(make_shared<Node<Shield>>(shield));
 }
 
@@ -511,7 +517,7 @@ void GameMap::generateSpecialDemon(map<string, Texture2D> textures) {
 		left_right *= -1;
 	}
 
-	Special_demon = make_shared<Demon>(Demon(textures["eye"], textures["fire"], x_coordinate, 20, 4, 500, 75));
+	Special_demon = make_shared<Demon>(Demon(textures["eye"], textures["fire"], Props, x_coordinate, 20, 4, 500, 75));
 	Special_demon->setLeftRight(left_right);
 }
 

@@ -50,7 +50,7 @@ int main() {
             map.drawInstructions();
 
             if (IsKeyPressed(KEY_ENTER)) {
-                map.getMage().setShieldCountToStartingAmount();
+                map.setResetShieldCountToStartingAmount();
                 map.generateShields();
                 map.setIsIntro(false);
             }

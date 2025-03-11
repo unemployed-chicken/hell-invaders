@@ -1,9 +1,9 @@
 #include "Character.h"
 
 Character::Character(
-		Texture2D character_texture, Texture2D projectile_texture, 
+		Texture2D character_texture, Texture2D projectile_texture,
 		float pos_x, float pos_y, float speed, float attack_rate, 
-		int attack_direction
+		int attack_direction, float texture_update_rate
 ) {
 	Active_texture = character_texture;
 	Projectile_texture = projectile_texture;
@@ -12,6 +12,8 @@ Character::Character(
 	Speed = speed;
 	Attack_rate = attack_rate;
 	Attack_direction = attack_direction;
+	Texture_update_rate = texture_update_rate;
+
 }
 
 void Character::moveCharacter(const float dT){}
@@ -52,6 +54,5 @@ float Character::getWidth() { return Width; }
 float Character::getHeight() { return Height; }
 void Character::setSpeed(const float speed) { Speed = speed; }
 void Character::setTextureUpdateRate(float update_rate) { Texture_update_rate = update_rate; }
-void Character::setTextureUpdateRate() { Texture_update_rate = texure_update_per_second; }
 void Character::setLeftRight(int left_right) { Left_Right = left_right; }
 void Character::tick(const float dT){}

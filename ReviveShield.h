@@ -4,6 +4,6 @@
 
 class ReviveShield : public Shield {
 public:
-	ReviveShield(Texture2D revive_shield, Properties properties);
+	ReviveShield(Texture2D revive_shield, Properties& properties);
 };
 

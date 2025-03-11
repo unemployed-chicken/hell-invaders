@@ -1,13 +1,12 @@
 #include "Demon.h"
 
 
-Demon::Demon(Texture2D character_texture, Texture2D projectile_texture, int demon_x_pos, int demon_y_pos, int texture_count, int points, float speed) :
-	Character(character_texture, projectile_texture, demon_x_pos, demon_y_pos, speed, demon_fire_rate, 1) {
+Demon::Demon(Texture2D character_texture, Texture2D projectile_texture, Properties& properties, int demon_x_pos, int demon_y_pos, int texture_count, int points, float speed) :
+	Character(character_texture, projectile_texture, demon_x_pos, demon_y_pos, speed, properties.getDemonAttackRateInSeconds(), 1, properties.getNumberOfTexureUpdatesRatePerSecond()
+	) {
 	Width = static_cast<float>(character_texture.width) / texture_count;
 	Height = static_cast<float>(character_texture.height);
 	Points = points;
-	// Temp for testing:
-	//Texture_update_rate *= 2;
 }
 Demon::~Demon() {
 	if (debugging) { std::cout << "Destroying Demon" << '\n'; }

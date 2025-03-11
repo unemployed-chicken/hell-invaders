@@ -68,8 +68,8 @@ class GameMap {
 	int level{ 0 };
 	int demons_moved_down_count{ 0 };
 
-	bool Is_main_screen{ true };
-	bool Is_intro{ false };
+	bool Is_main_screen{ false };
+	bool Is_intro{ true };
 	bool Is_new_high_score_screen{ false };
 	
 	bool hasCollision(shared_ptr<Demon> demon);
@@ -129,5 +129,6 @@ public:
 	void setIsIntro(const bool b);
 	int getDemonsMovedDownCount();
 	void resetProperties();
+	void setResetShieldCountToStartingAmount();
 };
 
