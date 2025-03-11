@@ -3,7 +3,6 @@
 #include "raymath.h"
 #include <iostream>
 
-extern const float texure_update_per_second;
 extern const bool debugging;
 
 constexpr float character_scale{ 3.0f };

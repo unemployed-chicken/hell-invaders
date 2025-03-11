@@ -2,8 +2,6 @@
 #include "Character.h"
 #include <iostream>
 
-const float demon_fire_rate{ 3.f }; // These will need to change as a new level appears. Figure this out later
-
 class Demon : public Character {
 	int Points{ 100 };
 	int Frame{ 0 };

@@ -6,8 +6,6 @@ extern const float texure_update_per_second;
 extern const float window_dimensions[2];
 extern const bool debugging;
 
-constexpr float magic_projectile_speed{ 300.f };
-constexpr float fire_projectile_speed{ 150.f };
 constexpr float magic_projectile_scale{ 4.0f };
 constexpr float fire_projectile_scale{ 2.0f };
 constexpr float fire_white_space_pixels_x{ 1.0f };

@@ -80,11 +80,6 @@ void Demon::moveCharacter(const float dT) {
 
 }
 
-//void Demon::bumpSpeed() {
-//	float before = getSpeed();
-//	Speed += 15.f;
-//	float after = getSpeed();
-//}
 
 bool Demon::isProjectileReady() {
 	if (Attack_cooldown > Attack_rate) {

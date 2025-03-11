@@ -16,6 +16,8 @@ Mage& GameMap::getMage() { return mage; }
 void GameMap::setHasSpecialDemonInvaded(const bool b) { has_special_demon_spawned = false; }
 int GameMap::getDemonsMovedDownCount() { return demons_moved_down_count; }
 
+void GameMap::resetProperties() { Props = Properties(); }
+
 void GameMap::appendProjectile() {
 	mage.setIsProjectileReady(false);
 	float x_coor{};
@@ -172,7 +174,7 @@ void GameMap::displayHomeMenu(map<string, Texture2D> textures, const float dT) {
 	/*
 	* TODO: 
 	* Play music on home screen
-	* random demons run around randomly
+
 	* user has option for start, game properties, exit
 	* If start, set intro to true and display to false
 	* If properties, open up properties menu and have user adjust as they would like
@@ -187,10 +189,14 @@ void GameMap::generateDemonsList(map<string, Texture2D> textures) {
 	has_special_demon_spawned = false;
 
 	int x_pos{ 5 };
-	for (int i = 0; i < number_of_demon_columns; ++i) {
+	for (int i = 0; i < Props.getNumberOfDemonColumns(); ++i) {
 		DoubleLinkedList<Demon> row{};
 		int y_pos{ 25 };
-		double demon_speed{ demon_base_speed + demon_base_speed * .25 * (level -1) };
+		double demon_speed{ Props.getDemonBaseSpeedInPixelsPerSecond() + Props.getDemonLevelAccelerationMultiplier() * (level - 1) };
+		int skull_points = Props.getDemonBasePoints() * Props.getSkullScoreMultiplier();
+		int fledge_points = Props.getDemonBasePoints() * Props.getFledglingScoreMultiplier();
+		int scamp_points = Props.getDemonBasePoints() * Props.getScampScoreMultiplier();
+		
 		for (int j = 0; j < 6; ++j) {
 			shared_ptr<Demon> demon;
 			if (j < 2) {
@@ -345,11 +351,11 @@ void GameMap::generateRandomDemon(map<string, Texture2D> textures) {
 	if (Demons_columns.getCount() < 1 && random % 2500 <= 10) {
 		// Generate a new column and populate with a demon
 		DoubleLinkedList<Demon> random_demons{};
-		//shared_ptr<Demon>demon = generateDemonWithRandomTexture(textures, random);
 		random_demons.insertAtEnd(make_shared<Node<Demon>>(generateDemonWithRandomTexture(textures, random)));
 		Demons_columns.insertAtEnd(make_shared<Node<DoubleLinkedList<Demon>>>(make_shared<DoubleLinkedList<Demon>>(random_demons)));
 	}
 	else if (Demons_columns.getCount() > 0 && Demons_columns.getHead()->Data->getCount() < 7 && random % 2500 <= 10) {
+		// Populate existing column with a demon
 		shared_ptr<Demon> demon = generateDemonWithRandomTexture(textures, random);
 		Demons_columns.getHead()->Data->insertAtEnd(make_shared<Node<Demon>>(generateDemonWithRandomTexture(textures, random)));
 	}
@@ -464,7 +470,7 @@ void GameMap::moveAllDemons(const float dT, const bool is_main_screen) {
 			{
 				is_first_down = true;
 				++demons_moved_down_count;
-				if (demons_moved_down_count % (number_of_rows_moved_per_speed_boost) == 0) {
+				if (demons_moved_down_count % Props.getNumberOfRowsBeforeSpeedBoost() == 0) {
 					is_speed_bump_row = true;
 				}
 				
@@ -479,7 +485,7 @@ void GameMap::moveAllDemons(const float dT, const bool is_main_screen) {
 void GameMap::moveDemonColumn(shared_ptr<Node<DoubleLinkedList<Demon>>> column, const float dT, const bool is_first_down, const bool is_speed_bump, const bool is_main_screen) {
 	shared_ptr<Node<Demon>> current_demon = column->Data->getHead();
 	while (current_demon) {
-		if (is_speed_bump) { current_demon->Data->setSpeed(current_demon->Data->getSpeed() + speed_increase); }
+		if (is_speed_bump) { current_demon->Data->setSpeed(current_demon->Data->getSpeed() + Props.getDemonAccelerationInPixelsPerSecond()); }
 		current_demon->Data->setIsFirstDown(is_first_down);
 		current_demon->Data->tick(dT);
 

@@ -15,9 +15,8 @@ const bool debugging{ false };
 const float window_dimensions[2]{ 640.0f , 640.0f }; // Width * Height
 const int targetFps{ 60 };
 
-
-// Texture Properties
-constexpr float texure_update_per_second{ 1.0f / 12.0f };
+// General
+const bool is_windows_os{ true };
 
 map<string, Texture2D> generateTexture();
 

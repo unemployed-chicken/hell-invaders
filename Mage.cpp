@@ -1,12 +1,16 @@
 #include "Mage.h"
-#include <iostream>
 
 
-
-Mage::Mage(Texture2D character_texture, Texture2D projectile_texture) : 
-	Character(character_texture, projectile_texture, starting_x_pos, starting_y_pos, mage_speed, mage_fire_rate, -1) {
+Mage::Mage(Texture2D character_texture, Texture2D projectile_texture, Properties properties) : 
+	Character(character_texture, projectile_texture, starting_x_pos, starting_y_pos, 
+		properties.getMageSpeedInPixelsPerSecond(), properties.getMageAttackRatePerSecond(), -1) 
+{
 	Width = static_cast<float>(character_texture.width) / mage_textures_per_row;
 	Height = static_cast<float>(character_texture.width) / mage_textures_per_column;
+	Lives = properties.getNumberOfStartingLives();
+	Shield_count = properties.getNumberOfStartingShields();
+	Attack_texture_update_rate_per_second = properties.getAttackTextureUpdateRatePerSecond();
+	Casting_texture_update_rate_per_second = properties.getCastingShieldTexutreUpdateRatePerSecond();
 }
 
 
@@ -22,10 +26,10 @@ bool Mage::getIsProjectileReady() { return Is_projectile_ready && Texture_frame 
 void Mage::addScore(const int points) { Score += points; }
 void Mage::decrementShieldCount() { --Shield_count; }
 void Mage::incrementShieldCount() { ++Shield_count; }
-void Mage::setShieldCountToStartingAmount() { Shield_count = number_of_starting_shields; }
+void Mage::setShieldCountToStartingAmount(const int shields) { Shield_count = shields; }
 void Mage::setIsShieldReady(const bool b) { Is_shield_ready = b; }
 void Mage::setIsReviveShieldActive(const bool b) { Is_revive_shield_active = b; }
-void Mage::setIsCastingShield(bool b) { Is_casting_shield = false; }
+void Mage::setIsCastingShield(const bool b) { Is_casting_shield = false; }
 
 void Mage::takeDamage() {
 	Last_texture_update = 0.0f;
@@ -122,6 +126,7 @@ void Mage::tick(const float dT) {
 		else if (Is_casting_shield && Texture_frame == casting_frames) {
 			Texture_frame = 0;
 			Is_casting_shield = false;
+			setTextureUpdateRate();
 		}
 	}
 	else {
@@ -179,7 +184,7 @@ void Mage::attack() {
 		Attack_cooldown = 0.0f;
 		Is_attacking = true;
 		Is_projectile_ready = true;
-		setTextureUpdateRate(attack_texture_update_rate_per_second);
+		setTextureUpdateRate(Attack_texture_update_rate_per_second);
 	}
 }
 
@@ -187,10 +192,11 @@ void Mage::castShield() {
 	castShield(IsKeyPressed(KEY_DOWN) || IsKeyPressed(KEY_LEFT_SHIFT) || IsKeyPressed(KEY_S));
 }
 
-void Mage::castShield(bool wants_to_cast_shield) {
+void Mage::castShield(const bool wants_to_cast_shield) {
 	if (wants_to_cast_shield && Shield_count > 0) {
 		Is_casting_shield = true;
 		Is_shield_ready = true;
+		setTextureUpdateRate(Casting_texture_update_rate_per_second);
 	}
 }
 

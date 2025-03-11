@@ -1,5 +1,8 @@
 #pragma once
 #include "Character.h"
+#include "Properties.h"
+#include <iostream>
+
 
 extern const bool debugging;
 
@@ -12,16 +15,9 @@ constexpr int death_texture_count{ 6 }; // The row of the death animation
 constexpr int casting_frames{ 10 }; // number of columns in the casting animation
 constexpr int casting_texture_count{ 5 }; // The row of the death animation
 
-constexpr float attack_texture_update_rate_per_second{ 1.0f / 18.0f };
-constexpr float mage_speed{ 200.f }; // pixels per second
-constexpr float mage_fire_rate{ .15 }; // seconds per attack
-
 constexpr int mage_textures_per_row{ 11 }; // number of rows in texture
 constexpr int mage_textures_per_column{ 9 }; // number of columns in texture
 constexpr Vector2 origin{ 34, 55 }; // Offsets the white space for movement
-
-constexpr int number_of_starting_shields{ 3 };
-constexpr int number_of_starting_lives{ 3 };
 
 constexpr float collision_rec_white_space_off_set{ character_scale / 3.f }; // Offsets the white space for collision rectangle
 
@@ -31,9 +27,11 @@ constexpr float death_texture_pixel_offset{ 20.45 }; // Offsets whitespace in te
 constexpr float death_count_frame_pause{ 9 }; // Number of times to repeat final death stage frames
 
 class Mage : public Character {
+	float Attack_texture_update_rate_per_second;
+	float Casting_texture_update_rate_per_second;
+	int Lives;
+	int Shield_count;
 	int Score{};
-	int Lives{ number_of_starting_lives };
-	int Shield_count{ number_of_starting_shields };
 	int Texture_frame{ 0 };
 	int Death_count_pause{ 0 };
 	bool Is_attacking{ false };
@@ -42,10 +40,11 @@ class Mage : public Character {
 	bool Is_shield_ready{ false };
 	bool Is_post_revive_active{ false };
 	bool Is_revive_shield_active{ false };
+
 	
 
 public:
-	Mage(Texture2D character_texture, Texture2D projectile_texture);
+	Mage(Texture2D character_texture, Texture2D projectile_texture, Properties properties);
 
 	int getLives();
 	int getScore();
@@ -58,14 +57,14 @@ public:
 	void addScore(const int points);
 	void attack();
 	void castShield();
-	void castShield(bool wants_to_cast_shield);
+	void castShield(const bool wants_to_cast_shield);
 	void takeDamage();
 	void decrementShieldCount();
 	void incrementShieldCount();
-	void setShieldCountToStartingAmount();
+	void setShieldCountToStartingAmount(const int shields);
 	void setIsShieldReady(const bool b);
 	void setIsReviveShieldActive(const bool b);
-	void setIsCastingShield(bool b);
+	void setIsCastingShield(const bool b);
 
 	virtual void render();
 	virtual void setTexturePosition();

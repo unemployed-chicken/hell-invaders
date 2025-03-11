@@ -4,6 +4,7 @@
 #include "DoubleLinkedList.h"
 #include "Mage.h"
 #include "Projectile.h"
+#include "Properties.h"
 #include "raylib.h"
 #include "ReviveShield.h"
 #include "Shield.h"
@@ -21,7 +22,6 @@ using std::to_string;
 
 extern const float window_dimensions[2];
 extern const bool debugging;
-extern const bool debuggingSpeedBump;
 
 // Backgrounds Properties
 const float background_scale{ 3.0f };
@@ -41,20 +41,13 @@ constexpr float end_game_coordinates_offset[2]{.15, .40};
 constexpr float end_game_text_size{ 75 };
 constexpr float shield_starting_x_coordinate{ 50 };
 constexpr float shield_spacing{ 225 };
-constexpr float demon_base_speed{ 50 }; // pixels per second 
-constexpr float base_demon_points{ 50 };
-constexpr float skull_points{ base_demon_points * 3 };
-constexpr float fledge_points{ base_demon_points * 2 };
-constexpr float scamp_points{ base_demon_points * 1 };
-constexpr float special_demon_points{ base_demon_points * 10 };
 constexpr int number_of_demon_textures{ 4 };
-constexpr int number_of_rows_moved_per_speed_boost{ 3 };
-constexpr int number_of_demon_columns{ 6 };
-constexpr float speed_increase{ 10.0f };
 
 const float demons_x_range[2]{ 5.0f, window_dimensions[1] - (16.f * character_scale) + 5.f}; // First is Left Limit, Second is Right Limit
 
 class GameMap {
+	Properties Props{};
+	
 	Texture2D Background;
 	Texture2D Midground;
 	Texture2D Foreground;
@@ -135,5 +128,6 @@ public:
 	void displayHomeMenu(map<string, Texture2D> textures, const float dT);
 	void setIsIntro(const bool b);
 	int getDemonsMovedDownCount();
+	void resetProperties();
 };
 
