@@ -1,28 +1,28 @@
 #include "GameMap.h"
 
-//GameMap::GameMap(map<string, Texture2D> textures)
-//	: Background(textures["main_background_1"]), Midground(textures["main_background_2"]), Foreground(textures["main_background_3"]), 
-//	  mage(textures["mage"], textures["magic"], Props), Regular_shield(textures["full_shield"]), Revive_shield(textures["revive_shield"]) 
-//{ }
-
-
 GameMap::GameMap(map<string, Texture2D> textures)
-	: Background(textures["background"]), Midground(textures["midground"]), Foreground(textures["foreground"]),
-	mage(textures["mage"], textures["magic"], Props), Regular_shield(textures["full_shield"]), Revive_shield(textures["revive_shield"])
-{
-}
-// textures["background"]), Midground(textures["midground"]), Foreground(textures["foreground"])
+	: Background(textures["main_background_1"]), Midground(textures["main_background_2"]), Foreground(textures["main_background_3"]), 
+	  mage(textures["mage"], textures["magic"], Props), Regular_shield(textures["full_shield"]), Revive_shield(textures["revive_shield"]) 
+{ }
+
 
 bool GameMap::hasDemons() { return Demons_columns.getCount() > 0; }
 bool GameMap::hasInvaded() { return has_invaded; }
 bool GameMap::getHasSpecialDemonInvaded() {	return has_special_demon_spawned; }
 bool GameMap::getIsMainScreen(){ return Is_main_screen; }
 bool GameMap::getIsIntro() { return Is_intro; }
+bool GameMap::getIsEndGameRequested() { return Is_end_game_requested; }
+bool GameMap::getPropertiesShouldStartGameWithShieldsActive() { return Props.getShouldStartWithShieldsActive(); }
+bool GameMap::getIsPropertiesScreen() {	return Is_properties_screen; }
 Mage& GameMap::getMage() { return mage; }
 void GameMap::setHasSpecialDemonInvaded(const bool b) { has_special_demon_spawned = false; }
 int GameMap::getDemonsMovedDownCount() { return demons_moved_down_count; }
 void GameMap::resetProperties() { Props = Properties(); }
 void GameMap::setResetShieldCountToStartingAmount() { mage.setShieldCountToStartingAmount(Props.getNumberOfStartingShields()); }
+
+void GameMap::clearAllShields() {
+	Shields.deleteAllNodes();
+}
 
 void GameMap::appendProjectile() {
 	mage.setIsProjectileReady(false);
@@ -107,9 +107,6 @@ void GameMap::drawMainScreen(map<string, Texture2D> textures, const float dT) {
 	generateRandomDemon(textures); 
 
 	if (Demons_columns.getCount() > 0) { moveAllDemons(dT, true); }
-
-	drawPlayerOptions();
-
 }
 
 void GameMap::drawShieldCount() {
@@ -136,7 +133,7 @@ void GameMap::drawMainScreenBackground() {
 	DrawTextureEx(Foreground, Vector2{100, 350}, 0.0, 2.0, WHITE);
 }
 
-void GameMap::drawPlayerOptions() {
+void GameMap::drawPlayerMenuOptions() {
 	string start_game{ "Start Game" };
 	string game_options{ "Game Options" };
 	string exit_game_display{ "Exit" };
@@ -144,6 +141,10 @@ void GameMap::drawPlayerOptions() {
 	DrawText(start_game.c_str(), 175, 200, 50, WHITE);
 	DrawText(game_options.c_str(), 175, 300, 50, WHITE);
 	DrawText(exit_game_display.c_str(), 175, 400, 50, WHITE);
+}
+
+void GameMap::drawPlayerPropertyOptions() {
+
 }
 
 void GameMap::drawLives() {
@@ -175,16 +176,56 @@ void GameMap::drawInstructions() {
 }
 
 void GameMap::displayHomeMenu(map<string, Texture2D> textures, const float dT) {
+	Select_box_movement_cooldown += dT;
 	drawMainScreen(textures, dT);
+
+	drawPlayerMenuOptions();
+
+	// Move and Render Player Select Box
+	bool has_player_selected_option = playerMainScreenTick();
+
+	// Take action if player has selected an option
+	if (has_player_selected_option && Select_box_location.y == 190) {
+		Is_main_screen = false;
+		updateBackgroundTextures(textures);
+		Demons_columns.deleteAllNodes();
+		
+		if (!Props.getShouldSkipIntro()) {
+			Is_intro = true; 
+		}
+		else if (Props.getShouldSkipIntro() && Props.getShouldStartWithShieldsActive()) {
+			generateShields();
+		}
+	} 
+	else if ( has_player_selected_option && Select_box_location.y == 290 ) {
+		Is_main_screen = false;
+		Is_properties_screen = true;
+		Select_box_location.y = 250;
+	}
+	else if ( has_player_selected_option && Select_box_location.y == 390 ) {
+		Is_end_game_requested = true;
+	}
 
 	/*
 	* TODO: 
 	* Play music on home screen
-
-	* user has option for start, game properties, exit
-	* If start, set intro to true and display to false
 	* If properties, open up properties menu and have user adjust as they would like
+	* 
+	* Provide menu navigation instructions
 	*/
+}
+
+void GameMap::displayPropertiesMenu(map<string, Texture2D> textures, const float dT) {
+	Select_box_movement_cooldown += dT;
+	drawMainScreen(textures, dT);
+
+	drawPlayerPropertyOptions();
+
+	// Move and Render Player Select Box
+	//bool has_player_selected_option = playerPropertiesScreenTick();
+
+	// Decide what actions to take
+	// If go back to main screen, change Select_box_location.y = 190
 }
 
 void GameMap::setIsIntro(const bool b) { Is_intro = b; }
@@ -330,7 +371,6 @@ void GameMap::generateOrMoveAllShields(const float dT) {
 			moveReviveShield(dT);
 		}
 		else if (!mage.getIsReviveShieldActive() && mage.getTextureFrame() == 0) {
-
 			generateReviveShield();
 		}
 	}
@@ -365,6 +405,33 @@ void GameMap::generateRandomDemon(map<string, Texture2D> textures) {
 		shared_ptr<Demon> demon = generateDemonWithRandomTexture(textures, random);
 		Demons_columns.getHead()->Data->insertAtEnd(make_shared<Node<Demon>>(generateDemonWithRandomTexture(textures, random)));
 	}
+}
+
+void GameMap::updateBackgroundTextures(map<string, Texture2D> textures) {
+	Background = textures["background"];
+	Midground = textures["midground"];
+	Foreground = textures["foreground"];
+}
+
+bool GameMap::playerMainScreenTick() {
+	if ((IsKeyDown(KEY_DOWN) || IsKeyDown(KEY_S)) && (Select_box_movement_cooldown >= select_box_movement_minimum_cooldown) ) {
+		Select_box_location.y < 390 ? Select_box_location.y += 100 : Select_box_location.y += 0;
+		Select_box_movement_cooldown = 0.f;
+	} else if ((IsKeyDown(KEY_UP) || IsKeyDown(KEY_W)) && (Select_box_movement_cooldown >= select_box_movement_minimum_cooldown)) {
+		Select_box_location.y > 190 ? Select_box_location.y -= 100 : Select_box_location.y -= 0;
+		Select_box_movement_cooldown = 0.f;
+	}
+
+	int width{};
+	
+	if (Select_box_location.y == 190) { width = 305; }
+	else if (Select_box_location.y == 290) { width = 350; }
+	else { width = 115; }
+
+	DrawRectangleLines(Select_box_location.x, Select_box_location.y, width, 70, RED);
+
+	if (IsKeyPressed(KEY_ENTER)) { return true;	}
+	return false;
 }
 
 shared_ptr<Demon> GameMap::generateDemonWithRandomTexture(map<string, Texture2D> textures, const int random) {

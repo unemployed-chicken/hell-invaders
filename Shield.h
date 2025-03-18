@@ -2,8 +2,6 @@
 #include "raylib.h"
 #include <map>
 #include <string>
-using std::map;
-using std::string;
 
 extern const bool debugging;
 

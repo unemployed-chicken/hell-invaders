@@ -24,6 +24,9 @@ Properties::Properties() {
     Properties_document.HasMember("number_of_starting_shields") ? Number_of_starting_shields = Properties_document["number_of_starting_shields"].GetInt() : Number_of_starting_shields = number_of_starting_shields;
     Properties_document.HasMember("number_of_texure_updates_rate_per_second") ? Number_of_texure_updates_rate_per_second = Properties_document["number_of_texure_updates_rate_per_second"].GetFloat() : Number_of_texure_updates_rate_per_second = number_of_texure_updates_rate_per_second;
     Properties_document.HasMember("revive_shield_movement_speed_in_pixels_per_second") ? Revive_shield_movement_speed_in_pixels_per_second = Properties_document["revive_shield_movement_speed_in_pixels_per_second"].GetFloat() : Revive_shield_movement_speed_in_pixels_per_second = revive_shield_movement_speed_in_pixels_per_second;
+    Properties_document.HasMember("should_skip_intro") ? Should_skip_intro = Properties_document["should_skip_intro"].GetBool() : Should_skip_intro = should_skip_intro;
+    Properties_document.HasMember("should_start_with_shields_active") ? Should_start_with_shields_active = Properties_document["should_start_with_shields_active"].GetBool() : Should_start_with_shields_active = should_start_with_shields_active;
+
 
     // Demon Properties
     Properties_document.HasMember("number_of_demon_columns") ? Number_of_demon_columns = Properties_document["number_of_demon_columns"].GetInt() : Number_of_demon_columns = number_of_demon_columns;
@@ -97,6 +100,8 @@ int Properties::getNumberOfStartingLives() { return Number_of_starting_lives; }
 int Properties::getNumberOfStartingShields() { return Number_of_starting_shields; }
 float Properties::getNumberOfTexureUpdatesRatePerSecond() { return Number_of_texure_updates_rate_per_second; }
 float Properties::getReviveShieldMovementSpeedInPixelsPerSecond() { return Revive_shield_movement_speed_in_pixels_per_second; }
+bool Properties::getShouldSkipIntro() { return Should_skip_intro; }
+bool Properties::getShouldStartWithShieldsActive() { return Should_start_with_shields_active; }
 int Properties::getNumberOfDemonColumns() { return Number_of_demon_columns; }
 int Properties::getNumberOfRowsBeforeSpeedBoost() { return Number_of_rows_before_speed_boost; }
 int Properties::getDemonBasePoints() { return Demon_base_points; }

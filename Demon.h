@@ -16,9 +16,9 @@ public:
 	~Demon();
 
 	void setYCoordinate();
-	void setTexturePosition();
+	void setTexturePosition(); //TODO: Is override
 	void setIsFirstDown(const bool b);
-	void moveCharacter(const float dT);
+	void moveCharacter(const float dT); //TODO: Is override
 	bool isProjectileReady();
 	bool getIsFirstDown();
 	int getPoints();

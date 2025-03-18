@@ -15,6 +15,8 @@ constexpr int number_of_starting_lives{ 3 };
 constexpr int number_of_starting_shields{ 3 };
 constexpr float number_of_texure_updates_rate_per_second{ 1.0f / 12.0f };
 constexpr float revive_shield_movement_speed_in_pixels_per_second{ -600 }; // pixels per second
+constexpr float should_skip_intro{ false };
+constexpr float should_start_with_shields_active{ true };
 
 
 // Demon Properties
@@ -50,6 +52,8 @@ class Properties {
 	int Number_of_starting_shields;
 	float Number_of_texure_updates_rate_per_second; // The number of times a characters texture is updated per second
 	float Revive_shield_movement_speed_in_pixels_per_second; // How quickly the revive shield moves across the map after a mage death
+	bool Should_skip_intro;
+	bool Should_start_with_shields_active;
 
 	// Demon Properties
 	int Number_of_demon_columns;
@@ -87,6 +91,8 @@ public:
 	int getNumberOfStartingShields();
 	float getNumberOfTexureUpdatesRatePerSecond();
 	float getReviveShieldMovementSpeedInPixelsPerSecond();
+	bool getShouldSkipIntro();
+	bool getShouldStartWithShieldsActive();
 	int getNumberOfDemonColumns();
 	int getNumberOfRowsBeforeSpeedBoost();
 	int getDemonBasePoints();

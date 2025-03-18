@@ -42,12 +42,19 @@ constexpr float end_game_text_size{ 75 };
 constexpr float shield_starting_x_coordinate{ 50 };
 constexpr float shield_spacing{ 225 };
 constexpr int number_of_demon_textures{ 4 };
+constexpr float select_box_movement_minimum_cooldown{ .20f };
 
 const float demons_x_range[2]{ 5.0f, window_dimensions[1] - (16.f * character_scale) + 5.f}; // First is Left Limit, Second is Right Limit
 
 class GameMap {
 	Properties Props{};
+
+	// Pregame Properties
+	Vector2 Select_box_location{ 165, 190 };
+	float Select_box_movement_cooldown{ 3.f };
+	int Properties_scroller_offset{ 0 };
 	
+	// Game Map Properties
 	Texture2D Background;
 	Texture2D Midground;
 	Texture2D Foreground;
@@ -68,9 +75,11 @@ class GameMap {
 	int level{ 0 };
 	int demons_moved_down_count{ 0 };
 
-	bool Is_main_screen{ false };
-	bool Is_intro{ true };
+	bool Is_main_screen{ true };
+	bool Is_properties_screen{ false };
+	bool Is_intro{ false };
 	bool Is_new_high_score_screen{ false };
+	bool Is_end_game_requested{ false };
 	
 	bool hasCollision(shared_ptr<Demon> demon);
 	void drawBackground();
@@ -78,7 +87,8 @@ class GameMap {
 	void drawShieldCount();
 	void drawMainScreenBackground();
 	void drawMainScreen(map<string, Texture2D> textures, const float dT);
-	void drawPlayerOptions();
+	void drawPlayerMenuOptions();
+	void drawPlayerPropertyOptions();
 	void appendProjectile();
 	void appendProjectile(shared_ptr<Demon> demon); 
 	void moveMageProjectiles(const float dT);
@@ -94,6 +104,8 @@ class GameMap {
 	void moveReviveShield(const float dT);
 	void destroySpecialDemon(const bool is_killed);
 	void generateRandomDemon(map<string, Texture2D> textures);
+	void updateBackgroundTextures(map<string, Texture2D> textures);
+	bool playerMainScreenTick();
 	shared_ptr<Demon> generateDemonWithRandomTexture(map<string, Texture2D> textures, const int random);
 	void moveDemonColumn(
 		shared_ptr<Node<DoubleLinkedList<Demon>>> column,
@@ -117,6 +129,9 @@ public:
 	bool getHasSpecialDemonInvaded();
 	bool getIsMainScreen();
 	bool getIsIntro();
+	bool getIsEndGameRequested();
+	bool getPropertiesShouldStartGameWithShieldsActive();
+	bool getIsPropertiesScreen();
 	Mage& getMage();
 	void tick(const float dT);
 	void generateDemonsList(map<string, Texture2D> textures);
@@ -126,9 +141,11 @@ public:
 	void setHasSpecialDemonInvaded(const bool b);
 	void drawInstructions();
 	void displayHomeMenu(map<string, Texture2D> textures, const float dT);
+	void displayPropertiesMenu(map<string, Texture2D> textures, const float dT);
 	void setIsIntro(const bool b);
-	int getDemonsMovedDownCount();
 	void resetProperties();
 	void setResetShieldCountToStartingAmount();
+	void clearAllShields();
+	int getDemonsMovedDownCount();
 };
 

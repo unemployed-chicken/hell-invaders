@@ -66,8 +66,8 @@ public:
 	void setIsReviveShieldActive(const bool b);
 	void setIsCastingShield(const bool b);
 
-	virtual void render();
-	virtual void setTexturePosition();
+	virtual void render() override; 
+	virtual void setTexturePosition() override;
 	
 	virtual bool getIsProjectileReady() override;
 	virtual Rectangle getCollisionRectangle() override;

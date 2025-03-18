@@ -28,15 +28,18 @@ int main() {
     // Create Textures
     map<string, Texture2D> textures = generateTexture();
     GameMap map(textures);
-        
 
-    while (!WindowShouldClose()) {
+    while (!WindowShouldClose() && !map.getIsEndGameRequested()) {
         BeginDrawing();
         ClearBackground(WHITE);
 
         if (map.getIsMainScreen()) {
             float menu_dT{ GetFrameTime() };
             map.displayHomeMenu(textures, menu_dT);
+        }
+        else if (map.getIsPropertiesScreen()) {
+            float properties_dT{ GetFrameTime() };
+            map.displayPropertiesMenu(textures, properties_dT);
         }
         else if (map.getMage().getLives() == 0 || map.hasInvaded()) {
             // Draw Game Over
@@ -50,9 +53,10 @@ int main() {
             map.drawInstructions();
 
             if (IsKeyPressed(KEY_ENTER)) {
+                map.clearAllShields();
                 map.setResetShieldCountToStartingAmount();
-                map.generateShields();
                 map.setIsIntro(false);
+                if (map.getPropertiesShouldStartGameWithShieldsActive()) { map.generateShields(); }
             }
         }
         else {
