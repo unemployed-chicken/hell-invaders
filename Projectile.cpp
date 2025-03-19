@@ -12,7 +12,7 @@ Projectile::Projectile(
 	Active_texture = texture;
 	isMagic ? X_coordinate = x_pos * (1) : X_coordinate = x_pos;
 	Y_coordinate = y_pos;
-	isMagic ? Velocity = properties.getMageProjectileSpeedInPixelsPerSecond() * direction : Velocity = properties.getDemonProjectileSpeedInPixelsPerSecond() * direction;
+	isMagic ? Velocity = properties.getFloatPropertyValue("Mage_projectile_speed_in_pixels_per_second") * direction : Velocity = properties.getFloatPropertyValue("Demon_projectile_speed_in_pixels_per_second") * direction;
 	Number_of_objects_in_x = number_of_objects_in_x;
 	Number_of_objects_in_y = number_of_objects_in_y;
 	Rotation = rotation;
@@ -25,7 +25,7 @@ Projectile::Projectile(
 
 	isMagic ? Width = texture.width / number_of_objects_in_x - 5: Width = texture.width / number_of_objects_in_x;
 	Height = texture.height / number_of_objects_in_y;
-	Texture_update_rate = properties.getNumberOfTexureUpdatesRatePerSecond();
+	Texture_update_rate = properties.getFloatPropertyValue("Number_of_texure_updates_rate_per_second");
 
 }
 

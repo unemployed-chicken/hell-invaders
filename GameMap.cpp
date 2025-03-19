@@ -12,13 +12,13 @@ bool GameMap::getHasSpecialDemonInvaded() {	return has_special_demon_spawned; }
 bool GameMap::getIsMainScreen(){ return Is_main_screen; }
 bool GameMap::getIsIntro() { return Is_intro; }
 bool GameMap::getIsEndGameRequested() { return Is_end_game_requested; }
-bool GameMap::getPropertiesShouldStartGameWithShieldsActive() { return Props.getShouldStartWithShieldsActive(); }
+bool GameMap::getPropertiesShouldStartGameWithShieldsActive() {	return Props.getBoolPropertyValue("Should_start_with_shields_active"); }
 bool GameMap::getIsPropertiesScreen() {	return Is_properties_screen; }
 Mage& GameMap::getMage() { return mage; }
 void GameMap::setHasSpecialDemonInvaded(const bool b) { has_special_demon_spawned = false; }
 int GameMap::getDemonsMovedDownCount() { return demons_moved_down_count; }
 void GameMap::resetProperties() { Props = Properties(); }
-void GameMap::setResetShieldCountToStartingAmount() { mage.setShieldCountToStartingAmount(Props.getNumberOfStartingShields()); }
+void GameMap::setResetShieldCountToStartingAmount() { mage.setShieldCountToStartingAmount(Props.getIntPropertyValue("Number_of_starting_shields")); }
 
 void GameMap::clearAllShields() {
 	Shields.deleteAllNodes();
@@ -190,10 +190,10 @@ void GameMap::displayHomeMenu(map<string, Texture2D> textures, const float dT) {
 		updateBackgroundTextures(textures);
 		Demons_columns.deleteAllNodes();
 		
-		if (!Props.getShouldSkipIntro()) {
+		if (!Props.getBoolPropertyValue("Should_skip_intro")) {
 			Is_intro = true; 
 		}
-		else if (Props.getShouldSkipIntro() && Props.getShouldStartWithShieldsActive()) {
+		else if (Props.getBoolPropertyValue("Should_skip_intro") && Props.getBoolPropertyValue("Should_start_with_shields_active")) {
 			generateShields();
 		}
 	} 
@@ -236,13 +236,13 @@ void GameMap::generateDemonsList(map<string, Texture2D> textures) {
 	has_special_demon_spawned = false;
 
 	int x_pos{ 5 };
-	for (int i = 0; i < Props.getNumberOfDemonColumns(); ++i) {
+	for (int i = 0; i < Props.getIntPropertyValue("Number_of_demon_columns"); ++i) {
 		DoubleLinkedList<Demon> row{};
 		int y_pos{ 25 };
-		double demon_speed{ Props.getDemonBaseSpeedInPixelsPerSecond() + Props.getDemonLevelAccelerationMultiplier() * (level - 1) };
-		int skull_points = Props.getDemonBasePoints() * Props.getSkullScoreMultiplier();
-		int fledge_points = Props.getDemonBasePoints() * Props.getFledglingScoreMultiplier();
-		int scamp_points = Props.getDemonBasePoints() * Props.getScampScoreMultiplier();
+		double demon_speed{ Props.getFloatPropertyValue("Demon_base_speed_in_pixels_per_second") + Props.getFloatPropertyValue("Demon_level_acceleration_percentage") * (level - 1)};
+		int skull_points = Props.getIntPropertyValue("Demon_base_points") * Props.getIntPropertyValue("Skull_score_multiplier");
+		int fledge_points = Props.getIntPropertyValue("Demon_base_points") * Props.getIntPropertyValue("Fledgling_score_multiplier");
+		int scamp_points = Props.getIntPropertyValue("Demon_base_points") * Props.getIntPropertyValue("Scamp_score_multiplier");
 		
 		for (int j = 0; j < 6; ++j) {
 			shared_ptr<Demon> demon;
@@ -543,7 +543,7 @@ void GameMap::moveAllDemons(const float dT, const bool is_main_screen) {
 			{
 				is_first_down = true;
 				++demons_moved_down_count;
-				if (demons_moved_down_count % Props.getNumberOfRowsBeforeSpeedBoost() == 0) {
+				if (demons_moved_down_count % Props.getIntPropertyValue("Number_of_rows_before_speed_boost") == 0) {
 					is_speed_bump_row = true;
 				}
 				
@@ -558,7 +558,7 @@ void GameMap::moveAllDemons(const float dT, const bool is_main_screen) {
 void GameMap::moveDemonColumn(shared_ptr<Node<DoubleLinkedList<Demon>>> column, const float dT, const bool is_first_down, const bool is_speed_bump, const bool is_main_screen) {
 	shared_ptr<Node<Demon>> current_demon = column->Data->getHead();
 	while (current_demon) {
-		if (is_speed_bump) { current_demon->Data->setSpeed(current_demon->Data->getSpeed() + Props.getDemonAccelerationInPixelsPerSecond()); }
+		if (is_speed_bump) { current_demon->Data->setSpeed(current_demon->Data->getSpeed() + Props.getFloatPropertyValue("Demon_acceleration_in_pixels_per_second")); }
 		current_demon->Data->setIsFirstDown(is_first_down);
 		current_demon->Data->tick(dT);
 

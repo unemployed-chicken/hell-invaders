@@ -3,10 +3,13 @@
 #include "rapidjson/filereadstream.h" 
 #include "rapidjson/filewritestream.h" 
 #include "rapidjson/writer.h"
+#include <map>
 #include <memory>
 #include <string>
 using std::unique_ptr;
 using std::string;
+using std::map;
+using std::make_pair;
 
 extern const bool is_windows_os;
 
@@ -46,40 +49,8 @@ constexpr float mage_projectile_speed_in_pixels_per_second{ 300.f }; // pixels p
 
 class Properties {
 	rapidjson::Document Properties_document;
+	map<string, Property> Props{};
 
-	// General Game Properties
-	int Number_of_starting_lives;
-	int Number_of_starting_shields;
-	float Number_of_texure_updates_rate_per_second; // The number of times a characters texture is updated per second
-	float Revive_shield_movement_speed_in_pixels_per_second; // How quickly the revive shield moves across the map after a mage death
-	bool Should_skip_intro;
-	bool Should_start_with_shields_active;
-
-	// Demon Properties
-	int Number_of_demon_columns;
-	int Number_of_rows_before_speed_boost;
-	int Demon_base_points;
-	int Scamp_score_multiplier;
-	int Fledgling_score_multiplier;
-	int Skull_score_multiplier;
-	int Eye_score_multipler;
-
-
-	// Demon Mechanic Properties
-	float Demon_base_speed_in_pixels_per_second;
-	float Demon_acceleration_in_pixels_per_second;
-	float Demon_level_acceleration_multiplier;
-	float Demon_attack_rate_in_seconds; // How long a demon will pause after an attack before looking to attack again
-	float Demon_projectile_speed_in_pixels_per_second;
-	int Demon_attack_chance_percentage; // The chance a ready demon will attack
-
-	// Mage Properties 
-	float Attack_texture_update_rate_per_second; // The number of times the mages texture is updated per second during its attack animation
-	float Casting_shield_texutre_update_rate_per_second; // The number of times the mages texture is updated per second during its shield casting animation
-	float Mage_speed_in_pixels_per_second;
-	float Mage_attack_rate_per_second; // The number of attacks a mage can fit in per second
-	float Mage_projectile_speed_in_pixels_per_second;
-	
 public:
 	Properties();
 	void saveProperties();
@@ -87,29 +58,23 @@ public:
 	void updateIntProperty(string key, int value);
 	void updateFloatProperty(string key, float value);
 
-	int getNumberOfStartingLives();
-	int getNumberOfStartingShields();
-	float getNumberOfTexureUpdatesRatePerSecond();
-	float getReviveShieldMovementSpeedInPixelsPerSecond();
-	bool getShouldSkipIntro();
-	bool getShouldStartWithShieldsActive();
-	int getNumberOfDemonColumns();
-	int getNumberOfRowsBeforeSpeedBoost();
-	int getDemonBasePoints();
-	int getScampScoreMultiplier();
-	int getFledglingScoreMultiplier();
-	int getSkullScoreMultiplier();
-	int getEyeScoreMultipler();
-	float getDemonBaseSpeedInPixelsPerSecond();
-	float getDemonAccelerationInPixelsPerSecond();
-	float getDemonLevelAccelerationMultiplier();
-	float getDemonAttackRateInSeconds();
-	float getDemonProjectileSpeedInPixelsPerSecond();
-	int getDemonAttackChancePercentage();
-	float getAttackTextureUpdateRatePerSecond();
-	float getCastingShieldTexutreUpdateRatePerSecond();
-	float getMageSpeedInPixelsPerSecond();
-	float getMageAttackRatePerSecond();
-	float getMageProjectileSpeedInPixelsPerSecond();
+	bool getBoolPropertyValue(string property);
+	int getIntPropertyValue(string property);
+	float getFloatPropertyValue(string property);
+	//string getNameOfPropertyAtPositionX(int position_x); // Bit more intensive
 };
 
+class Property {
+	string Key;
+	float Value;
+	int Location;
+
+public:
+	Property(string key, float value, int location);
+	void setKey(string key);
+	void setValue(float value);
+	void setLocation(int location);
+	string getKey();
+	float getValue();
+	int getLocation();
+};
