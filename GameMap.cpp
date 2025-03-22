@@ -19,9 +19,46 @@ void GameMap::setHasSpecialDemonInvaded(const bool b) { has_special_demon_spawne
 int GameMap::getDemonsMovedDownCount() { return demons_moved_down_count; }
 void GameMap::resetProperties() { Props = Properties(); }
 void GameMap::setResetShieldCountToStartingAmount() { mage.setShieldCountToStartingAmount(Props.getIntPropertyValue("Number_of_starting_shields")); }
+void GameMap::clearAllShields() { Shields.deleteAllNodes(); }
 
-void GameMap::clearAllShields() {
-	Shields.deleteAllNodes();
+void GameMap::updatePropertySelectorCoordinate(int x) {
+	Property_selector_coordinate += x;
+	if (Visible_properties.getCount() == 5) {
+		if (x > 0) { Visible_properties.deleteHead(); }
+		else { Visible_properties.deleteTail(); }
+	}
+
+	if (x > 0) {
+		shared_ptr<Property> next_property = Props.getPropertyByName(Visible_properties.getTail()->Next->Data->getKey());
+		Visible_properties.insertAtEnd(make_shared<Node<Property>>(next_property));
+	}
+	else {
+		shared_ptr<Property> previous_property = Props.getPropertyByName(Visible_properties.getHead()->Previous->Data->getKey());
+		Visible_properties.insertAtFront(make_shared<Node<Property>>(previous_property));
+	}
+
+}
+
+void GameMap::populateVisibleProperties() {
+	int i = Property_selector_coordinate - 2;
+	while (true) {
+		if (i > 0) {
+			shared_ptr<Property> first_property = Props.getPropertyByPosition(i);
+			Visible_properties.insertAtEnd(make_shared<Node<Property>>(first_property));
+			break;
+		}
+
+		if (i > Property_selector_coordinate + 2) { cout << "populateVisibleProperties did not find a property at position " << i << ". Stuck in infinite loop.\n"; }
+		
+		i++;
+	}
+
+	for (i; i < Property_selector_coordinate + 2; i++) {
+		if (i <= Props.getCount()) {
+			shared_ptr<Property> next_property = Props.getPropertyByName(Visible_properties.getTail()->Next->Data->getKey());
+			Visible_properties.insertAtEnd(make_shared<Node<Property>>(next_property));
+		}
+	}
 }
 
 void GameMap::appendProjectile() {
@@ -109,6 +146,27 @@ void GameMap::drawMainScreen(map<string, Texture2D> textures, const float dT) {
 	if (Demons_columns.getCount() > 0) { moveAllDemons(dT, true); }
 }
 
+void GameMap::drawFloatProperty(float value, int x_position, int y_position) {
+	// To Be Changed
+	string string_value{ "Value: " };
+	string_value.append(to_string(value));
+	DrawText(string_value.c_str(), x_position, y_position, properties_font_size, WHITE);
+}
+
+void GameMap::drawBoolProperty(bool value, int x_position, int y_position) {
+	// To Be Changed
+	string string_value{ "Value: " };
+	string_value.append(to_string(value));
+	DrawText(string_value.c_str(), x_position, y_position, properties_font_size, WHITE);
+}
+
+void GameMap::drawIntProperty(int value, int x_position, int y_position) {
+	// To Be Changed
+	string string_value{ "Value: " };
+	string_value.append(to_string(value));
+	DrawText(string_value.c_str(), x_position, y_position, properties_font_size, WHITE);
+}
+
 void GameMap::drawShieldCount() {
 	float starting_x{ 115 };
 
@@ -143,27 +201,29 @@ void GameMap::drawPlayerMenuOptions() {
 	DrawText(exit_game_display.c_str(), 175, 400, 50, WHITE);
 }
 
-void GameMap::drawProperty(Property property, int i) {
-	int y_position = properties_starting_y_coordinate + properties_spacing * (i - 1); // Starting position
-	DrawText(property.getKey().c_str(), 50, y_position, 40, WHITE);
+void GameMap::drawProperty(shared_ptr<Node<Property>> property, int i) {
+	int y_position = properties_starting_y_coordinate + properties_spacing * (i - 1);
+	DrawText(property->Data->getKey().c_str(), 50, y_position, 40, WHITE);
 	
 	// Draw property value. 
-	int value_x_position = property.getPropertyWidth(properties_font_size) + 15;
+	int value_x_position = property->Data->getPropertyWidth(properties_font_size) + 15;
 	// TODO: Create draw methods. Exists in header, but commented out for reminder
-	if (property.getIsFloat()) { drawFloatProperty(Props.getFloatPropertyValue(property.getKey()), value_x_position, y_position); }
-	else if (property.getIsBool()) { drawBoolProperty(Props.getBoolPropertyValue(property.getKey()), value_x_position, y_position); }
-	else { drawIntProperty(Props.getIntPropertyValue(property.getKey()), value_x_position, y_position); }
+	if (property->Data->getIsFloat()) { drawFloatProperty(Props.getFloatPropertyValue(property->Data->getKey()), value_x_position, y_position); }
+	else if (property->Data->getIsBool()) { drawBoolProperty(Props.getBoolPropertyValue(property->Data->getKey()), value_x_position, y_position); }
+	else { drawIntProperty(Props.getIntPropertyValue(property->Data->getKey()), value_x_position, y_position); }
 }
 
 int GameMap::drawPlayerPropertyOptions() {
 	int width{};
 	
-	for (int i = Property_selector_coordinate - 2; i < Property_selector_coordinate + 2; i++) {
-		if (i > 0 && i <= Props.getCount()) {
-			Property property = Props.getPropertyAtPositionX(i); // To be defined // Might be a shared ptr or a ref
-			drawProperty(property, i);
-			if (i == Property_selector_coordinate ) { width = property.getPropertyWidth(properties_font_size); }
-		}
+	shared_ptr<Node<Property>> current_property = Visible_properties.getHead();
+	int i{ 1 };
+	while (current_property) {
+		drawProperty(current_property, i);
+		if (i == Property_selector_coordinate) { width = current_property->Data->getPropertyWidth(properties_font_size); }
+
+		current_property = current_property->Next;
+		++i;
 	}
 	
 	return width;
@@ -239,6 +299,9 @@ void GameMap::displayHomeMenu(map<string, Texture2D> textures, const float dT) {
 
 void GameMap::displayPropertiesMenu(map<string, Texture2D> textures, const float dT) {
 	Select_box_movement_cooldown += dT;
+
+	if (Visible_properties.getCount() < 1) { populateVisibleProperties(); }
+
 	drawMainScreen(textures, dT);
 
 	// Move Player Select Box, Populate and Render Options, Render Player Select Box
@@ -458,14 +521,14 @@ bool GameMap::playerPropertiesScreenTick() {
 	// Move Options based on user input
 	if ((IsKeyDown(KEY_DOWN) || IsKeyDown(KEY_S)) && (Select_box_movement_cooldown >= select_box_movement_minimum_cooldown)) {
 		if (Property_selector_coordinate > 1) {
-			Property_selector_coordinate--;
+			updatePropertySelectorCoordinate(-1);
 			Select_box_movement_cooldown = 0.f;
 		}
 
 	}
 	else if ((IsKeyDown(KEY_UP) || IsKeyDown(KEY_W)) && (Select_box_movement_cooldown >= select_box_movement_minimum_cooldown)) {
 		if (Property_selector_coordinate < Props.getCount()) {
-			Property_selector_coordinate++;
+			updatePropertySelectorCoordinate(1);
 			Select_box_movement_cooldown = 0.f;
 		}
 	}
@@ -477,7 +540,8 @@ bool GameMap::playerPropertiesScreenTick() {
 	DrawRectangleLines(Select_box_location.x, Select_box_location.y, width, 70, RED);
 
 	// TODO: Change to if option is save and close, close without save, or restore defaults 
-	BOB_SAGET
+	// BANANA_HAMMOCK
+
 	//if (IsKeyPressed(KEY_ENTER)) { return true; }
 	return false;
 }

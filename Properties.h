@@ -1,4 +1,5 @@
 #pragma once
+#include "DoubleLinkedList.h"
 #include "rapidjson/document.h" 
 #include "rapidjson/filereadstream.h" 
 #include "rapidjson/filewritestream.h" 
@@ -6,9 +7,8 @@
 #include <map>
 #include <memory>
 #include <string>
-using std::unique_ptr;
-using std::string;
 using std::map;
+using std::string;
 using std::make_pair;
 
 extern const bool is_windows_os;
@@ -71,7 +71,7 @@ public:
 
 class Properties {
 	rapidjson::Document Properties_document;
-	map<string, Property> Props{};
+	map<string, Node<Property>> Props{};
 	int count{ 0 };
 
 public:
@@ -86,5 +86,6 @@ public:
 	bool getBoolPropertyValue(string property);
 	int getIntPropertyValue(string property);
 	float getFloatPropertyValue(string property);
-	Property getPropertyAtPositionX(int position_x); // Bit more intensive // Make this return a Shared, or we have to edit in a way
+	shared_ptr<Property> getPropertyByPosition(int property_position);
+	shared_ptr<Property> getPropertyByName(string property);
 };

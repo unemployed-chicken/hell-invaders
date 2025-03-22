@@ -53,7 +53,8 @@ public:
     shared_ptr<Node<T>> getTail() { return Tail; }
     int getCount() { return Count; }
     
-    void insertAtEnd(std::shared_ptr<Node<T>> node) { // If Head and Tail do not exist, this will make the node the head and the tail
+    void insertAtEnd(std::shared_ptr<Node<T>> node) { 
+        // If Head and Tail do not exist, this will make the node the head and the tail
         if (!Tail) {
             Head = Tail = node;
         }
@@ -61,6 +62,19 @@ public:
             node->linkPrevious(Tail);
             Tail->linkNext(node);
             Tail = node;
+        }
+        ++Count;
+    }
+
+    void insertAtFront(std::shared_ptr<Node<T>> node) {
+        // If Head and Tail do not exist, this will make the node the head and the tail
+        if (!Head) {
+            Head = Tail = node;
+        }
+        else {
+            node->linkNext(Head);
+            Head->linkPrevious(node);
+            Head = node;
         }
         ++Count;
     }

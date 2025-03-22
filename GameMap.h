@@ -8,14 +8,13 @@
 #include "raylib.h"
 #include "ReviveShield.h"
 #include "Shield.h"
-#include <vector>
 #include <iostream>
 #include <string>
 #include <memory>
 #include <map>
-using std::vector;
-using std::shared_ptr;
+using std::cout;
 using std::map;
+using std::shared_ptr;
 using std::string;
 using std::make_shared;
 using std::to_string;
@@ -51,6 +50,7 @@ const float demons_x_range[2]{ 5.0f, window_dimensions[1] - (16.f * character_sc
 
 class GameMap {
 	Properties Props{};
+	DoubleLinkedList<Property> Visible_properties{};
 
 	// Pregame Properties
 	Vector2 Select_box_location{ 165, 190 };
@@ -88,15 +88,17 @@ class GameMap {
 	bool hasCollision(shared_ptr<Demon> demon);
 	int drawPlayerPropertyOptions();
 	void drawPlayerMenuOptions();
-	void drawProperty(Property property, int i);
+	void drawProperty(shared_ptr<Node<Property>> property, int i);
 	void drawBackground();
 	void drawLives();
 	void drawShieldCount();
 	void drawMainScreenBackground();
 	void drawMainScreen(map<string, Texture2D> textures, const float dT);
-	//void drawFloatProperty(float value, int x_position, int y_position);
-	//void drawBoolProperty(bool value, int x_position, int y_position);
-	//void drawIntProperty(int value, int x_position, int y_position);
+	void drawFloatProperty(float value, int x_position, int y_position);
+	void drawBoolProperty(bool value, int x_position, int y_position);
+	void drawIntProperty(int value, int x_position, int y_position);
+	void updatePropertySelectorCoordinate(int x);
+	void populateVisibleProperties();
 	void appendProjectile();
 	void appendProjectile(shared_ptr<Demon> demon); 
 	void moveMageProjectiles(const float dT);

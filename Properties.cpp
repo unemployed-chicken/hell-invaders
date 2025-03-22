@@ -193,11 +193,9 @@ void Properties::updateFloatProperty(string key, float value) {
 }
 
 int Properties::getCount() { return count; }
-bool Properties::getBoolPropertyValue(string property) { return static_cast<bool>(Props[property].getValue()); }
-int Properties::getIntPropertyValue(string property) { return static_cast<int>(Props[property].getValue()); }
-float Properties::getFloatPropertyValue(string property) { return Props[property].getValue(); }
-
-//string Properties::getNameOfPropertyAtPositionX(int position_x) { return string(); } // This ones a bit more intensive;
+bool Properties::getBoolPropertyValue(string property) { return static_cast<bool>(Props[property].Data->getValue()); }
+int Properties::getIntPropertyValue(string property) { return static_cast<int>(Props[property].Data->getValue()); }
+float Properties::getFloatPropertyValue(string property) { return Props[property].Data->getValue(); }
 
 
 
