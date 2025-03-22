@@ -43,6 +43,9 @@ constexpr float shield_starting_x_coordinate{ 50 };
 constexpr float shield_spacing{ 225 };
 constexpr int number_of_demon_textures{ 4 };
 constexpr float select_box_movement_minimum_cooldown{ .20f };
+constexpr int properties_starting_y_coordinate{ 150 };
+constexpr int properties_spacing{ 75 };
+constexpr int properties_font_size{ 50 };
 
 const float demons_x_range[2]{ 5.0f, window_dimensions[1] - (16.f * character_scale) + 5.f}; // First is Left Limit, Second is Right Limit
 
@@ -53,6 +56,7 @@ class GameMap {
 	Vector2 Select_box_location{ 165, 190 };
 	float Select_box_movement_cooldown{ 3.f };
 	int Properties_scroller_offset{ 0 };
+	int Property_selector_coordinate{ 1 };
 	
 	// Game Map Properties
 	Texture2D Background;
@@ -82,13 +86,17 @@ class GameMap {
 	bool Is_end_game_requested{ false };
 	
 	bool hasCollision(shared_ptr<Demon> demon);
+	int drawPlayerPropertyOptions();
+	void drawPlayerMenuOptions();
+	void drawProperty(Property property, int i);
 	void drawBackground();
 	void drawLives();
 	void drawShieldCount();
 	void drawMainScreenBackground();
 	void drawMainScreen(map<string, Texture2D> textures, const float dT);
-	void drawPlayerMenuOptions();
-	void drawPlayerPropertyOptions();
+	//void drawFloatProperty(float value, int x_position, int y_position);
+	//void drawBoolProperty(bool value, int x_position, int y_position);
+	//void drawIntProperty(int value, int x_position, int y_position);
 	void appendProjectile();
 	void appendProjectile(shared_ptr<Demon> demon); 
 	void moveMageProjectiles(const float dT);
@@ -106,7 +114,9 @@ class GameMap {
 	void generateRandomDemon(map<string, Texture2D> textures);
 	void updateBackgroundTextures(map<string, Texture2D> textures);
 	bool playerMainScreenTick();
+	bool playerPropertiesScreenTick();
 	shared_ptr<Demon> generateDemonWithRandomTexture(map<string, Texture2D> textures, const int random);
+	
 	void moveDemonColumn(
 		shared_ptr<Node<DoubleLinkedList<Demon>>> column,
 		const float dT, 

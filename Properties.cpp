@@ -146,6 +146,8 @@ Properties::Properties() {
     float Mage_projectile_speed_in_pixels_per_second;
     Properties_document.HasMember("mage_projectile_speed_in_pixels_per_second") ? Mage_projectile_speed_in_pixels_per_second = Properties_document["mage_projectile_speed_in_pixels_per_second"].GetFloat() : Mage_projectile_speed_in_pixels_per_second = mage_projectile_speed_in_pixels_per_second;
     Props["Mage_projectile_speed_in_pixels_per_second"] = Property("Mage_projectile_speed_in_pixels_per_second", Mage_projectile_speed_in_pixels_per_second, i);
+
+    count = i;
 }
 
 void Properties::saveProperties() {
@@ -190,6 +192,7 @@ void Properties::updateFloatProperty(string key, float value) {
     }
 }
 
+int Properties::getCount() { return count; }
 bool Properties::getBoolPropertyValue(string property) { return static_cast<bool>(Props[property].getValue()); }
 int Properties::getIntPropertyValue(string property) { return static_cast<int>(Props[property].getValue()); }
 float Properties::getFloatPropertyValue(string property) { return Props[property].getValue(); }
@@ -214,9 +217,14 @@ float Properties::getFloatPropertyValue(string property) { return Props[property
 */
 
 Property::Property(string key, float value, int location) : Key(key), Value(value), Location(location) {}
+Property::Property(){}
+
 void Property::setKey(string key) { Key = key; }
 void Property::setValue(float value) { Value = value; }
 void Property::setLocation(int location) { Location = location; }
 string Property::getKey() { return Key; }
 float Property::getValue(){ return Value; }
 int Property::getLocation() { return Location; }
+int Property::getPropertyWidth(int font_size) { return Key.length() * font_size; }
+bool Property::getIsFloat() { return isFloat; }
+bool Property::getIsBool() { return isBool; }

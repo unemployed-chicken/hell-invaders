@@ -47,9 +47,32 @@ constexpr float mage_attack_rate_per_second{ .15 }; // seconds per attack
 constexpr float mage_projectile_speed_in_pixels_per_second{ 300.f }; // pixels per second
 
 
+class Property {
+	string Key;
+	float Value;
+	int Location;
+	bool isFloat;
+	bool isBool;
+
+public:
+	Property(string key, float value, int location);
+	Property();
+	void setKey(string key);
+	void setValue(float value);
+	void setLocation(int location);
+	string getKey();
+	float getValue();
+	int getLocation();
+	int getPropertyWidth(int font_size);
+	bool getIsFloat();
+	bool getIsBool();
+};
+
+
 class Properties {
 	rapidjson::Document Properties_document;
 	map<string, Property> Props{};
+	int count{ 0 };
 
 public:
 	Properties();
@@ -58,23 +81,10 @@ public:
 	void updateIntProperty(string key, int value);
 	void updateFloatProperty(string key, float value);
 
+	int getCount();
+
 	bool getBoolPropertyValue(string property);
 	int getIntPropertyValue(string property);
 	float getFloatPropertyValue(string property);
-	//string getNameOfPropertyAtPositionX(int position_x); // Bit more intensive
-};
-
-class Property {
-	string Key;
-	float Value;
-	int Location;
-
-public:
-	Property(string key, float value, int location);
-	void setKey(string key);
-	void setValue(float value);
-	void setLocation(int location);
-	string getKey();
-	float getValue();
-	int getLocation();
+	Property getPropertyAtPositionX(int position_x); // Bit more intensive // Make this return a Shared, or we have to edit in a way
 };

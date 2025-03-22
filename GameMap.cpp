@@ -143,8 +143,30 @@ void GameMap::drawPlayerMenuOptions() {
 	DrawText(exit_game_display.c_str(), 175, 400, 50, WHITE);
 }
 
-void GameMap::drawPlayerPropertyOptions() {
+void GameMap::drawProperty(Property property, int i) {
+	int y_position = properties_starting_y_coordinate + properties_spacing * (i - 1); // Starting position
+	DrawText(property.getKey().c_str(), 50, y_position, 40, WHITE);
+	
+	// Draw property value. 
+	int value_x_position = property.getPropertyWidth(properties_font_size) + 15;
+	// TODO: Create draw methods. Exists in header, but commented out for reminder
+	if (property.getIsFloat()) { drawFloatProperty(Props.getFloatPropertyValue(property.getKey()), value_x_position, y_position); }
+	else if (property.getIsBool()) { drawBoolProperty(Props.getBoolPropertyValue(property.getKey()), value_x_position, y_position); }
+	else { drawIntProperty(Props.getIntPropertyValue(property.getKey()), value_x_position, y_position); }
+}
 
+int GameMap::drawPlayerPropertyOptions() {
+	int width{};
+	
+	for (int i = Property_selector_coordinate - 2; i < Property_selector_coordinate + 2; i++) {
+		if (i > 0 && i <= Props.getCount()) {
+			Property property = Props.getPropertyAtPositionX(i); // To be defined // Might be a shared ptr or a ref
+			drawProperty(property, i);
+			if (i == Property_selector_coordinate ) { width = property.getPropertyWidth(properties_font_size); }
+		}
+	}
+	
+	return width;
 }
 
 void GameMap::drawLives() {
@@ -200,7 +222,7 @@ void GameMap::displayHomeMenu(map<string, Texture2D> textures, const float dT) {
 	else if ( has_player_selected_option && Select_box_location.y == 290 ) {
 		Is_main_screen = false;
 		Is_properties_screen = true;
-		Select_box_location.y = 250;
+		Select_box_location.y = 300;
 	}
 	else if ( has_player_selected_option && Select_box_location.y == 390 ) {
 		Is_end_game_requested = true;
@@ -219,10 +241,8 @@ void GameMap::displayPropertiesMenu(map<string, Texture2D> textures, const float
 	Select_box_movement_cooldown += dT;
 	drawMainScreen(textures, dT);
 
-	drawPlayerPropertyOptions();
-
-	// Move and Render Player Select Box
-	//bool has_player_selected_option = playerPropertiesScreenTick();
+	// Move Player Select Box, Populate and Render Options, Render Player Select Box
+	bool has_player_selected_option = playerPropertiesScreenTick();
 
 	// Decide what actions to take
 	// If go back to main screen, change Select_box_location.y = 190
@@ -431,6 +451,34 @@ bool GameMap::playerMainScreenTick() {
 	DrawRectangleLines(Select_box_location.x, Select_box_location.y, width, 70, RED);
 
 	if (IsKeyPressed(KEY_ENTER)) { return true;	}
+	return false;
+}
+
+bool GameMap::playerPropertiesScreenTick() {
+	// Move Options based on user input
+	if ((IsKeyDown(KEY_DOWN) || IsKeyDown(KEY_S)) && (Select_box_movement_cooldown >= select_box_movement_minimum_cooldown)) {
+		if (Property_selector_coordinate > 1) {
+			Property_selector_coordinate--;
+			Select_box_movement_cooldown = 0.f;
+		}
+
+	}
+	else if ((IsKeyDown(KEY_UP) || IsKeyDown(KEY_W)) && (Select_box_movement_cooldown >= select_box_movement_minimum_cooldown)) {
+		if (Property_selector_coordinate < Props.getCount()) {
+			Property_selector_coordinate++;
+			Select_box_movement_cooldown = 0.f;
+		}
+	}
+
+	// Draw Player Options and return width of the currently selectable option
+	int width = drawPlayerPropertyOptions();
+
+	// Draw Select Box
+	DrawRectangleLines(Select_box_location.x, Select_box_location.y, width, 70, RED);
+
+	// TODO: Change to if option is save and close, close without save, or restore defaults 
+	BOB_SAGET
+	//if (IsKeyPressed(KEY_ENTER)) { return true; }
 	return false;
 }
 
