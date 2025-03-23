@@ -1,5 +1,10 @@
 #include "Properties.h"
 
+void Properties::assignPreviousandNext(shared_ptr<Node<Property>> previous, shared_ptr<Node<Property>> next) {
+	if (previous) { previous->Next = next; }
+	if (next) {	next->Previous = previous; }
+}
+
 Properties::Properties() {
 	FILE* fp;
     is_windows_os ? fopen_s(&fp, "user_defined_properties.json", "rb") : fopen_s(&fp, "user_defined_properties.json", "r"); // non-Windows use "r" 
@@ -19,133 +24,39 @@ Properties::Properties() {
         Properties_document.SetObject();
     }
     
-    int i{ 1 };
+    int i{ 0 };
 
     // General Game Properties
-    int Number_of_starting_lives;
-    Properties_document.HasMember("number_of_starting_lives") ? Number_of_starting_lives = Properties_document["number_of_starting_lives"].GetInt() : Number_of_starting_lives = number_of_starting_lives;
-    Props["Number_of_starting_lives"] = Property("Number_of_starting_lives", static_cast<float>(Number_of_starting_lives), i);
-
-    i++;
-    int Number_of_starting_shields;
-    Properties_document.HasMember("number_of_starting_shields") ? Number_of_starting_shields = Properties_document["number_of_starting_shields"].GetInt() : Number_of_starting_shields = number_of_starting_shields;
-    Props["Number_of_starting_shields"] = Property("Number_of_starting_shields", static_cast<float>(Number_of_starting_shields), i);
+    i = genertateIntProperty("number_of_starting_lives", "Number_of_starting_lives", number_of_starting_lives, i, nullptr);
+	i = genertateIntProperty("number_of_starting_shields", "Number_of_starting_shields", number_of_starting_shields, i, Props["Number_of_starting_lives"]);
+	i = genertateFloatProperty("number_of_texure_updates_rate_per_second", "Number_of_texure_updates_rate_per_second", number_of_texure_updates_rate_per_second, i, Props["Number_of_starting_shields"]);
+	i = genertateFloatProperty("revive_shield_movement_speed_in_pixels_per_second", "Revive_shield_movement_speed_in_pixels_per_second", revive_shield_movement_speed_in_pixels_per_second, i, Props["Number_of_texure_updates_rate_per_second"]);
+	i = genertateBoolProperty("should_skip_intro", "Should_skip_intro", should_skip_intro, i, Props["Revive_shield_movement_speed_in_pixels_per_second"]);
+	i = genertateBoolProperty("should_start_with_shields_active", "Should_start_with_shields_active", should_start_with_shields_active, i, Props["Should_skip_intro"]);
     
-    i++;
-    float Number_of_texure_updates_rate_per_second;
-    Properties_document.HasMember("number_of_texure_updates_rate_per_second") ? Number_of_texure_updates_rate_per_second = Properties_document["number_of_texure_updates_rate_per_second"].GetFloat() : Number_of_texure_updates_rate_per_second = number_of_texure_updates_rate_per_second;
-    Props["Number_of_texure_updates_rate_per_second"] = Property("Number_of_texure_updates_rate_per_second", Number_of_texure_updates_rate_per_second, i);
-    
-    i++;
-    float Revive_shield_movement_speed_in_pixels_per_second;
-    Properties_document.HasMember("revive_shield_movement_speed_in_pixels_per_second") ? Revive_shield_movement_speed_in_pixels_per_second = Properties_document["revive_shield_movement_speed_in_pixels_per_second"].GetFloat() : Revive_shield_movement_speed_in_pixels_per_second = revive_shield_movement_speed_in_pixels_per_second;
-    Props["Revive_shield_movement_speed_in_pixels_per_second"] = Property("Revive_shield_movement_speed_in_pixels_per_second", Revive_shield_movement_speed_in_pixels_per_second, i);
-
-    i++;
-    bool Should_skip_intro;
-    Properties_document.HasMember("should_skip_intro") ? Should_skip_intro = Properties_document["should_skip_intro"].GetBool() : Should_skip_intro = should_skip_intro;
-    Props["Should_skip_intro"] = Property("Should_skip_intro", static_cast<float>(Should_skip_intro), i);
-    
-    i++;
-    bool Should_start_with_shields_active;
-    Properties_document.HasMember("should_start_with_shields_active") ? Should_start_with_shields_active = Properties_document["should_start_with_shields_active"].GetBool() : Should_start_with_shields_active = should_start_with_shields_active;
-    Props["Should_start_with_shields_active"] = Property("Should_start_with_shields_active", static_cast<float>(Should_start_with_shields_active), i);
-
-
-    // Demon Properties
-    i++;
-    int Number_of_demon_columns;
-    Properties_document.HasMember("number_of_demon_columns") ? Number_of_demon_columns = Properties_document["number_of_demon_columns"].GetInt() : Number_of_demon_columns = number_of_demon_columns;
-    Props["Number_of_demon_columns"] = Property("Number_of_demon_columns", static_cast<float>(Number_of_demon_columns), i);
-
-    i++;
-    int Number_of_rows_before_speed_boost;
-    Properties_document.HasMember("number_of_rows_before_speed_boost") ? Number_of_rows_before_speed_boost = Properties_document["number_of_rows_before_speed_boost"].GetInt() : Number_of_rows_before_speed_boost = number_of_rows_before_speed_boost;
-    Props["Number_of_rows_before_speed_boost"] = Property("Number_of_rows_before_speed_boost", static_cast<float>(Number_of_rows_before_speed_boost), i);
-
-    i++;
-    int Demon_base_points;
-    Properties_document.HasMember("demon_base_points") ? Demon_base_points = Properties_document["demon_base_points"].GetInt() : Demon_base_points = demon_base_points;
-    Props["Demon_base_points"] = Property("Demon_base_points", static_cast<float>(Demon_base_points), i);
-
-    i++;
-    int Scamp_score_multiplier;
-    Properties_document.HasMember("scamp_score_multiplier") ? Scamp_score_multiplier = Properties_document["scamp_score_multiplier"].GetInt() : Scamp_score_multiplier = scamp_score_multiplier;
-    Props["Scamp_score_multiplier"] = Property("Scamp_score_multiplier", static_cast<float>(Scamp_score_multiplier), i);
-
-    i++;
-    int Fledgling_score_multiplier;
-    Properties_document.HasMember("fledgling_score_multiplier") ? Fledgling_score_multiplier = Properties_document["fledgling_score_multiplier"].GetInt() : Fledgling_score_multiplier = fledgling_score_multiplier;
-    Props["Fledgling_score_multiplier"] = Property("Fledgling_score_multiplier", static_cast<float>(Fledgling_score_multiplier), i);
-
-    i++;
-    int Skull_score_multiplier;
-    Properties_document.HasMember("skull_score_multiplier") ? Skull_score_multiplier = Properties_document["skull_score_multiplier"].GetInt() : Skull_score_multiplier = skull_score_multiplier;
-    Props["Skull_score_multiplier"] = Property("Skull_score_multiplier", static_cast<float>(Skull_score_multiplier), i);
-
-    i++;
-    int Eye_score_multipler;
-    Properties_document.HasMember("eye_score_multipler") ? Eye_score_multipler = Properties_document["eye_score_multipler"].GetInt() : Eye_score_multipler = eye_score_multipler;
-    Props["Eye_score_multipler"] = Property("Eye_score_multipler", static_cast<float>(Eye_score_multipler), i);
-
+	// Demon Properties
+	i = genertateIntProperty("number_of_demon_columns", "Number_of_demon_columns", number_of_demon_columns, i, Props["Should_start_with_shields_active"]);
+	i = genertateIntProperty("number_of_rows_before_speed_boost", "Number_of_rows_before_speed_boost", number_of_rows_before_speed_boost, i, Props["Number_of_demon_columns"]);
+	i = genertateIntProperty("demon_base_points", "Demon_base_points", demon_base_points, i, Props["Number_of_rows_before_speed_boost"]);
+	i = genertateIntProperty("scamp_score_multiplier", "Scamp_score_multiplier", scamp_score_multiplier, i, Props["Demon_base_points"]);
+	i = genertateIntProperty("fledgling_score_multiplier", "Fledgling_score_multiplier", fledgling_score_multiplier, i, Props["Scamp_score_multiplier"]);
+	i = genertateIntProperty("skull_score_multiplier", "Skull_score_multiplier", skull_score_multiplier, i, Props["Fledgling_score_multiplier"]);
+	i = genertateIntProperty("eye_score_multipler", "Eye_score_multipler", eye_score_multipler, i, Props["Skull_score_multiplier"]);
 
     // Demon Mechanic Properties
-    i++;
-    float Demon_base_speed_in_pixels_per_second;
-    Properties_document.HasMember("demon_base_speed_in_pixels_per_second") ? Demon_base_speed_in_pixels_per_second = Properties_document["demon_base_speed_in_pixels_per_second"].GetFloat() : Demon_base_speed_in_pixels_per_second = demon_base_speed_in_pixels_per_second;
-    Props["Demon_base_speed_in_pixels_per_second"] = Property("Demon_base_speed_in_pixels_per_second", Demon_base_speed_in_pixels_per_second, i);
-
-    i++;
-    float Demon_acceleration_in_pixels_per_second;
-    Properties_document.HasMember("demon_acceleration_in_pixels_per_second") ? Demon_acceleration_in_pixels_per_second = Properties_document["demon_acceleration_in_pixels_per_second"].GetFloat() : Demon_acceleration_in_pixels_per_second = demon_acceleration_in_pixels_per_second;
-    Props["Demon_acceleration_in_pixels_per_second"] = Property("Demon_acceleration_in_pixels_per_second", Demon_acceleration_in_pixels_per_second, i);
-
-    i++;
-    float Demon_level_acceleration_percentage;
-    Properties_document.HasMember("demon_level_acceleration_percentage") ? Demon_level_acceleration_percentage = Properties_document["demon_level_acceleration_percentage"].GetFloat() : Demon_level_acceleration_percentage = demon_level_acceleration_percentage;
-    Props["Demon_level_acceleration_percentage"] = Property("Demon_level_acceleration_percentage", Demon_level_acceleration_percentage, i);
-
-    i++;
-    float Demon_attack_rate_in_seconds;
-    Properties_document.HasMember("demon_attack_rate_in_seconds") ? Demon_attack_rate_in_seconds = Properties_document["demon_attack_rate_in_seconds"].GetFloat() : Demon_attack_rate_in_seconds = demon_attack_rate_in_seconds;
-    Props["Demon_attack_rate_in_seconds"] = Property("Demon_attack_rate_in_seconds", Demon_attack_rate_in_seconds, i);
-
-    i++;
-    float Demon_projectile_speed_in_pixels_per_second;
-    Properties_document.HasMember("demon_projectile_speed_in_pixels_per_second") ? Demon_projectile_speed_in_pixels_per_second = Properties_document["demon_projectile_speed_in_pixels_per_second"].GetFloat() : Demon_projectile_speed_in_pixels_per_second = demon_projectile_speed_in_pixels_per_second;
-    Props["Demon_projectile_speed_in_pixels_per_second"] = Property("Demon_projectile_speed_in_pixels_per_second", Demon_projectile_speed_in_pixels_per_second, i);
-
-    i++;
-    int Demon_attack_chance_percentage;
-    Properties_document.HasMember("demon_attack_chance_percentage") ? Demon_attack_chance_percentage = Properties_document["demon_attack_chance_percentage"].GetInt() : Demon_attack_chance_percentage = demon_attack_chance_percentage;
-    Props["Demon_attack_chance_percentage"] = Property("Demon_attack_chance_percentage", static_cast<float>(Demon_attack_chance_percentage), i);
-
+	i = genertateFloatProperty("demon_base_speed_in_pixels_per_second", "Demon_base_speed_in_pixels_per_second", demon_base_speed_in_pixels_per_second, i, Props["Eye_score_multipler"]);
+	i = genertateFloatProperty("demon_acceleration_in_pixels_per_second", "Demon_acceleration_in_pixels_per_second", demon_acceleration_in_pixels_per_second, i, Props["Demon_base_speed_in_pixels_per_second"]);
+	i = genertateFloatProperty("demon_level_acceleration_percentage", "Demon_level_acceleration_percentage", demon_level_acceleration_percentage, i, Props["Demon_acceleration_in_pixels_per_second"]);
+	i = genertateFloatProperty("demon_attack_rate_in_seconds", "Demon_attack_rate_in_seconds", demon_attack_rate_in_seconds, i, Props["Demon_level_acceleration_percentage"]);
+	i = genertateFloatProperty("demon_projectile_speed_in_pixels_per_second", "Demon_projectile_speed_in_pixels_per_second", demon_projectile_speed_in_pixels_per_second, i, Props["Demon_attack_rate_in_seconds"]);
+	i = genertateIntProperty("demon_attack_chance_percentage", "Demon_attack_chance_percentage", demon_attack_chance_percentage, i, Props["Demon_projectile_speed_in_pixels_per_second"]);
 
     // Mage Properties
-    i++;
-    float Attack_texture_update_rate_per_second;
-    Properties_document.HasMember("attack_texture_update_rate_per_second") ? Attack_texture_update_rate_per_second = Properties_document["attack_texture_update_rate_per_second"].GetFloat() : Attack_texture_update_rate_per_second = attack_texture_update_rate_per_second;
-    Props["Attack_texture_update_rate_per_second"] = Property("Attack_texture_update_rate_per_second", Attack_texture_update_rate_per_second, i);
-
-    i++;
-    float Casting_shield_texutre_update_rate_per_second;
-    Properties_document.HasMember("casting_shield_texutre_update_rate_per_second") ? Casting_shield_texutre_update_rate_per_second = Properties_document["casting_shield_texutre_update_rate_per_second"].GetFloat() : Casting_shield_texutre_update_rate_per_second = casting_shield_texutre_update_rate_per_second;
-    Props["Casting_shield_texutre_update_rate_per_second"] = Property("Casting_shield_texutre_update_rate_per_second", Casting_shield_texutre_update_rate_per_second, i);
-
-    i++;
-    float Mage_speed_in_pixels_per_second;
-    Properties_document.HasMember("mage_speed_in_pixels_per_second") ? Mage_speed_in_pixels_per_second = Properties_document["mage_speed_in_pixels_per_second"].GetFloat() : Mage_speed_in_pixels_per_second = mage_speed_in_pixels_per_second;
-    Props["Mage_speed_in_pixels_per_second"] = Property("Mage_speed_in_pixels_per_second", Mage_speed_in_pixels_per_second, i);
-
-    i++;
-    float Mage_attack_rate_per_second;
-    Properties_document.HasMember("mage_attack_rate_per_second") ? Mage_attack_rate_per_second = Properties_document["mage_attack_rate_per_second"].GetFloat() : Mage_attack_rate_per_second = mage_attack_rate_per_second;
-    Props["Mage_attack_rate_per_second"] = Property("Mage_attack_rate_per_second", Mage_attack_rate_per_second, i);
-
-    i++;
-    float Mage_projectile_speed_in_pixels_per_second;
-    Properties_document.HasMember("mage_projectile_speed_in_pixels_per_second") ? Mage_projectile_speed_in_pixels_per_second = Properties_document["mage_projectile_speed_in_pixels_per_second"].GetFloat() : Mage_projectile_speed_in_pixels_per_second = mage_projectile_speed_in_pixels_per_second;
-    Props["Mage_projectile_speed_in_pixels_per_second"] = Property("Mage_projectile_speed_in_pixels_per_second", Mage_projectile_speed_in_pixels_per_second, i);
+	i = genertateFloatProperty("attack_texture_update_rate_per_second", "Attack_texture_update_rate_per_second", attack_texture_update_rate_per_second, i, Props["Demon_attack_chance_percentage"]);
+	i = genertateFloatProperty("casting_shield_texutre_update_rate_per_second", "Casting_shield_texutre_update_rate_per_second", casting_shield_texutre_update_rate_per_second, i, Props["Attack_texture_update_rate_per_second"]);
+	i = genertateFloatProperty("mage_speed_in_pixels_per_second", "Mage_speed_in_pixels_per_second", mage_speed_in_pixels_per_second, i, Props["Casting_shield_texutre_update_rate_per_second"]);
+	i = genertateFloatProperty("mage_attack_rate_per_second", "Mage_attack_rate_per_second", mage_attack_rate_per_second, i, Props["Mage_speed_in_pixels_per_second"]);
+	i = genertateFloatProperty("mage_projectile_speed_in_pixels_per_second", "Mage_projectile_speed_in_pixels_per_second", mage_projectile_speed_in_pixels_per_second, i, Props["Mage_attack_rate_per_second"]);
 
     count = i;
 }
@@ -192,10 +103,43 @@ void Properties::updateFloatProperty(string key, float value) {
     }
 }
 
+int Properties::genertateIntProperty(string document_key, string props_key, int default_value, int count, shared_ptr<Node<Property>> previous) {
+    count++;
+    int value;
+	Properties_document.HasMember(document_key.c_str()) ? value = Properties_document[document_key.c_str()].GetInt() : value = default_value;
+
+	shared_ptr<Property> prop = make_shared<Property>(props_key, value, count);
+	Props[props_key] = make_shared<Node<Property>>(prop);
+    assignPreviousandNext(previous, Props[props_key]);
+    return count;
+}
+
+int Properties::genertateBoolProperty(string document_key, string props_key, bool default_value, int count, shared_ptr<Node<Property>> previous) {
+    count++;
+    bool value;
+    Properties_document.HasMember(document_key.c_str()) ? value = Properties_document[document_key.c_str()].GetBool() : value = default_value;
+
+    shared_ptr<Property> prop = make_shared<Property>(props_key, value, count);
+    Props[props_key] = make_shared<Node<Property>>(prop);
+    assignPreviousandNext(previous, Props[props_key]);
+    return count;
+}
+
+int Properties::genertateFloatProperty(string document_key, string props_key, float default_value, int count, shared_ptr<Node<Property>> previous) {
+    count++;
+    float value;
+    Properties_document.HasMember(document_key.c_str()) ? value = Properties_document[document_key.c_str()].GetFloat() : value = default_value;
+
+    shared_ptr<Property> prop = make_shared<Property>(props_key, value, count);
+    Props[props_key] = make_shared<Node<Property>>(prop);
+    assignPreviousandNext(previous, Props[props_key]);
+    return count;
+}
+
 int Properties::getCount() { return count; }
-bool Properties::getBoolPropertyValue(string property) { return static_cast<bool>(Props[property].Data->getValue()); }
-int Properties::getIntPropertyValue(string property) { return static_cast<int>(Props[property].Data->getValue()); }
-float Properties::getFloatPropertyValue(string property) { return Props[property].Data->getValue(); }
+bool Properties::getBoolPropertyValue(string property) { return static_cast<bool>(Props[property]->Data->getValue()); }
+int Properties::getIntPropertyValue(string property) { return static_cast<int>(Props[property]->Data->getValue()); }
+float Properties::getFloatPropertyValue(string property) { return Props[property]->Data->getValue(); }
 
 
 
@@ -214,7 +158,9 @@ float Properties::getFloatPropertyValue(string property) { return Props[property
 *    
 */
 
-Property::Property(string key, float value, int location) : Key(key), Value(value), Location(location) {}
+Property::Property(string key, float value, int location) : Key(key), Value(value), Location(location), IsFloat(true), IsBool(false) {}
+Property::Property(string key, int value, int location) : Key(key), Value(static_cast<float>(value)), Location(location), IsFloat(false), IsBool(false) {}
+Property::Property(string key, bool value, int location) : Key(key), Value(static_cast<float>(value)), Location(location), IsFloat(false), IsBool(true) {}
 Property::Property(){}
 
 void Property::setKey(string key) { Key = key; }
@@ -224,5 +170,5 @@ string Property::getKey() { return Key; }
 float Property::getValue(){ return Value; }
 int Property::getLocation() { return Location; }
 int Property::getPropertyWidth(int font_size) { return Key.length() * font_size; }
-bool Property::getIsFloat() { return isFloat; }
-bool Property::getIsBool() { return isBool; }
+bool Property::getIsFloat() { return IsFloat; }
+bool Property::getIsBool() { return IsBool; }

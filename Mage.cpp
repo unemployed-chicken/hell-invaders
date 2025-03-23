@@ -56,7 +56,7 @@ void Mage::moveCharacter(const float dT) {
 	};
 	if (IsKeyDown(KEY_RIGHT) || IsKeyDown(KEY_D)) {
 		Left_Right = 1;
-		if (X_coordinate + Speed * dT > 625 - Width) { // TODO: 625 offsets the witespace of the texture
+		if (X_coordinate + Speed * dT > 625 - Width) { // 625 offsets the witespace of the texture
 			X_coordinate = 625 - Width;
 		}
 		else {

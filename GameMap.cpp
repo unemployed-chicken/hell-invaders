@@ -205,9 +205,10 @@ void GameMap::drawProperty(shared_ptr<Node<Property>> property, int i) {
 	int y_position = properties_starting_y_coordinate + properties_spacing * (i - 1);
 	DrawText(property->Data->getKey().c_str(), 50, y_position, 40, WHITE);
 	
-	// Draw property value. 
+
 	int value_x_position = property->Data->getPropertyWidth(properties_font_size) + 15;
-	// TODO: Create draw methods. Exists in header, but commented out for reminder
+
+	// Draw property value. 
 	if (property->Data->getIsFloat()) { drawFloatProperty(Props.getFloatPropertyValue(property->Data->getKey()), value_x_position, y_position); }
 	else if (property->Data->getIsBool()) { drawBoolProperty(Props.getBoolPropertyValue(property->Data->getKey()), value_x_position, y_position); }
 	else { drawIntProperty(Props.getIntPropertyValue(property->Data->getKey()), value_x_position, y_position); }
@@ -539,7 +540,7 @@ bool GameMap::playerPropertiesScreenTick() {
 	// Draw Select Box
 	DrawRectangleLines(Select_box_location.x, Select_box_location.y, width, 70, RED);
 
-	// TODO: Change to if option is save and close, close without save, or restore defaults 
+	// TODO: Change to if option is "save and close", "close without save", or "restore defaults" 
 	// BANANA_HAMMOCK
 
 	//if (IsKeyPressed(KEY_ENTER)) { return true; }

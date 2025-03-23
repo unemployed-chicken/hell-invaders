@@ -10,6 +10,7 @@
 using std::map;
 using std::string;
 using std::make_pair;
+using std::make_shared;
 
 extern const bool is_windows_os;
 
@@ -51,11 +52,13 @@ class Property {
 	string Key;
 	float Value;
 	int Location;
-	bool isFloat;
-	bool isBool;
+	bool IsFloat;
+	bool IsBool;
 
 public:
 	Property(string key, float value, int location);
+	Property(string key, int value, int location);
+	Property(string key, bool value, int location);
 	Property();
 	void setKey(string key);
 	void setValue(float value);
@@ -71,8 +74,13 @@ public:
 
 class Properties {
 	rapidjson::Document Properties_document;
-	map<string, Node<Property>> Props{};
+	map<string, shared_ptr<Node<Property>>> Props{};
 	int count{ 0 };
+
+	int genertateIntProperty(string document_key, string props_key, int default_value, int count, shared_ptr<Node<Property>> previous);
+	int genertateBoolProperty(string document_key, string props_key, bool default_value, int count, shared_ptr<Node<Property>> previous);
+	int genertateFloatProperty(string document_key, string props_key, float default_value, int count, shared_ptr<Node<Property>> previous);
+	void assignPreviousandNext(shared_ptr<Node<Property>> previous, shared_ptr<Node<Property>> next);
 
 public:
 	Properties();
@@ -86,6 +94,6 @@ public:
 	bool getBoolPropertyValue(string property);
 	int getIntPropertyValue(string property);
 	float getFloatPropertyValue(string property);
-	shared_ptr<Property> getPropertyByPosition(int property_position);
-	shared_ptr<Property> getPropertyByName(string property);
+	shared_ptr<Property> getPropertyByPosition(int property_position); // TODO: Define This
+	shared_ptr<Property> getPropertyByName(string property); // TODO: Define This
 };
