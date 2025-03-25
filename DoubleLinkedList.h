@@ -79,7 +79,13 @@ public:
         ++Count;
     }
 
-    void deleteHead() { // This will delete tail if there is only one node
+
+    /*
+    * The following was used for Hell Invaders.
+    * set bool destructive to false wehn you need to change the head or tail node but do not want
+    * to remove the previous head or tail node.
+    */
+    void deleteHead(bool destructive=true) { // This will delete tail if there is only one node
         if (!Head) {
             return;
         }
@@ -89,12 +95,12 @@ public:
         }
         else {
             Head = Head->Next;
-            Head->Previous->pop();
+            if (destructive) Head->Previous->pop();
         }
         --Count;
     }
 
-    void deleteTail() { // This will delete head if there is only one node
+    void deleteTail(bool destructive = true) { // This will delete head if there is only one node
         if (!Tail) {
             return;
         }
@@ -104,7 +110,7 @@ public:
         }
         else {
             Tail = Tail->Previous;
-            Tail->Next->pop();
+            if (destructive) Tail->Next->pop();
         }
         --Count;
     }

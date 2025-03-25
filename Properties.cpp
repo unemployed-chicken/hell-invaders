@@ -141,6 +141,19 @@ bool Properties::getBoolPropertyValue(string property) { return static_cast<bool
 int Properties::getIntPropertyValue(string property) { return static_cast<int>(Props[property]->Data->getValue()); }
 float Properties::getFloatPropertyValue(string property) { return Props[property]->Data->getValue(); }
 
+shared_ptr<Node<Property>> Properties::getPropertyByPosition(int property_position) {
+	//for (auto& prop : Props) { // Provided by copilot. Concerned about the &
+    for (auto& prop : Props) {
+		//if (prop.second->Data->getLocation() == property_position) { return prop.second; } // Provided by copilot. Concerned about the &
+        if (prop.second->Data->getLocation() == property_position) { return Props[prop.first]; }
+	}
+}
+
+shared_ptr<Node<Property>> Properties::getPropertyByName(string property) { 
+    if (Props.find(property) == Props.end()) { return nullptr; };
+    return Props[property]; 
+}
+
 
 
 
@@ -169,6 +182,6 @@ void Property::setLocation(int location) { Location = location; }
 string Property::getKey() { return Key; }
 float Property::getValue(){ return Value; }
 int Property::getLocation() { return Location; }
-int Property::getPropertyWidth(int font_size) { return Key.length() * font_size; }
+int Property::getPropertyWidth(int font_size) { return Key.length() * font_size * .65; }
 bool Property::getIsFloat() { return IsFloat; }
 bool Property::getIsBool() { return IsBool; }

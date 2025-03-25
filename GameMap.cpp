@@ -24,17 +24,21 @@ void GameMap::clearAllShields() { Shields.deleteAllNodes(); }
 void GameMap::updatePropertySelectorCoordinate(int x) {
 	Property_selector_coordinate += x;
 	if (Visible_properties.getCount() == 5) {
-		if (x > 0) { Visible_properties.deleteHead(); }
-		else { Visible_properties.deleteTail(); }
+		if (x > 0) { Visible_properties.deleteHead(false); }
+		else { Visible_properties.deleteTail(false); }
 	}
 
 	if (x > 0) {
-		shared_ptr<Property> next_property = Props.getPropertyByName(Visible_properties.getTail()->Next->Data->getKey());
-		Visible_properties.insertAtEnd(make_shared<Node<Property>>(next_property));
+		if (Visible_properties.getTail()->Next) {
+			shared_ptr<Node<Property>> next_property_node = Props.getPropertyByName(Visible_properties.getTail()->Next->Data->getKey());
+			if (next_property_node) { Visible_properties.insertAtEnd(next_property_node); }
+		}
 	}
 	else {
-		shared_ptr<Property> previous_property = Props.getPropertyByName(Visible_properties.getHead()->Previous->Data->getKey());
-		Visible_properties.insertAtFront(make_shared<Node<Property>>(previous_property));
+		if (Visible_properties.getHead()->Previous) {
+			shared_ptr<Node<Property>> previous_property_node = Props.getPropertyByName(Visible_properties.getHead()->Previous->Data->getKey());
+			if (previous_property_node) { Visible_properties.insertAtFront(previous_property_node); }
+		}
 	}
 
 }
@@ -43,8 +47,8 @@ void GameMap::populateVisibleProperties() {
 	int i = Property_selector_coordinate - 2;
 	while (true) {
 		if (i > 0) {
-			shared_ptr<Property> first_property = Props.getPropertyByPosition(i);
-			Visible_properties.insertAtEnd(make_shared<Node<Property>>(first_property));
+			//shared_ptr<Node<Property>> first_property_node = Props.getPropertyByPosition(i);
+			Visible_properties.insertAtEnd(Props.getPropertyByPosition(i));
 			break;
 		}
 
@@ -55,8 +59,8 @@ void GameMap::populateVisibleProperties() {
 
 	for (i; i < Property_selector_coordinate + 2; i++) {
 		if (i <= Props.getCount()) {
-			shared_ptr<Property> next_property = Props.getPropertyByName(Visible_properties.getTail()->Next->Data->getKey());
-			Visible_properties.insertAtEnd(make_shared<Node<Property>>(next_property));
+			//shared_ptr<Node<Property>> next_property_node = Props.getPropertyByName(Visible_properties.getTail()->Next->Data->getKey());
+			Visible_properties.insertAtEnd(Props.getPropertyByName(Visible_properties.getTail()->Next->Data->getKey()));
 		}
 	}
 }
@@ -137,6 +141,16 @@ void GameMap::drawBackground() {
 	drawShieldCount();
 }
 
+void GameMap::drawSaveAndExitOptions() {
+	string save{ "Save and Exit" }; // 13
+	string restore_defaults{ "Restore Defaults" }; // 16
+	string exit{ "Exit without Save" }; // 17
+
+	DrawText(save.c_str(), 50, 600, properties_font_size, WHITE);
+	DrawText(restore_defaults.c_str(), 250, 600, properties_font_size, WHITE);
+	DrawText(exit.c_str(), 450, 600, properties_font_size, WHITE);
+}
+
 void GameMap::drawMainScreen(map<string, Texture2D> textures, const float dT) {
 	drawMainScreenBackground();
 
@@ -156,7 +170,9 @@ void GameMap::drawFloatProperty(float value, int x_position, int y_position) {
 void GameMap::drawBoolProperty(bool value, int x_position, int y_position) {
 	// To Be Changed
 	string string_value{ "Value: " };
-	string_value.append(to_string(value));
+	if (value) { string_value.append("True"); }
+	else { string_value.append("False"); }
+	//string_value.append(to_string(value));
 	DrawText(string_value.c_str(), x_position, y_position, properties_font_size, WHITE);
 }
 
@@ -165,6 +181,71 @@ void GameMap::drawIntProperty(int value, int x_position, int y_position) {
 	string string_value{ "Value: " };
 	string_value.append(to_string(value));
 	DrawText(string_value.c_str(), x_position, y_position, properties_font_size, WHITE);
+}
+
+void GameMap::checkPropertiesPageUserInput() {
+	if ((IsKeyDown(KEY_UP) || IsKeyDown(KEY_W)) && (Select_box_movement_cooldown >= select_box_movement_minimum_cooldown)) {
+		if (Property_selector_coordinate > 1) { updatePropertySelectorCoordinate(-1); }
+		else { moveSelectBoxLocationToSaveProperties(); }
+		Select_box_movement_cooldown = 0.f;
+
+	}
+	else if ((IsKeyDown(KEY_DOWN) || IsKeyDown(KEY_S)) && (Select_box_movement_cooldown >= select_box_movement_minimum_cooldown)) {
+		if (Property_selector_coordinate < Props.getCount()) { updatePropertySelectorCoordinate(1); }
+		else { moveSelectBoxLocationToSaveProperties(); }
+		Select_box_movement_cooldown = 0.f;
+	}
+}
+
+void GameMap::saveOrRestorDefaults() {
+	if (Select_box_location.x == 50) {
+		Props.saveProperties();
+	}
+	else if (Select_box_location.x == 250) {
+		Props.restoreDefaults();
+	}
+	else {}
+}
+
+bool GameMap::checkPropertiesPageSaveOptionsInput() {
+	bool is_selected{ false };
+	
+	if ((IsKeyDown(KEY_UP) || IsKeyDown(KEY_W)) && (Select_box_movement_cooldown >= select_box_movement_minimum_cooldown)) {
+		moveSelectBoxLocationToGameProperties();
+		Select_box_movement_cooldown = 0.f;
+	}
+	if ((IsKeyDown(KEY_LEFT) || IsKeyDown(KEY_A)) && (Select_box_movement_cooldown >= select_box_movement_minimum_cooldown)) {
+		if (Select_box_location.x > 50) { 
+			Select_box_location.x -= 200; 
+			Select_box_movement_cooldown = 0.f;
+		}
+	}
+	if ((IsKeyDown(KEY_RIGHT) || IsKeyDown(KEY_D)) && (Select_box_movement_cooldown >= select_box_movement_minimum_cooldown)) {
+		if (Select_box_location.x < 450) {
+			Select_box_location.x += 200;
+			Select_box_movement_cooldown = 0.f;
+		}
+	}
+	if (IsKeyPressed(KEY_ENTER)) {
+		is_selected = true;
+	}
+
+	return is_selected;
+}
+
+void GameMap::moveSelectBoxLocationToSaveProperties() {
+	Select_box_location.x = 50;
+	Select_box_location.y = 600;
+}
+
+void GameMap::moveSelectBoxLocationToGameProperties() {
+	Select_box_location.x = 25;
+	Select_box_location.y = 300;
+}
+
+void GameMap::moveSelectBoxLocationToGamePlayOptions() {
+	Select_box_location.x = 165;
+	Select_box_location.y = 190;
 }
 
 void GameMap::drawShieldCount() {
@@ -201,12 +282,13 @@ void GameMap::drawPlayerMenuOptions() {
 	DrawText(exit_game_display.c_str(), 175, 400, 50, WHITE);
 }
 
-void GameMap::drawProperty(shared_ptr<Node<Property>> property, int i) {
-	int y_position = properties_starting_y_coordinate + properties_spacing * (i - 1);
-	DrawText(property->Data->getKey().c_str(), 50, y_position, 40, WHITE);
+void GameMap::drawProperty(shared_ptr<Node<Property>> property) {
+	int y_position = properties_starting_y_coordinate + (property->Data->getLocation() - Property_selector_coordinate) * properties_spacing;
+	DrawText(property->Data->getKey().c_str(), 25, y_position, properties_font_size, WHITE);
 	
 
-	int value_x_position = property->Data->getPropertyWidth(properties_font_size) + 15;
+	//int value_x_position = property->Data->getPropertyWidth(properties_font_size) + 15; // Spacinge is not working as expected
+	int value_x_position = 450; // Spacinge is not working as expected
 
 	// Draw property value. 
 	if (property->Data->getIsFloat()) { drawFloatProperty(Props.getFloatPropertyValue(property->Data->getKey()), value_x_position, y_position); }
@@ -215,18 +297,22 @@ void GameMap::drawProperty(shared_ptr<Node<Property>> property, int i) {
 }
 
 int GameMap::drawPlayerPropertyOptions() {
-	int width{};
+	int width{ 16 * properties_font_size };
 	
 	shared_ptr<Node<Property>> current_property = Visible_properties.getHead();
-	int i{ 1 };
+	
 	while (current_property) {
-		drawProperty(current_property, i);
-		if (i == Property_selector_coordinate) { width = current_property->Data->getPropertyWidth(properties_font_size); }
+		drawProperty(current_property);
+		if (current_property->Data->getLocation() == Property_selector_coordinate && Select_box_location.y < 600) {
+			width = current_property->Data->getPropertyWidth(properties_font_size); 
+		}
 
 		current_property = current_property->Next;
-		++i;
+		if (current_property == Visible_properties.getTail()->Next) { break; }
 	}
 	
+	drawSaveAndExitOptions();
+
 	return width;
 }
 
@@ -283,7 +369,7 @@ void GameMap::displayHomeMenu(map<string, Texture2D> textures, const float dT) {
 	else if ( has_player_selected_option && Select_box_location.y == 290 ) {
 		Is_main_screen = false;
 		Is_properties_screen = true;
-		Select_box_location.y = 300;
+		moveSelectBoxLocationToGameProperties();
 	}
 	else if ( has_player_selected_option && Select_box_location.y == 390 ) {
 		Is_end_game_requested = true;
@@ -292,13 +378,16 @@ void GameMap::displayHomeMenu(map<string, Texture2D> textures, const float dT) {
 	/*
 	* TODO: 
 	* Play music on home screen
-	* If properties, open up properties menu and have user adjust as they would like
 	* 
 	* Provide menu navigation instructions
 	*/
 }
 
 void GameMap::displayPropertiesMenu(map<string, Texture2D> textures, const float dT) {
+	// TODO: ? If a user makes no changes and selects save and close, How do I revert their changes? It may already be doing that, so take a look
+	// TODO: Game crashes when selecting Update Properties
+	// TODO: When Moving down, the box surrounds the second property. When moving up, the box surrounds the 4th property.
+	// TODO: Allow user to adjust properties
 	Select_box_movement_cooldown += dT;
 
 	if (Visible_properties.getCount() < 1) { populateVisibleProperties(); }
@@ -309,7 +398,14 @@ void GameMap::displayPropertiesMenu(map<string, Texture2D> textures, const float
 	bool has_player_selected_option = playerPropertiesScreenTick();
 
 	// Decide what actions to take
-	// If go back to main screen, change Select_box_location.y = 190
+	if (has_player_selected_option && Select_box_location.y == 600) {
+		saveOrRestorDefaults();
+
+		moveSelectBoxLocationToGamePlayOptions();
+
+		Is_properties_screen = false;
+		Is_main_screen = true;
+	}
 }
 
 void GameMap::setIsIntro(const bool b) { Is_intro = b; }
@@ -520,31 +616,22 @@ bool GameMap::playerMainScreenTick() {
 
 bool GameMap::playerPropertiesScreenTick() {
 	// Move Options based on user input
-	if ((IsKeyDown(KEY_DOWN) || IsKeyDown(KEY_S)) && (Select_box_movement_cooldown >= select_box_movement_minimum_cooldown)) {
-		if (Property_selector_coordinate > 1) {
-			updatePropertySelectorCoordinate(-1);
-			Select_box_movement_cooldown = 0.f;
-		}
-
+	bool is_selected{ false };
+	
+	if (Select_box_location.y < 600) {
+		checkPropertiesPageUserInput();
 	}
-	else if ((IsKeyDown(KEY_UP) || IsKeyDown(KEY_W)) && (Select_box_movement_cooldown >= select_box_movement_minimum_cooldown)) {
-		if (Property_selector_coordinate < Props.getCount()) {
-			updatePropertySelectorCoordinate(1);
-			Select_box_movement_cooldown = 0.f;
-		}
+	else {
+		is_selected = checkPropertiesPageSaveOptionsInput();
 	}
 
 	// Draw Player Options and return width of the currently selectable option
 	int width = drawPlayerPropertyOptions();
 
 	// Draw Select Box
-	DrawRectangleLines(Select_box_location.x, Select_box_location.y, width, 70, RED);
+	DrawRectangleLines(Select_box_location.x - 5, Select_box_location.y - 5, width, properties_font_size + 10, RED);
 
-	// TODO: Change to if option is "save and close", "close without save", or "restore defaults" 
-	// BANANA_HAMMOCK
-
-	//if (IsKeyPressed(KEY_ENTER)) { return true; }
-	return false;
+	return is_selected;
 }
 
 shared_ptr<Demon> GameMap::generateDemonWithRandomTexture(map<string, Texture2D> textures, const int random) {

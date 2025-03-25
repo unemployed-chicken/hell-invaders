@@ -94,6 +94,6 @@ public:
 	bool getBoolPropertyValue(string property);
 	int getIntPropertyValue(string property);
 	float getFloatPropertyValue(string property);
-	shared_ptr<Property> getPropertyByPosition(int property_position); // TODO: Define This
-	shared_ptr<Property> getPropertyByName(string property); // TODO: Define This
+	shared_ptr<Node<Property>> getPropertyByPosition(int property_position); // TODO: Define This
+	shared_ptr<Node<Property>> getPropertyByName(string property); // TODO: Define This
 };

@@ -42,9 +42,9 @@ constexpr float shield_starting_x_coordinate{ 50 };
 constexpr float shield_spacing{ 225 };
 constexpr int number_of_demon_textures{ 4 };
 constexpr float select_box_movement_minimum_cooldown{ .20f };
-constexpr int properties_starting_y_coordinate{ 150 };
+constexpr int properties_starting_y_coordinate{ 300 };
 constexpr int properties_spacing{ 75 };
-constexpr int properties_font_size{ 50 };
+constexpr int properties_font_size{ 15 };
 
 const float demons_x_range[2]{ 5.0f, window_dimensions[1] - (16.f * character_scale) + 5.f}; // First is Left Limit, Second is Right Limit
 
@@ -85,11 +85,11 @@ class GameMap {
 	bool Is_new_high_score_screen{ false };
 	bool Is_end_game_requested{ false };
 	
-	bool hasCollision(shared_ptr<Demon> demon);
 	int drawPlayerPropertyOptions();
 	void drawPlayerMenuOptions();
-	void drawProperty(shared_ptr<Node<Property>> property, int i);
+	void drawProperty(shared_ptr<Node<Property>> property);
 	void drawBackground();
+	void drawSaveAndExitOptions();
 	void drawLives();
 	void drawShieldCount();
 	void drawMainScreenBackground();
@@ -97,6 +97,11 @@ class GameMap {
 	void drawFloatProperty(float value, int x_position, int y_position);
 	void drawBoolProperty(bool value, int x_position, int y_position);
 	void drawIntProperty(int value, int x_position, int y_position);
+	void checkPropertiesPageUserInput();
+	void saveOrRestorDefaults();
+	void moveSelectBoxLocationToSaveProperties();
+	void moveSelectBoxLocationToGameProperties();
+	void moveSelectBoxLocationToGamePlayOptions();
 	void updatePropertySelectorCoordinate(int x);
 	void populateVisibleProperties();
 	void appendProjectile();
@@ -115,6 +120,8 @@ class GameMap {
 	void destroySpecialDemon(const bool is_killed);
 	void generateRandomDemon(map<string, Texture2D> textures);
 	void updateBackgroundTextures(map<string, Texture2D> textures);
+	bool hasCollision(shared_ptr<Demon> demon);
+	bool checkPropertiesPageSaveOptionsInput();
 	bool playerMainScreenTick();
 	bool playerPropertiesScreenTick();
 	shared_ptr<Demon> generateDemonWithRandomTexture(map<string, Texture2D> textures, const int random);
