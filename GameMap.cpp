@@ -297,7 +297,8 @@ void GameMap::drawProperty(shared_ptr<Node<Property>> property) {
 }
 
 int GameMap::drawPlayerPropertyOptions() {
-	int width{ 16 * properties_font_size };
+	int width{ save_and_exit_width };
+	if (Select_box_location.x > 50) { width = other_close_properties_width; }
 	
 	shared_ptr<Node<Property>> current_property = Visible_properties.getHead();
 	
@@ -386,7 +387,7 @@ void GameMap::displayHomeMenu(map<string, Texture2D> textures, const float dT) {
 void GameMap::displayPropertiesMenu(map<string, Texture2D> textures, const float dT) {
 	// TODO: ? If a user makes no changes and selects save and close, How do I revert their changes? It may already be doing that, so take a look
 	// TODO: Game crashes when selecting Update Properties
-	// TODO: When Moving down, the box surrounds the second property. When moving up, the box surrounds the 4th property.
+	// TODO: When Moving down, if they start moving up then move back down, the box surrounds the second property. When moving up, the box surrounds the 4th property.
 	// TODO: Allow user to adjust properties
 	Select_box_movement_cooldown += dT;
 
