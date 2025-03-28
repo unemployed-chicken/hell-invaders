@@ -23,10 +23,10 @@ void GameMap::clearAllShields() { Shields.deleteAllNodes(); }
 
 void GameMap::updatePropertySelectorCoordinate(int x) {
 	Property_selector_coordinate += x;
-	if (Visible_properties.getCount() == 5) {
+	if (shouldNodeBeDeleted()) {
 		if (x > 0) { Visible_properties.deleteHead(false); }
 		else { Visible_properties.deleteTail(false); }
-	}
+	} 
 
 	if (x > 0) {
 		if (Visible_properties.getTail()->Next) {
@@ -47,7 +47,6 @@ void GameMap::populateVisibleProperties() {
 	int i = Property_selector_coordinate - 2;
 	while (true) {
 		if (i > 0) {
-			//shared_ptr<Node<Property>> first_property_node = Props.getPropertyByPosition(i);
 			Visible_properties.insertAtEnd(Props.getPropertyByPosition(i));
 			break;
 		}
@@ -59,10 +58,16 @@ void GameMap::populateVisibleProperties() {
 
 	for (i; i < Property_selector_coordinate + 2; i++) {
 		if (i <= Props.getCount()) {
-			//shared_ptr<Node<Property>> next_property_node = Props.getPropertyByName(Visible_properties.getTail()->Next->Data->getKey());
 			Visible_properties.insertAtEnd(Props.getPropertyByName(Visible_properties.getTail()->Next->Data->getKey()));
 		}
 	}
+}
+
+void GameMap::clearVisibleProperties() {
+	// Clear the visible properties list
+	Visible_properties = DoubleLinkedList<Property>() ; 
+
+	Property_selector_coordinate = 1; // Reset to default
 }
 
 void GameMap::appendProjectile() {
@@ -195,6 +200,26 @@ void GameMap::checkPropertiesPageUserInput() {
 		else { moveSelectBoxLocationToSaveProperties(); }
 		Select_box_movement_cooldown = 0.f;
 	}
+
+	if ((IsKeyPressed(KEY_LEFT) || IsKeyPressed(KEY_A)) && (Select_box_movement_cooldown >= select_box_movement_minimum_cooldown)) {
+		shared_ptr<Node<Property>> current_property = Props.getPropertyByPosition(Property_selector_coordinate);
+		current_property->Data->incrementValue(-1);
+
+		//TODO:!!!!!! Currently, we are changing the value successfully, but it is trying to save the updates as .Title(). I need it to be all .Lower
+		// Once Resolved: We need to implement float update logic as well.
+		// TODO: Change the Properties creation method to take in an Incrementor and set Property.Increment_counter to that value
+		// TODO: Create a JSON file containing the user friendly name of a property and its description
+		// TODO: Save the User Friendly name and description to the Property object
+		
+		// TODO: Implement logic to handle decrementing values for different types of properties (int, float)
+		Props.updateIntProperty(current_property->Data->getKey(), static_cast<int>(current_property->Data->getValue()));
+	}
+	else if ((IsKeyPressed(KEY_RIGHT) || IsKeyPressed(KEY_D)) && (Select_box_movement_cooldown >= select_box_movement_minimum_cooldown)) {
+		shared_ptr<Node<Property>> current_property = Props.getPropertyByPosition(Property_selector_coordinate);
+		current_property->Data->incrementValue(1);
+		// TODO: Implement logic to handle decrementing values for different types of properties (int, float)
+		Props.updateIntProperty(current_property->Data->getKey(), static_cast<int>(current_property->Data->getValue()));
+	}
 }
 
 void GameMap::saveOrRestorDefaults() {
@@ -204,13 +229,15 @@ void GameMap::saveOrRestorDefaults() {
 	else if (Select_box_location.x == 250) {
 		Props.restoreDefaults();
 	}
-	else {}
+	
+	resetProperties(); // Rebuilds Props.
+
 }
 
 bool GameMap::checkPropertiesPageSaveOptionsInput() {
 	bool is_selected{ false };
 	
-	if ((IsKeyDown(KEY_UP) || IsKeyDown(KEY_W)) && (Select_box_movement_cooldown >= select_box_movement_minimum_cooldown)) {
+	if ((IsKeyDown(KEY_UP) || IsKeyDown(KEY_W) || IsKeyDown(KEY_DOWN) || IsKeyDown(KEY_S)) && (Select_box_movement_cooldown >= select_box_movement_minimum_cooldown)) {
 		moveSelectBoxLocationToGameProperties();
 		Select_box_movement_cooldown = 0.f;
 	}
@@ -381,13 +408,12 @@ void GameMap::displayHomeMenu(map<string, Texture2D> textures, const float dT) {
 	* Play music on home screen
 	* 
 	* Provide menu navigation instructions
+	* High Score can log first three initials
+	* After death, either wait 5 seconds or press enter to continue to main screen
 	*/
 }
 
 void GameMap::displayPropertiesMenu(map<string, Texture2D> textures, const float dT) {
-	// TODO: ? If a user makes no changes and selects save and close, How do I revert their changes? It may already be doing that, so take a look
-	// TODO: Game crashes when selecting Update Properties
-	// TODO: When Moving down, if they start moving up then move back down, the box surrounds the second property. When moving up, the box surrounds the 4th property.
 	// TODO: Allow user to adjust properties
 	Select_box_movement_cooldown += dT;
 
@@ -401,6 +427,8 @@ void GameMap::displayPropertiesMenu(map<string, Texture2D> textures, const float
 	// Decide what actions to take
 	if (has_player_selected_option && Select_box_location.y == 600) {
 		saveOrRestorDefaults();
+
+		clearVisibleProperties();
 
 		moveSelectBoxLocationToGamePlayOptions();
 
@@ -594,12 +622,20 @@ void GameMap::updateBackgroundTextures(map<string, Texture2D> textures) {
 	Foreground = textures["foreground"];
 }
 
+bool GameMap::shouldNodeBeDeleted() {
+	// is Property_selector_coordinate at beginning or end of the list
+	bool is_at_start_or_end = Property_selector_coordinate == 1 || Property_selector_coordinate == Props.getCount();
+	
+	return Visible_properties.getCount() == 5 || is_at_start_or_end && Visible_properties.getCount() == 4;
+
+}
+
 bool GameMap::playerMainScreenTick() {
 	if ((IsKeyDown(KEY_DOWN) || IsKeyDown(KEY_S)) && (Select_box_movement_cooldown >= select_box_movement_minimum_cooldown) ) {
-		Select_box_location.y < 390 ? Select_box_location.y += 100 : Select_box_location.y += 0;
+		Select_box_location.y < 390 ? Select_box_location.y += 100 : Select_box_location.y = 190;
 		Select_box_movement_cooldown = 0.f;
 	} else if ((IsKeyDown(KEY_UP) || IsKeyDown(KEY_W)) && (Select_box_movement_cooldown >= select_box_movement_minimum_cooldown)) {
-		Select_box_location.y > 190 ? Select_box_location.y -= 100 : Select_box_location.y -= 0;
+		Select_box_location.y > 190 ? Select_box_location.y -= 100 : Select_box_location.y = 390;
 		Select_box_movement_cooldown = 0.f;
 	}
 

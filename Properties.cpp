@@ -5,6 +5,7 @@ void Properties::assignPreviousandNext(shared_ptr<Node<Property>> previous, shar
 	if (next) {	next->Previous = previous; }
 }
 
+
 Properties::Properties() {
 	FILE* fp;
     is_windows_os ? fopen_s(&fp, "user_defined_properties.json", "rb") : fopen_s(&fp, "user_defined_properties.json", "r"); // non-Windows use "r" 
@@ -76,7 +77,7 @@ void Properties::saveProperties() {
 }
 
 void Properties::restoreDefaults() {
-    Properties_document.Clear();
+    Properties_document.SetObject();
     saveProperties();
 }
 
@@ -142,8 +143,8 @@ int Properties::getIntPropertyValue(string property) { return static_cast<int>(P
 float Properties::getFloatPropertyValue(string property) { return Props[property]->Data->getValue(); }
 
 shared_ptr<Node<Property>> Properties::getPropertyByPosition(int property_position) {
-	//for (auto& prop : Props) { // Provided by copilot. Concerned about the &
-    for (auto& prop : Props) {
+	//for (auto& prop : Props) { // Provided by copilot. Concerned about the & as this is already a shared_ptr
+    for (auto prop : Props) {
 		//if (prop.second->Data->getLocation() == property_position) { return prop.second; } // Provided by copilot. Concerned about the &
         if (prop.second->Data->getLocation() == property_position) { return Props[prop.first]; }
 	}
@@ -179,6 +180,16 @@ Property::Property(){}
 void Property::setKey(string key) { Key = key; }
 void Property::setValue(float value) { Value = value; }
 void Property::setLocation(int location) { Location = location; }
+void Property::incrementValue(int direction) {
+    if (IsBool) {
+        if (Value == 0) { Value = 1; }
+        else { Value = 0; }
+	}
+    else {
+        Value += Increment_counter * direction;
+    }
+} 
+
 string Property::getKey() { return Key; }
 float Property::getValue(){ return Value; }
 int Property::getLocation() { return Location; }

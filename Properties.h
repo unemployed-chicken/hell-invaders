@@ -51,6 +51,9 @@ constexpr float mage_projectile_speed_in_pixels_per_second{ 300.f }; // pixels p
 class Property {
 	string Key;
 	float Value;
+	string Description{}; // TODO: Define this logic
+	string Name{}; // TODO: Define this logic
+	int Increment_counter{ 1 }; // TODO: Define this logic
 	int Location;
 	bool IsFloat;
 	bool IsBool;
@@ -63,6 +66,7 @@ public:
 	void setKey(string key);
 	void setValue(float value);
 	void setLocation(int location);
+	void incrementValue(int direction);
 	string getKey();
 	float getValue();
 	int getLocation();
@@ -81,6 +85,7 @@ class Properties {
 	int genertateBoolProperty(string document_key, string props_key, bool default_value, int count, shared_ptr<Node<Property>> previous);
 	int genertateFloatProperty(string document_key, string props_key, float default_value, int count, shared_ptr<Node<Property>> previous);
 	void assignPreviousandNext(shared_ptr<Node<Property>> previous, shared_ptr<Node<Property>> next);
+	void savePropsToPropertiesDocument();
 
 public:
 	Properties();
@@ -94,6 +99,6 @@ public:
 	bool getBoolPropertyValue(string property);
 	int getIntPropertyValue(string property);
 	float getFloatPropertyValue(string property);
-	shared_ptr<Node<Property>> getPropertyByPosition(int property_position); // TODO: Define This
-	shared_ptr<Node<Property>> getPropertyByName(string property); // TODO: Define This
+	shared_ptr<Node<Property>> getPropertyByPosition(int property_position);
+	shared_ptr<Node<Property>> getPropertyByName(string property); 
 };

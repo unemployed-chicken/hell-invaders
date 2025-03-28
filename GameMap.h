@@ -106,6 +106,7 @@ class GameMap {
 	void moveSelectBoxLocationToGamePlayOptions();
 	void updatePropertySelectorCoordinate(int x);
 	void populateVisibleProperties();
+	void clearVisibleProperties();
 	void appendProjectile();
 	void appendProjectile(shared_ptr<Demon> demon); 
 	void moveMageProjectiles(const float dT);
@@ -122,6 +123,7 @@ class GameMap {
 	void destroySpecialDemon(const bool is_killed);
 	void generateRandomDemon(map<string, Texture2D> textures);
 	void updateBackgroundTextures(map<string, Texture2D> textures);
+	bool shouldNodeBeDeleted();
 	bool hasCollision(shared_ptr<Demon> demon);
 	bool checkPropertiesPageSaveOptionsInput();
 	bool playerMainScreenTick();
