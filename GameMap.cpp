@@ -218,7 +218,8 @@ void GameMap::checkPropertiesPageUserInput() {
 		// TODO: Move demon_attack_chance_percentage next to demon_attack_rate_in_seconds 
 		// TODO: change attack_texture_update_rate_per_second an int and divide by 1/x
 		// TODO: change casting_shield_texutre_update_rate_per_second an int and divide by 1/x (ALSO: texture is spelt wrong.)
-		
+		// TODO: change mage_attack_rate_per_second to an int and divide by 1/x
+
 		Props.updateIntProperty(current_property->Data->getKey(), static_cast<int>(current_property->Data->getValue()));
 	}
 	else if ((IsKeyPressed(KEY_RIGHT) || IsKeyPressed(KEY_D)) && (Select_box_movement_cooldown >= select_box_movement_minimum_cooldown)) {
