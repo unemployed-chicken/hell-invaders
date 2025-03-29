@@ -1,5 +1,6 @@
 #include "Properties.h"
 
+
 void Properties::assignPreviousandNext(shared_ptr<Node<Property>> previous, shared_ptr<Node<Property>> next) {
 	if (previous) { previous->Next = next; }
 	if (next) {	next->Previous = previous; }
@@ -8,7 +9,7 @@ void Properties::assignPreviousandNext(shared_ptr<Node<Property>> previous, shar
 
 Properties::Properties() {
 	FILE* fp;
-    is_windows_os ? fopen_s(&fp, "user_defined_properties.json", "rb") : fopen_s(&fp, "user_defined_properties.json", "r"); // non-Windows use "r" 
+    is_windows_os ? fopen_s(&fp, "properties\\user_defined_properties.json", "rb") : fopen_s(&fp, "properties/user_defined_properties.json", "r"); // non-Windows use "r" 
 
     if (fp) {
         char readBuffer[65536];
@@ -21,7 +22,6 @@ Properties::Properties() {
     }
 
     if (Properties_document.HasParseError() || !Properties_document.IsObject()) {
-        // Possible logger message here: cout << "Error reading JSON file. Creating a new JSON object.\n";
         Properties_document.SetObject();
     }
     
@@ -30,7 +30,7 @@ Properties::Properties() {
     // General Game Properties
     i = genertateIntProperty("number_of_starting_lives", "Number_of_starting_lives", number_of_starting_lives, i, nullptr);
 	i = genertateIntProperty("number_of_starting_shields", "Number_of_starting_shields", number_of_starting_shields, i, Props["Number_of_starting_lives"]);
-	i = genertateFloatProperty("number_of_texure_updates_rate_per_second", "Number_of_texure_updates_rate_per_second", number_of_texure_updates_rate_per_second, i, Props["Number_of_starting_shields"]);
+	i = genertateFloatProperty("number_of_texure_updates_rate_per_second", "Number_of_texure_updates_rate_per_second", number_of_texure_updates_rate_per_second, i, Props["Number_of_starting_shields"]); // TODO: Change this to pull an int and divide 1 by the number provided
 	i = genertateFloatProperty("revive_shield_movement_speed_in_pixels_per_second", "Revive_shield_movement_speed_in_pixels_per_second", revive_shield_movement_speed_in_pixels_per_second, i, Props["Number_of_texure_updates_rate_per_second"]);
 	i = genertateBoolProperty("should_skip_intro", "Should_skip_intro", should_skip_intro, i, Props["Revive_shield_movement_speed_in_pixels_per_second"]);
 	i = genertateBoolProperty("should_start_with_shields_active", "Should_start_with_shields_active", should_start_with_shields_active, i, Props["Should_skip_intro"]);
@@ -64,7 +64,7 @@ Properties::Properties() {
 
 void Properties::saveProperties() {
     FILE* fp;
-    is_windows_os ? fopen_s(&fp, "user_defined_properties.json", "wb") : fopen_s(&fp, "user_defined_properties.json", "w"); // non-Windows use "w" 
+    is_windows_os ? fopen_s(&fp, "properties\\user_defined_properties.json", "wb") : fopen_s(&fp, "properties/user_defined_properties.json", "w"); // non-Windows use "w" 
 
     if (fp) {
         char writeBuffer[65536];
@@ -82,25 +82,44 @@ void Properties::restoreDefaults() {
 }
 
 void Properties::updateIntProperty(string key, int value) {
+    std::transform(key.begin(), key.begin()+1, key.begin(), ::tolower);
     if (Properties_document.HasMember(key.c_str())) {
         rapidjson::Value& property = Properties_document[key.c_str()];
         property.SetInt(value);
     }
     else {
-        rapidjson::Value v_key(rapidjson::StringRef(key.c_str()));
+        rapidjson::Value v_key;
+        v_key.SetString(key.c_str(), Properties_document.GetAllocator());
         rapidjson::Value v_value(value); 
         Properties_document.AddMember(v_key, v_value, Properties_document.GetAllocator());
     }
 }
 
+void Properties::updateBoolProperty(string key, bool value) {
+    std::transform(key.begin(), key.begin() + 1, key.begin(), ::tolower);
+    if (Properties_document.HasMember(key.c_str())) {
+        rapidjson::Value& property = Properties_document[key.c_str()];
+        property.SetInt(value);
+    }
+    else {
+        rapidjson::Value v_key;
+        v_key.SetString(key.c_str(), Properties_document.GetAllocator());
+        Properties_document.AddMember(v_key, value, Properties_document.GetAllocator());
+    }
+}
+
 void Properties::updateFloatProperty(string key, float value) {
+    std::transform(key.begin(), key.begin() + 1, key.begin(), ::tolower);
     if (Properties_document.HasMember(key.c_str())) {
         rapidjson::Value& property = Properties_document[key.c_str()];
         property.SetFloat(value);
     }
     else {
-        rapidjson::Value v_key(rapidjson::StringRef(key.c_str()));
-        Properties_document.AddMember(v_key, value, Properties_document.GetAllocator());
+        rapidjson::Value v_key;
+        v_key.SetString(key.c_str(), Properties_document.GetAllocator());
+        rapidjson::Value v_value{};
+		v_value.SetFloat(value);
+        Properties_document.AddMember(v_key, v_value, Properties_document.GetAllocator());
     }
 }
 
@@ -143,9 +162,7 @@ int Properties::getIntPropertyValue(string property) { return static_cast<int>(P
 float Properties::getFloatPropertyValue(string property) { return Props[property]->Data->getValue(); }
 
 shared_ptr<Node<Property>> Properties::getPropertyByPosition(int property_position) {
-	//for (auto& prop : Props) { // Provided by copilot. Concerned about the & as this is already a shared_ptr
     for (auto prop : Props) {
-		//if (prop.second->Data->getLocation() == property_position) { return prop.second; } // Provided by copilot. Concerned about the &
         if (prop.second->Data->getLocation() == property_position) { return Props[prop.first]; }
 	}
 }
@@ -186,7 +203,7 @@ void Property::incrementValue(int direction) {
         else { Value = 0; }
 	}
     else {
-        Value += Increment_counter * direction;
+        if (Value + Increment_counter * direction >= 0) { Value += Increment_counter * direction; }
     }
 } 
 

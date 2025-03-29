@@ -6,6 +6,7 @@
 extern const float window_dimensions[2];
 extern const bool debugging;
 
+constexpr float magic_texure_update_rate{ 1.0f / 12.0f };
 constexpr float magic_projectile_scale{ 4.0f };
 constexpr float fire_projectile_scale{ 2.0f };
 constexpr float fire_white_space_pixels_x{ 1.0f };

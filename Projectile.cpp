@@ -25,7 +25,7 @@ Projectile::Projectile(
 
 	isMagic ? Width = texture.width / number_of_objects_in_x - 5: Width = texture.width / number_of_objects_in_x;
 	Height = texture.height / number_of_objects_in_y;
-	Texture_update_rate = properties.getFloatPropertyValue("Number_of_texure_updates_rate_per_second");
+	isMagic ? Texture_update_rate = magic_texure_update_rate : Texture_update_rate = properties.getFloatPropertyValue("Number_of_texure_updates_rate_per_second");
 
 }
 
@@ -63,7 +63,6 @@ void Projectile::render() {
 
 	Vector2 origin{0, 0};
 
-	// Temporary for now:
 	Rectangle collision_rectangle = getCollisionRectangle();
 
 	DrawTexturePro(Active_texture, source, destination, origin, Rotation, WHITE);

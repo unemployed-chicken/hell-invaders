@@ -205,20 +205,35 @@ void GameMap::checkPropertiesPageUserInput() {
 		shared_ptr<Node<Property>> current_property = Props.getPropertyByPosition(Property_selector_coordinate);
 		current_property->Data->incrementValue(-1);
 
-		//TODO:!!!!!! Currently, we are changing the value successfully, but it is trying to save the updates as .Title(). I need it to be all .Lower
-		// Once Resolved: We need to implement float update logic as well.
 		// TODO: Change the Properties creation method to take in an Incrementor and set Property.Increment_counter to that value
 		// TODO: Create a JSON file containing the user friendly name of a property and its description
 		// TODO: Save the User Friendly name and description to the Property object
+		// TODO: number_of_texure_updates_rate_per_second changed to int and do 1/x
+		// TODO: demon_level_acceleration_percentage changed to an int and (x/100) + 100 to get the percentage increase. 
+		// TODO: demon_attack_rate_in_seconds convert to milliseconds
+		// TODO: Mage Speed Acceleration per round?
+		// TODO: Prop for projectile collision
+		// TODO: Prop for turning off music
+		// TODO: Change demon_projectile_speed_in_pixels_per_second to an int
+		// TODO: Move demon_attack_chance_percentage next to demon_attack_rate_in_seconds 
+		// TODO: change attack_texture_update_rate_per_second an int and divide by 1/x
+		// TODO: change casting_shield_texutre_update_rate_per_second an int and divide by 1/x (ALSO: texture is spelt wrong.)
 		
-		// TODO: Implement logic to handle decrementing values for different types of properties (int, float)
 		Props.updateIntProperty(current_property->Data->getKey(), static_cast<int>(current_property->Data->getValue()));
 	}
 	else if ((IsKeyPressed(KEY_RIGHT) || IsKeyPressed(KEY_D)) && (Select_box_movement_cooldown >= select_box_movement_minimum_cooldown)) {
 		shared_ptr<Node<Property>> current_property = Props.getPropertyByPosition(Property_selector_coordinate);
 		current_property->Data->incrementValue(1);
-		// TODO: Implement logic to handle decrementing values for different types of properties (int, float)
-		Props.updateIntProperty(current_property->Data->getKey(), static_cast<int>(current_property->Data->getValue()));
+
+		if (current_property->Data->getIsFloat()) {
+			Props.updateFloatProperty(current_property->Data->getKey(), current_property->Data->getValue());
+		}
+		else if (current_property->Data->getIsBool()) {
+			Props.updateBoolProperty(current_property->Data->getKey(), static_cast<bool>(current_property->Data->getValue()));
+		}
+		else {
+			Props.updateIntProperty(current_property->Data->getKey(), static_cast<int>(current_property->Data->getValue()));
+		}
 	}
 }
 

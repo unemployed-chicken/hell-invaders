@@ -4,5 +4,5 @@ ReviveShield::ReviveShield(Texture2D revive_shield, Properties& properties) : Sh
 	Is_persistent = true;
 	Width_scale = 20;
 	X_coordinate = 5;
-	Revive_shield_movement_speed = properties.getFloatPropertyValue("Revive_shield_movement_speed_in_pixels_per_second");
+	Revive_shield_movement_speed = properties.getFloatPropertyValue("Revive_shield_movement_speed_in_pixels_per_second") * -1;
 }

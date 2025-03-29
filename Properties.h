@@ -4,6 +4,7 @@
 #include "rapidjson/filereadstream.h" 
 #include "rapidjson/filewritestream.h" 
 #include "rapidjson/writer.h"
+#include <algorithm>
 #include <map>
 #include <memory>
 #include <string>
@@ -17,8 +18,8 @@ extern const bool is_windows_os;
 // General Game Properties
 constexpr int number_of_starting_lives{ 3 };
 constexpr int number_of_starting_shields{ 3 };
-constexpr float number_of_texure_updates_rate_per_second{ 1.0f / 12.0f };
-constexpr float revive_shield_movement_speed_in_pixels_per_second{ -600 }; // pixels per second
+constexpr float number_of_texure_updates_rate_per_second{ 1.0f / 12.0f }; // TODO: Change this to 12 and divide 1 by this number in code
+constexpr float revive_shield_movement_speed_in_pixels_per_second{ 600 }; // pixels per second // TODO: Make this Positive
 constexpr float should_skip_intro{ false };
 constexpr float should_start_with_shields_active{ true };
 
@@ -35,8 +36,8 @@ constexpr int eye_score_multipler{ 10 };
 // Demon Mechanic Properties
 constexpr float demon_base_speed_in_pixels_per_second{ 50.0 }; // pixels per second 
 constexpr float demon_acceleration_in_pixels_per_second{ 10.0f }; // pixels per second
-constexpr float demon_level_acceleration_percentage{ 1.25 }; // 
-constexpr float demon_attack_rate_in_seconds{ 3.f }; // How long a demon will pause after an attack before looking to attack again
+constexpr float demon_level_acceleration_percentage{ 1.25 }; // TODO: Make this an int
+constexpr float demon_attack_rate_in_seconds{ 3.f }; // How long a demon will pause after an attack before looking to attack again //TODO: Convert to Milliseconds
 constexpr float demon_projectile_speed_in_pixels_per_second{ 150.f }; // pixels per second
 constexpr int demon_attack_chance_percentage{ 20 }; // This is a percentage (aka, divided by 100)
 
@@ -85,13 +86,13 @@ class Properties {
 	int genertateBoolProperty(string document_key, string props_key, bool default_value, int count, shared_ptr<Node<Property>> previous);
 	int genertateFloatProperty(string document_key, string props_key, float default_value, int count, shared_ptr<Node<Property>> previous);
 	void assignPreviousandNext(shared_ptr<Node<Property>> previous, shared_ptr<Node<Property>> next);
-	void savePropsToPropertiesDocument();
 
 public:
 	Properties();
 	void saveProperties();
 	void restoreDefaults();
 	void updateIntProperty(string key, int value);
+	void updateBoolProperty(string key, bool value);
 	void updateFloatProperty(string key, float value);
 
 	int getCount();

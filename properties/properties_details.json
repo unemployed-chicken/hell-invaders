@@ -1,0 +1,122 @@
+{
+    "number_of_starting_lives": {
+        "name": "Lives",
+        "description": "Number of lives player starts with.",
+        "increment": 1
+    },
+    "number_of_starting_shields": {
+        "name": "Shields to Start",
+        "description": "Number of shields player starts with.",
+        "increment": 1
+    },
+    "number_of_texure_updates_rate_per_second": {
+        "name": "Sprite Update Rate",
+        "description": "How many times sprites update per second.",
+        "increment": 1
+    },
+    "revive_shield_movement_speed_in_pixels_per_second": {
+        "name": "Revive Shield Speed",
+        "description": "The speed of the revive shield moving through the map. Number indicates pixels per second",
+        "increment": 10
+    },
+    "should_skip_intro": {
+        "name": "Skip Intro",
+        "description": "Determines whether a new game should skip the instructions stage.",
+        "increment": 1
+    },
+    "should_start_with_shields_active": {
+        "name": "Start With Shields",
+        "description": "Determines whether a new game should start with shields activated.",
+        "increment": 1
+    },
+    "number_of_demon_columns": {
+        "name": "Demon Columns",
+        "description": "The number of demon columns a round should have. A column contains 6 demons.",
+        "increment": 1
+    },
+    "number_of_rows_before_speed_boost": {
+        "name": "Rows At Speed",
+        "description": "The number of rows the demons will travel before increasing their speed.",
+        "increment": 1
+    },
+    "demon_base_points": {
+        "name": "Demon Points",
+        "description": "The base number of points a demon is worth. This number will be multiplied during the game.",
+        "increment": 5
+    },
+    "scamp_score_multiplier": {
+        "name": "Front Row Multiplier",
+        "description": "This number is multiplied by Demon Points and the level to calculate the points for the demons in the first two rows.",
+        "increment": 1
+    },
+    "fledgling_score_multiplier": {
+        "name": "Middle Row Multiplier",
+        "description": "This number is multiplied by Demon Points and the level to calculate the points for the demons in the middle two rows.",
+        "increment": 1
+    },
+    "skull_score_multiplier": {
+        "name": "Last Row Multiplier",
+        "description": "This number is multiplied by Demon Points and the level to calculate the points for the demons in the last two rows.",
+        "increment": 1
+    },
+    "eye_score_multipler": {
+        "name": "Special Demon Multiplier",
+        "description": "This number is multiplied by Demon Points and the level to calculate the points of the special demon.",
+        "increment": 1
+    },
+    "demon_base_speed_in_pixels_per_second": {
+        "name": "Base Demon Speed",
+        "description": "The starting speed at the beginning of the first level. The base speed that will be increased with each row and level.",
+        "increment": 5
+    },
+    "demon_acceleration_in_pixels_per_second": {
+        "name": "Demon Row Acceleration",
+        "description": "The speed increase of the demons after they have moved a certain number of rows, which is identified by 'Rows At Speed'. This is in pixels per second.",
+        "increment": 1
+    },
+    "demon_level_acceleration_percentage": {
+        "name": "Level Acceleration",
+        "description": "The percentage that dictates the demons speed increase per level.",
+        "increment": 5
+    },
+    "demon_attack_rate_in_seconds": {
+        "name": "Demon Attack Rate",
+        "description": "How many milliseconds a demon will wait before being allowed to attack. Demon may not decide to attack at this time.",
+        "increment": 250
+    },
+    "demon_projectile_speed_in_pixels_per_second": {
+        "name": "Fire Speed",
+        "description": "The speed at which the demons projectiles move, in pixels per second.",
+        "increment": 10
+    },
+    "demon_attack_chance_percentage": {
+        "name": "Attack Chance",
+        "description": "The percentage dictating how likely a demon will be to attack after pausing for the previous attack, which is determined by 'Demon Attack Rate'",
+        "increment": 5
+    },
+    "attack_texture_update_rate_per_second": {
+        "name": "Attack Animation Speed",
+        "description": "How many times the player sprite updates per second when casting attack magic.",
+        "increment": 1
+    },
+    "casting_shield_texutre_update_rate_per_second": {
+        "name": "Shield Animation Speed",
+        "description": "How many times the player sprite updates per second when casting a shield.",
+        "increment": 1
+    },
+    "mage_speed_in_pixels_per_second": {
+        "name": "Player Speed",
+        "description": "How quickly the player can move left and right",
+        "increment": 10
+    },
+    "mage_attack_rate_per_second": {
+        "name": "Player Attack Rate",
+        "description": "The number of attacks a player can get within a second.",
+        "increment": 1
+    },
+    "mage_projectile_speed_in_pixels_per_second": {
+        "name": "Magic Speed",
+        "description": "The speed at which the players projectiles move, in pixels per second.",
+        "increment": 10
+    }
+}
