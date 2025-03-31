@@ -3,7 +3,7 @@
 
 Mage::Mage(Texture2D character_texture, Texture2D projectile_texture, Properties& properties) : 
 	Character(character_texture, projectile_texture, starting_x_pos, starting_y_pos,
-		properties.getFloatPropertyValue("Mage_speed_in_pixels_per_second"), properties.getFloatPropertyValue("Mage_attack_rate_per_second"),
+		properties.getFloatPropertyValue("Mage_speed_in_pixels_per_second"), properties.getFloatPropertyValue("Mage_attack_rate_in_millisecond"),
 		-1, properties.getFloatPropertyValue("Number_of_texure_updates_rate_per_second")
 	)
 {
@@ -13,7 +13,7 @@ Mage::Mage(Texture2D character_texture, Texture2D projectile_texture, Properties
 	Shield_count = properties.getIntPropertyValue("Number_of_starting_shields");
 	Base_Texture_update_rate = properties.getFloatPropertyValue("Number_of_texure_updates_rate_per_second");
 	Attack_texture_update_rate_per_second = properties.getFloatPropertyValue("Attack_texture_update_rate_per_second");
-	Casting_texture_update_rate_per_second = properties.getFloatPropertyValue("Casting_shield_texutre_update_rate_per_second");
+	Casting_texture_update_rate_per_second = properties.getFloatPropertyValue("Casting_shield_texture_update_rate_per_second");
 }
 
 

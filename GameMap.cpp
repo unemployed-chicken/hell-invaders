@@ -3,7 +3,7 @@
 GameMap::GameMap(map<string, Texture2D> textures)
 	: Background(textures["main_background_1"]), Midground(textures["main_background_2"]), Foreground(textures["main_background_3"]), 
 	  mage(textures["mage"], textures["magic"], Props), Regular_shield(textures["full_shield"]), Revive_shield(textures["revive_shield"]) 
-{ }
+{}
 
 
 bool GameMap::hasDemons() { return Demons_columns.getCount() > 0; }
@@ -205,20 +205,20 @@ void GameMap::checkPropertiesPageUserInput() {
 		shared_ptr<Node<Property>> current_property = Props.getPropertyByPosition(Property_selector_coordinate);
 		current_property->Data->incrementValue(-1);
 
-		// TODO: Change the Properties creation method to take in an Incrementor and set Property.Increment_counter to that value
-		// TODO: Create a JSON file containing the user friendly name of a property and its description
-		// TODO: Save the User Friendly name and description to the Property object
+		// 
+		// PROP CHANGES
 		// TODO: number_of_texure_updates_rate_per_second changed to int and do 1/x
-		// TODO: demon_level_acceleration_percentage changed to an int and (x/100) + 100 to get the percentage increase. 
-		// TODO: demon_attack_rate_in_seconds convert to milliseconds
-		// TODO: Mage Speed Acceleration per round?
-		// TODO: Prop for projectile collision
-		// TODO: Prop for turning off music
-		// TODO: Change demon_projectile_speed_in_pixels_per_second to an int
-		// TODO: Move demon_attack_chance_percentage next to demon_attack_rate_in_seconds 
+
+
 		// TODO: change attack_texture_update_rate_per_second an int and divide by 1/x
-		// TODO: change casting_shield_texutre_update_rate_per_second an int and divide by 1/x (ALSO: texture is spelt wrong.)
-		// TODO: change mage_attack_rate_per_second to an int and divide by 1/x
+		// TODO: change tasting_shield_texture_update_rate_per_second an int and divide by 1/x
+
+		// TODO: Revive Shield Movement Speed to int
+		// TODO: Demon base speed in pixels per second to int
+		// TODO: Demon attack rate in milliseconds to int
+		// TODO: Mage Speed in pixels per second to int
+		// TODO: Mage projectile speed in pixels per second to int
+
 
 		Props.updateIntProperty(current_property->Data->getKey(), static_cast<int>(current_property->Data->getValue()));
 	}
@@ -422,10 +422,16 @@ void GameMap::displayHomeMenu(map<string, Texture2D> textures, const float dT) {
 	/*
 	* TODO: 
 	* Play music on home screen
+	* Use is_music_on to determine if music should be played
+	* 
+	* implement a should_projectiles_collide check and do not destroy projectiles if false
 	* 
 	* Provide menu navigation instructions
 	* High Score can log first three initials
 	* After death, either wait 5 seconds or press enter to continue to main screen
+	* 
+		// TODO: Mage Speed Acceleration per round?
+	* Should Mage Speed increase per round? (mage_level_acceleration_in_pixels_per_second)
 	*/
 }
 
@@ -464,7 +470,7 @@ void GameMap::generateDemonsList(map<string, Texture2D> textures) {
 	for (int i = 0; i < Props.getIntPropertyValue("Number_of_demon_columns"); ++i) {
 		DoubleLinkedList<Demon> row{};
 		int y_pos{ 25 };
-		double demon_speed{ Props.getFloatPropertyValue("Demon_base_speed_in_pixels_per_second") + Props.getFloatPropertyValue("Demon_level_acceleration_percentage") * (level - 1)};
+		double demon_speed{ Props.getFloatPropertyValue("Demon_base_speed_in_pixels_per_second") + Props.getIntPropertyValue("Demon_level_acceleration_in_pixels_per_second") * (level - 1)};
 		int skull_points = Props.getIntPropertyValue("Demon_base_points") * Props.getIntPropertyValue("Skull_score_multiplier");
 		int fledge_points = Props.getIntPropertyValue("Demon_base_points") * Props.getIntPropertyValue("Fledgling_score_multiplier");
 		int scamp_points = Props.getIntPropertyValue("Demon_base_points") * Props.getIntPropertyValue("Scamp_score_multiplier");

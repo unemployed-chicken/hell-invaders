@@ -2,7 +2,7 @@
 
 Character::Character(
 		Texture2D character_texture, Texture2D projectile_texture,
-		float pos_x, float pos_y, float speed, float attack_rate, 
+		float pos_x, float pos_y, float speed, float attack_rate_in_milliseconds, 
 		int attack_direction, float texture_update_rate
 ) {
 	Active_texture = character_texture;
@@ -10,7 +10,7 @@ Character::Character(
 	X_coordinate = pos_x;
 	Y_coordinate = pos_y;
 	Speed = speed;
-	Attack_rate = attack_rate;
+	Attack_rate = attack_rate_in_milliseconds / 1000;
 	Attack_direction = attack_direction;
 	Texture_update_rate = texture_update_rate;
 

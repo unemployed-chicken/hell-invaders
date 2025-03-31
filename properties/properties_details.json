@@ -29,6 +29,16 @@
         "description": "Determines whether a new game should start with shields activated.",
         "increment": 1
     },
+    "should_projectiles_collide": {
+        "name": "Projectile Collision",
+        "description": "When turned on, magic attack and fire attacks collide and destroy each other.",
+        "increment": 1
+    },
+    "is_music_on": {
+        "name": "Music",
+        "description": "Determines whether music will play during playthrough.",
+        "increment": 1
+    },
     "number_of_demon_columns": {
         "name": "Demon Columns",
         "description": "The number of demon columns a round should have. A column contains 6 demons.",
@@ -74,12 +84,12 @@
         "description": "The speed increase of the demons after they have moved a certain number of rows, which is identified by 'Rows At Speed'. This is in pixels per second.",
         "increment": 1
     },
-    "demon_level_acceleration_percentage": {
+    "demon_level_acceleration_in_pixels_per_second": {
         "name": "Level Acceleration",
-        "description": "The percentage that dictates the demons speed increase per level.",
-        "increment": 5
+        "description": "The number of pixels per second the demons at the beginning of each new level.",
+        "increment": 2
     },
-    "demon_attack_rate_in_seconds": {
+    "demon_attack_rate_in_milliseconds": {
         "name": "Demon Attack Rate",
         "description": "How many milliseconds a demon will wait before being allowed to attack. Demon may not decide to attack at this time.",
         "increment": 250
@@ -109,10 +119,10 @@
         "description": "How quickly the player can move left and right",
         "increment": 10
     },
-    "mage_attack_rate_per_second": {
+    "mage_attack_rate_in_millisecond": {
         "name": "Player Attack Rate",
         "description": "The number of attacks a player can get within a second.",
-        "increment": 1
+        "increment": 10
     },
     "mage_projectile_speed_in_pixels_per_second": {
         "name": "Magic Speed",

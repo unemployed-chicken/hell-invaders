@@ -1,9 +1,9 @@
 #include <iostream>
 #include<map>
-#include "raylib.h"
-#include "raymath.h"
 #include "GameMap.h"
 #include "Mage.h"
+#include "raylib.h"
+#include "raymath.h"
 using std::map;
 using std::string;
 
@@ -18,6 +18,7 @@ const int targetFps{ 60 };
 // General
 const bool is_windows_os{ true };
 
+// Declares generateTexture() in Hell_Invaders.cpp.
 map<string, Texture2D> generateTexture();
 
 int main() {

@@ -8,6 +8,7 @@ void Properties::assignPreviousandNext(shared_ptr<Node<Property>> previous, shar
 
 
 Properties::Properties() {
+	rapidjson::Document properties_details = generatePropertyDescriptions();
 	FILE* fp;
     is_windows_os ? fopen_s(&fp, "properties\\user_defined_properties.json", "rb") : fopen_s(&fp, "properties/user_defined_properties.json", "r"); // non-Windows use "r" 
 
@@ -28,36 +29,38 @@ Properties::Properties() {
     int i{ 0 };
 
     // General Game Properties
-    i = genertateIntProperty("number_of_starting_lives", "Number_of_starting_lives", number_of_starting_lives, i, nullptr);
-	i = genertateIntProperty("number_of_starting_shields", "Number_of_starting_shields", number_of_starting_shields, i, Props["Number_of_starting_lives"]);
-	i = genertateFloatProperty("number_of_texure_updates_rate_per_second", "Number_of_texure_updates_rate_per_second", number_of_texure_updates_rate_per_second, i, Props["Number_of_starting_shields"]); // TODO: Change this to pull an int and divide 1 by the number provided
-	i = genertateFloatProperty("revive_shield_movement_speed_in_pixels_per_second", "Revive_shield_movement_speed_in_pixels_per_second", revive_shield_movement_speed_in_pixels_per_second, i, Props["Number_of_texure_updates_rate_per_second"]);
-	i = genertateBoolProperty("should_skip_intro", "Should_skip_intro", should_skip_intro, i, Props["Revive_shield_movement_speed_in_pixels_per_second"]);
-	i = genertateBoolProperty("should_start_with_shields_active", "Should_start_with_shields_active", should_start_with_shields_active, i, Props["Should_skip_intro"]);
-    
+    i = genertateIntProperty("number_of_starting_lives", "Number_of_starting_lives", number_of_starting_lives, i, nullptr, properties_details);
+	i = genertateIntProperty("number_of_starting_shields", "Number_of_starting_shields", number_of_starting_shields, i, Props["Number_of_starting_lives"], properties_details);
+	i = genertateFloatProperty("number_of_texure_updates_rate_per_second", "Number_of_texure_updates_rate_per_second", number_of_texure_updates_rate_per_second, i, Props["Number_of_starting_shields"], properties_details); // TODO: Change this to pull an int and divide 1 by the number provided
+	i = genertateFloatProperty("revive_shield_movement_speed_in_pixels_per_second", "Revive_shield_movement_speed_in_pixels_per_second", revive_shield_movement_speed_in_pixels_per_second, i, Props["Number_of_texure_updates_rate_per_second"], properties_details);
+	i = genertateBoolProperty("should_skip_intro", "Should_skip_intro", should_skip_intro, i, Props["Revive_shield_movement_speed_in_pixels_per_second"], properties_details);
+	i = genertateBoolProperty("should_start_with_shields_active", "Should_start_with_shields_active", should_start_with_shields_active, i, Props["Should_skip_intro"], properties_details);
+	i = genertateBoolProperty("should_projectiles_collide", "Should_projectiles_collide", should_projectiles_collide, i, Props["Should_start_with_shields_active"], properties_details);
+	i = genertateBoolProperty("is_music_on", "Is_music_on", is_music_on, i, Props["Should_projectiles_collide"], properties_details);
+
 	// Demon Properties
-	i = genertateIntProperty("number_of_demon_columns", "Number_of_demon_columns", number_of_demon_columns, i, Props["Should_start_with_shields_active"]);
-	i = genertateIntProperty("number_of_rows_before_speed_boost", "Number_of_rows_before_speed_boost", number_of_rows_before_speed_boost, i, Props["Number_of_demon_columns"]);
-	i = genertateIntProperty("demon_base_points", "Demon_base_points", demon_base_points, i, Props["Number_of_rows_before_speed_boost"]);
-	i = genertateIntProperty("scamp_score_multiplier", "Scamp_score_multiplier", scamp_score_multiplier, i, Props["Demon_base_points"]);
-	i = genertateIntProperty("fledgling_score_multiplier", "Fledgling_score_multiplier", fledgling_score_multiplier, i, Props["Scamp_score_multiplier"]);
-	i = genertateIntProperty("skull_score_multiplier", "Skull_score_multiplier", skull_score_multiplier, i, Props["Fledgling_score_multiplier"]);
-	i = genertateIntProperty("eye_score_multipler", "Eye_score_multipler", eye_score_multipler, i, Props["Skull_score_multiplier"]);
+	i = genertateIntProperty("number_of_demon_columns", "Number_of_demon_columns", number_of_demon_columns, i, Props["Is_music_on"], properties_details);
+	i = genertateIntProperty("number_of_rows_before_speed_boost", "Number_of_rows_before_speed_boost", number_of_rows_before_speed_boost, i, Props["Number_of_demon_columns"], properties_details);
+	i = genertateIntProperty("demon_base_points", "Demon_base_points", demon_base_points, i, Props["Number_of_rows_before_speed_boost"], properties_details);
+	i = genertateIntProperty("scamp_score_multiplier", "Scamp_score_multiplier", scamp_score_multiplier, i, Props["Demon_base_points"], properties_details);
+	i = genertateIntProperty("fledgling_score_multiplier", "Fledgling_score_multiplier", fledgling_score_multiplier, i, Props["Scamp_score_multiplier"], properties_details);
+	i = genertateIntProperty("skull_score_multiplier", "Skull_score_multiplier", skull_score_multiplier, i, Props["Fledgling_score_multiplier"], properties_details);
+	i = genertateIntProperty("eye_score_multipler", "Eye_score_multipler", eye_score_multipler, i, Props["Skull_score_multiplier"], properties_details);
 
     // Demon Mechanic Properties
-	i = genertateFloatProperty("demon_base_speed_in_pixels_per_second", "Demon_base_speed_in_pixels_per_second", demon_base_speed_in_pixels_per_second, i, Props["Eye_score_multipler"]);
-	i = genertateFloatProperty("demon_acceleration_in_pixels_per_second", "Demon_acceleration_in_pixels_per_second", demon_acceleration_in_pixels_per_second, i, Props["Demon_base_speed_in_pixels_per_second"]);
-	i = genertateFloatProperty("demon_level_acceleration_percentage", "Demon_level_acceleration_percentage", demon_level_acceleration_percentage, i, Props["Demon_acceleration_in_pixels_per_second"]);
-	i = genertateFloatProperty("demon_attack_rate_in_seconds", "Demon_attack_rate_in_seconds", demon_attack_rate_in_seconds, i, Props["Demon_level_acceleration_percentage"]);
-	i = genertateFloatProperty("demon_projectile_speed_in_pixels_per_second", "Demon_projectile_speed_in_pixels_per_second", demon_projectile_speed_in_pixels_per_second, i, Props["Demon_attack_rate_in_seconds"]);
-	i = genertateIntProperty("demon_attack_chance_percentage", "Demon_attack_chance_percentage", demon_attack_chance_percentage, i, Props["Demon_projectile_speed_in_pixels_per_second"]);
+	i = genertateFloatProperty("demon_base_speed_in_pixels_per_second", "Demon_base_speed_in_pixels_per_second", demon_base_speed_in_pixels_per_second, i, Props["Eye_score_multipler"], properties_details);
+	i = genertateIntProperty("demon_acceleration_in_pixels_per_second", "Demon_acceleration_in_pixels_per_second", demon_acceleration_in_pixels_per_second, i, Props["Demon_base_speed_in_pixels_per_second"], properties_details);
+	i = genertateIntProperty("demon_level_acceleration_in_pixels_per_second", "Demon_level_acceleration_in_pixels_per_second", demon_level_acceleration_in_pixels_per_second, i, Props["Demon_acceleration_in_pixels_per_second"], properties_details);
+	i = genertateIntProperty("demon_projectile_speed_in_pixels_per_second", "Demon_projectile_speed_in_pixels_per_second", demon_projectile_speed_in_pixels_per_second, i, Props["Demon_level_acceleration_in_pixels_per_second"], properties_details);
+    i = genertateFloatProperty("demon_attack_rate_in_milliseconds", "Demon_attack_rate_in_milliseconds", demon_attack_rate_in_milliseconds, i, Props["Demon_projectile_speed_in_pixels_per_second"], properties_details);
+    i = genertateIntProperty("demon_attack_chance_percentage", "Demon_attack_chance_percentage", demon_attack_chance_percentage, i, Props["Demon_attack_rate_in_milliseconds"], properties_details);
 
     // Mage Properties
-	i = genertateFloatProperty("attack_texture_update_rate_per_second", "Attack_texture_update_rate_per_second", attack_texture_update_rate_per_second, i, Props["Demon_attack_chance_percentage"]);
-	i = genertateFloatProperty("casting_shield_texutre_update_rate_per_second", "Casting_shield_texutre_update_rate_per_second", casting_shield_texutre_update_rate_per_second, i, Props["Attack_texture_update_rate_per_second"]);
-	i = genertateFloatProperty("mage_speed_in_pixels_per_second", "Mage_speed_in_pixels_per_second", mage_speed_in_pixels_per_second, i, Props["Casting_shield_texutre_update_rate_per_second"]);
-	i = genertateFloatProperty("mage_attack_rate_per_second", "Mage_attack_rate_per_second", mage_attack_rate_per_second, i, Props["Mage_speed_in_pixels_per_second"]);
-	i = genertateFloatProperty("mage_projectile_speed_in_pixels_per_second", "Mage_projectile_speed_in_pixels_per_second", mage_projectile_speed_in_pixels_per_second, i, Props["Mage_attack_rate_per_second"]);
+	i = genertateFloatProperty("attack_texture_update_rate_per_second", "Attack_texture_update_rate_per_second", attack_texture_update_rate_per_second, i, Props["Demon_attack_chance_percentage"], properties_details);
+	i = genertateFloatProperty("casting_shield_texture_update_rate_per_second", "Casting_shield_texture_update_rate_per_second", casting_shield_texture_update_rate_per_second, i, Props["Attack_texture_update_rate_per_second"], properties_details);
+	i = genertateFloatProperty("mage_speed_in_pixels_per_second", "Mage_speed_in_pixels_per_second", mage_speed_in_pixels_per_second, i, Props["Casting_shield_texture_update_rate_per_second"], properties_details);
+	i = genertateIntProperty("mage_attack_rate_in_millisecond", "Mage_attack_rate_in_millisecond", mage_attack_rate_in_millisecond, i, Props["Mage_speed_in_pixels_per_second"], properties_details);
+	i = genertateFloatProperty("mage_projectile_speed_in_pixels_per_second", "Mage_projectile_speed_in_pixels_per_second", mage_projectile_speed_in_pixels_per_second, i, Props["Mage_attack_rate_in_millisecond"], properties_details);
 
     count = i;
 }
@@ -123,34 +126,76 @@ void Properties::updateFloatProperty(string key, float value) {
     }
 }
 
-int Properties::genertateIntProperty(string document_key, string props_key, int default_value, int count, shared_ptr<Node<Property>> previous) {
+int Properties::genertateIntProperty(string document_key, string props_key, int default_value, int count, shared_ptr<Node<Property>> previous, rapidjson::Document& properties_details) {
     count++;
+    string name;
+    string description;
+    int increment_counter;
     int value;
-	Properties_document.HasMember(document_key.c_str()) ? value = Properties_document[document_key.c_str()].GetInt() : value = default_value;
+	
+    Properties_document.HasMember(document_key.c_str()) ? value = Properties_document[document_key.c_str()].GetInt() : value = default_value;
+    if (properties_details.HasMember(document_key.c_str())) {
+		name = properties_details[document_key.c_str()]["name"].GetString();
+		description = properties_details[document_key.c_str()]["description"].GetString();
+		increment_counter = properties_details[document_key.c_str()]["increment"].GetInt();
+	}
+    else {
+        name = "None";
+        description = "None";
+        increment_counter = 1;
+    }
 
-	shared_ptr<Property> prop = make_shared<Property>(props_key, value, count);
+	shared_ptr<Property> prop = make_shared<Property>(props_key, value, count, description, name, increment_counter, default_value);
 	Props[props_key] = make_shared<Node<Property>>(prop);
     assignPreviousandNext(previous, Props[props_key]);
     return count;
 }
 
-int Properties::genertateBoolProperty(string document_key, string props_key, bool default_value, int count, shared_ptr<Node<Property>> previous) {
+int Properties::genertateBoolProperty(string document_key, string props_key, bool default_value, int count, shared_ptr<Node<Property>> previous, rapidjson::Document& properties_details) {
     count++;
+    string name;
+    string description;
+    int increment_counter;
     bool value;
-    Properties_document.HasMember(document_key.c_str()) ? value = Properties_document[document_key.c_str()].GetBool() : value = default_value;
 
-    shared_ptr<Property> prop = make_shared<Property>(props_key, value, count);
+    Properties_document.HasMember(document_key.c_str()) ? value = Properties_document[document_key.c_str()].GetBool() : value = default_value;
+    if (properties_details.HasMember(document_key.c_str())) {
+        name = properties_details[document_key.c_str()]["name"].GetString();
+        description = properties_details[document_key.c_str()]["description"].GetString();
+        increment_counter = properties_details[document_key.c_str()]["increment"].GetInt();
+    }
+    else {
+        name = "None";
+        description = "None";
+        increment_counter = 1;
+    }
+
+    shared_ptr<Property> prop = make_shared<Property>(props_key, value, count, description, name, increment_counter, default_value);
     Props[props_key] = make_shared<Node<Property>>(prop);
     assignPreviousandNext(previous, Props[props_key]);
     return count;
 }
 
-int Properties::genertateFloatProperty(string document_key, string props_key, float default_value, int count, shared_ptr<Node<Property>> previous) {
+int Properties::genertateFloatProperty(string document_key, string props_key, float default_value, int count, shared_ptr<Node<Property>> previous, rapidjson::Document& properties_details) {
     count++;
     float value;
-    Properties_document.HasMember(document_key.c_str()) ? value = Properties_document[document_key.c_str()].GetFloat() : value = default_value;
+    string name;
+    string description;
+    int increment_counter;
 
-    shared_ptr<Property> prop = make_shared<Property>(props_key, value, count);
+    Properties_document.HasMember(document_key.c_str()) ? value = Properties_document[document_key.c_str()].GetFloat() : value = default_value;
+    if (properties_details.HasMember(document_key.c_str())) {
+        name = properties_details[document_key.c_str()]["name"].GetString();
+        description = properties_details[document_key.c_str()]["description"].GetString();
+        increment_counter = properties_details[document_key.c_str()]["increment"].GetInt();
+    }
+    else {
+        name = "None";
+        description = "None";
+        increment_counter = 1;
+    }
+
+    shared_ptr<Property> prop = make_shared<Property>(props_key, value, count, description, name, increment_counter, default_value);
     Props[props_key] = make_shared<Node<Property>>(prop);
     assignPreviousandNext(previous, Props[props_key]);
     return count;
@@ -172,6 +217,29 @@ shared_ptr<Node<Property>> Properties::getPropertyByName(string property) {
     return Props[property]; 
 }
 
+rapidjson::Document Properties::generatePropertyDescriptions() {
+    rapidjson::Document properties_details_document;
+
+    FILE* fp;
+    is_windows_os ? fopen_s(&fp, "properties\\properties_details.json", "rb") : fopen_s(&fp, "properties/properties_details.json", "r"); // non-Windows use "r" 
+
+    if (fp) {
+        char readBuffer[65536];
+        rapidjson::FileReadStream is(fp, readBuffer, sizeof(readBuffer));
+        properties_details_document.ParseStream(is);
+        fclose(fp);
+    }
+    else {
+        properties_details_document.SetObject();
+    }
+
+    if (properties_details_document.HasParseError() || !properties_details_document.IsObject()) {
+        properties_details_document.SetObject();
+    }
+
+    return properties_details_document;
+}
+
 
 
 
@@ -189,9 +257,9 @@ shared_ptr<Node<Property>> Properties::getPropertyByName(string property) {
 *    
 */
 
-Property::Property(string key, float value, int location) : Key(key), Value(value), Location(location), IsFloat(true), IsBool(false) {}
-Property::Property(string key, int value, int location) : Key(key), Value(static_cast<float>(value)), Location(location), IsFloat(false), IsBool(false) {}
-Property::Property(string key, bool value, int location) : Key(key), Value(static_cast<float>(value)), Location(location), IsFloat(false), IsBool(true) {}
+Property::Property(string key, float value, int location, string description, string name, int increment_counter, float default_value) : Key(key), Value(value), Location(location), IsFloat(true), IsBool(false), Description(description), Name(name), Increment_counter(increment_counter), Default_value(default_value) {}
+Property::Property(string key, int value, int location, string description, string name, int increment_counter, int default_value) : Key(key), Value(static_cast<float>(value)), Location(location), IsFloat(false), IsBool(false), Description(description), Name(name), Increment_counter(increment_counter), Default_value(static_cast<float>(default_value)) {}
+Property::Property(string key, bool value, int location, string description, string name, int increment_counter, bool default_value) : Key(key), Value(static_cast<float>(value)), Location(location), IsFloat(false), IsBool(true), Description(description), Name(name), Increment_counter(increment_counter), Default_value(static_cast<float>(default_value)) {}
 Property::Property(){}
 
 void Property::setKey(string key) { Key = key; }
