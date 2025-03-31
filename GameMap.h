@@ -45,8 +45,7 @@ constexpr float select_box_movement_minimum_cooldown{ .20f };
 constexpr int properties_starting_y_coordinate{ 300 };
 constexpr int properties_spacing{ 75 };
 constexpr int properties_font_size{ 15 };
-constexpr int save_and_exit_width{ properties_font_size * 8 };
-constexpr int other_close_properties_width{ properties_font_size * 9 };
+
 
 const float demons_x_range[2]{ 5.0f, window_dimensions[1] - (16.f * character_scale) + 5.f}; // First is Left Limit, Second is Right Limit
 
@@ -87,9 +86,10 @@ class GameMap {
 	bool Is_new_high_score_screen{ false };
 	bool Is_end_game_requested{ false };
 	
-	int drawPlayerPropertyOptions();
+	void drawPlayerPropertyOptions();
 	void drawPlayerMenuOptions();
 	void drawProperty(shared_ptr<Node<Property>> property);
+	void drawPropertyDescription(shared_ptr<Node<Property>> property);
 	void drawBackground();
 	void drawSaveAndExitOptions();
 	void drawLives();

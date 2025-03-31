@@ -25,7 +25,7 @@ Projectile::Projectile(
 
 	isMagic ? Width = texture.width / number_of_objects_in_x - 5: Width = texture.width / number_of_objects_in_x;
 	Height = texture.height / number_of_objects_in_y;
-	isMagic ? Texture_update_rate = magic_texure_update_rate : Texture_update_rate = properties.getFloatPropertyValue("Number_of_texure_updates_rate_per_second");
+	isMagic ? Texture_update_rate = magic_texure_update_rate : Texture_update_rate = properties.getPerSecondPropertyValue("Number_of_texure_updates_rate_per_second");
 
 }
 

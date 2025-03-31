@@ -204,23 +204,8 @@ void GameMap::checkPropertiesPageUserInput() {
 	if ((IsKeyPressed(KEY_LEFT) || IsKeyPressed(KEY_A)) && (Select_box_movement_cooldown >= select_box_movement_minimum_cooldown)) {
 		shared_ptr<Node<Property>> current_property = Props.getPropertyByPosition(Property_selector_coordinate);
 		current_property->Data->incrementValue(-1);
-
-		// 
-		// PROP CHANGES
-		// TODO: number_of_texure_updates_rate_per_second changed to int and do 1/x
-
-
-		// TODO: change attack_texture_update_rate_per_second an int and divide by 1/x
-		// TODO: change tasting_shield_texture_update_rate_per_second an int and divide by 1/x
-
-		// TODO: Revive Shield Movement Speed to int
-		// TODO: Demon base speed in pixels per second to int
-		// TODO: Demon attack rate in milliseconds to int
-		// TODO: Mage Speed in pixels per second to int
-		// TODO: Mage projectile speed in pixels per second to int
-
-
 		Props.updateIntProperty(current_property->Data->getKey(), static_cast<int>(current_property->Data->getValue()));
+		// TODO: Do we need updateFloatProperty or UpdateBoolProperty?
 	}
 	else if ((IsKeyPressed(KEY_RIGHT) || IsKeyPressed(KEY_D)) && (Select_box_movement_cooldown >= select_box_movement_minimum_cooldown)) {
 		shared_ptr<Node<Property>> current_property = Props.getPropertyByPosition(Property_selector_coordinate);
@@ -327,8 +312,7 @@ void GameMap::drawPlayerMenuOptions() {
 
 void GameMap::drawProperty(shared_ptr<Node<Property>> property) {
 	int y_position = properties_starting_y_coordinate + (property->Data->getLocation() - Property_selector_coordinate) * properties_spacing;
-	DrawText(property->Data->getKey().c_str(), 25, y_position, properties_font_size, WHITE);
-	
+	DrawText(property->Data->getName().c_str(), 25, y_position, properties_font_size, WHITE);
 
 	//int value_x_position = property->Data->getPropertyWidth(properties_font_size) + 15; // Spacinge is not working as expected
 	int value_x_position = 450; // Spacinge is not working as expected
@@ -339,16 +323,37 @@ void GameMap::drawProperty(shared_ptr<Node<Property>> property) {
 	else { drawIntProperty(Props.getIntPropertyValue(property->Data->getKey()), value_x_position, y_position); }
 }
 
-int GameMap::drawPlayerPropertyOptions() {
-	int width{ save_and_exit_width };
-	if (Select_box_location.x > 50) { width = other_close_properties_width; }
+void GameMap::drawPropertyDescription(shared_ptr<Node<Property>> property) {
+	int x_position = 10;
+	int y_position = 10;
+
+	string property_min{ "Min: " };
+	property_min.append(to_string(property->Data->getMinValue()));
+
+	string property_max{ "Max: " };
+	property_max.append(to_string(property->Data->getMaxValue()));
+
+	string property_default{ "Default: " };
+	property_default.append(to_string(property->Data->getDefaultValue()));
+
+	DrawRectangleLines(x_position, y_position, window_dimensions[1] - (x_position * 2), 100, WHITE);
+
+	DrawText(property->Data->getDescription().c_str(), x_position + 10, y_position + 10, properties_font_size, WHITE);
+	DrawText(property_min.c_str(), 150, 90, properties_font_size, WHITE);
+	DrawText(property_max.c_str(), 300, 90, properties_font_size, WHITE);
+	DrawText(property_default.c_str(), 450, 90, properties_font_size, WHITE);
 	
+}
+
+void GameMap::drawPlayerPropertyOptions() {
 	shared_ptr<Node<Property>> current_property = Visible_properties.getHead();
 	
 	while (current_property) {
 		drawProperty(current_property);
 		if (current_property->Data->getLocation() == Property_selector_coordinate && Select_box_location.y < 600) {
-			width = current_property->Data->getPropertyWidth(properties_font_size); 
+			//width = current_property->Data->getPropertyWidth(properties_font_size); 
+			drawPropertyDescription(current_property);
+			// Incorporate Description (include min, max, and default value logic)
 		}
 
 		current_property = current_property->Next;
@@ -357,7 +362,7 @@ int GameMap::drawPlayerPropertyOptions() {
 	
 	drawSaveAndExitOptions();
 
-	return width;
+	//return width;
 }
 
 void GameMap::drawLives() {
@@ -430,13 +435,11 @@ void GameMap::displayHomeMenu(map<string, Texture2D> textures, const float dT) {
 	* High Score can log first three initials
 	* After death, either wait 5 seconds or press enter to continue to main screen
 	* 
-		// TODO: Mage Speed Acceleration per round?
 	* Should Mage Speed increase per round? (mage_level_acceleration_in_pixels_per_second)
 	*/
 }
 
 void GameMap::displayPropertiesMenu(map<string, Texture2D> textures, const float dT) {
-	// TODO: Allow user to adjust properties
 	Select_box_movement_cooldown += dT;
 
 	if (Visible_properties.getCount() < 1) { populateVisibleProperties(); }
@@ -685,7 +688,12 @@ bool GameMap::playerPropertiesScreenTick() {
 	}
 
 	// Draw Player Options and return width of the currently selectable option
-	int width = drawPlayerPropertyOptions();
+	drawPlayerPropertyOptions();
+
+	int width{};
+	if (Select_box_location.y < 600) { width = 525;	}
+	else if (Select_box_location.x <= 50) { width = 115; }
+	else { width = 135; }
 
 	// Draw Select Box
 	DrawRectangleLines(Select_box_location.x - 5, Select_box_location.y - 5, width, properties_font_size + 10, RED);

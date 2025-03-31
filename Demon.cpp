@@ -3,7 +3,7 @@
 
 Demon::Demon(Texture2D character_texture, Texture2D projectile_texture, Properties& properties, int demon_x_pos, int demon_y_pos, int texture_count, int points, float speed) :
 	Character(character_texture, projectile_texture, demon_x_pos, demon_y_pos, speed, properties.getFloatPropertyValue("Demon_attack_rate_in_milliseconds"), 1, 
-		properties.getFloatPropertyValue("Number_of_texure_updates_rate_per_second")
+		properties.getPerSecondPropertyValue("Number_of_texure_updates_rate_per_second")
 	) {
 	Width = static_cast<float>(character_texture.width) / texture_count;
 	Height = static_cast<float>(character_texture.height);
