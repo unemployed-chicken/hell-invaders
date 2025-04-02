@@ -17,6 +17,7 @@ const int targetFps{ 60 };
 
 // General
 const bool is_windows_os{ true };
+constexpr int end_game_screen_pause_time{ 3 }; // seconds
 
 // Declares generateTexture() in Hell_Invaders.cpp.
 map<string, Texture2D> generateTexture();
@@ -25,6 +26,8 @@ int main() {
     srand(time(0));
     InitWindow(window_dimensions[0], window_dimensions[1], "Hell Invaders");
     SetTargetFPS(targetFps);
+
+    float time_on_screen{};
 
     // Create Textures
     map<string, Texture2D> textures = generateTexture();
@@ -44,7 +47,12 @@ int main() {
         }
         else if (map.getMage().getLives() == 0 || map.hasInvaded()) {
             // Draw Game Over
+            time_on_screen += GetFrameTime();
             map.drawEndGame();
+            if (time_on_screen >= end_game_screen_pause_time) { 
+                time_on_screen = 0;
+                map = GameMap(textures); 
+            }
         }
         else if (map.getIsIntro()) {
             // Run Intro Screen

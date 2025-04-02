@@ -43,8 +43,9 @@ constexpr float shield_spacing{ 225 };
 constexpr int number_of_demon_textures{ 4 };
 constexpr float select_box_movement_minimum_cooldown{ .20f };
 constexpr int properties_starting_y_coordinate{ 300 };
-constexpr int properties_spacing{ 75 };
+constexpr int properties_spacing{ 60 };
 constexpr int properties_font_size{ 15 };
+constexpr int save_and_exit_y_coordinate{ 525 };
 
 
 const float demons_x_range[2]{ 5.0f, window_dimensions[1] - (16.f * character_scale) + 5.f}; // First is Left Limit, Second is Right Limit
@@ -88,6 +89,7 @@ class GameMap {
 	
 	void drawPlayerPropertyOptions();
 	void drawPlayerMenuOptions();
+	void drawNavigationInstructions(bool isPropertiesMenu);
 	void drawProperty(shared_ptr<Node<Property>> property);
 	void drawPropertyDescription(shared_ptr<Node<Property>> property);
 	void drawBackground();

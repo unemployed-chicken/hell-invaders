@@ -147,13 +147,13 @@ void GameMap::drawBackground() {
 }
 
 void GameMap::drawSaveAndExitOptions() {
-	string save{ "Save and Exit" }; // 13
-	string restore_defaults{ "Restore Defaults" }; // 16
-	string exit{ "Exit without Save" }; // 17
+	string save{ "Save and Exit" };
+	string restore_defaults{ "Restore Defaults" };
+	string exit{ "Exit without Save" };
 
-	DrawText(save.c_str(), 50, 600, properties_font_size, WHITE);
-	DrawText(restore_defaults.c_str(), 250, 600, properties_font_size, WHITE);
-	DrawText(exit.c_str(), 450, 600, properties_font_size, WHITE);
+	DrawText(save.c_str(), 50, save_and_exit_y_coordinate, properties_font_size, WHITE);
+	DrawText(restore_defaults.c_str(), 250, save_and_exit_y_coordinate, properties_font_size, WHITE);
+	DrawText(exit.c_str(), 450, save_and_exit_y_coordinate, properties_font_size, WHITE);
 }
 
 void GameMap::drawMainScreen(map<string, Texture2D> textures, const float dT) {
@@ -166,23 +166,19 @@ void GameMap::drawMainScreen(map<string, Texture2D> textures, const float dT) {
 }
 
 void GameMap::drawFloatProperty(float value, int x_position, int y_position) {
-	// To Be Changed
 	string string_value{ "Value: " };
 	string_value.append(to_string(value));
 	DrawText(string_value.c_str(), x_position, y_position, properties_font_size, WHITE);
 }
 
 void GameMap::drawBoolProperty(bool value, int x_position, int y_position) {
-	// To Be Changed
 	string string_value{ "Value: " };
 	if (value) { string_value.append("True"); }
 	else { string_value.append("False"); }
-	//string_value.append(to_string(value));
 	DrawText(string_value.c_str(), x_position, y_position, properties_font_size, WHITE);
 }
 
 void GameMap::drawIntProperty(int value, int x_position, int y_position) {
-	// To Be Changed
 	string string_value{ "Value: " };
 	string_value.append(to_string(value));
 	DrawText(string_value.c_str(), x_position, y_position, properties_font_size, WHITE);
@@ -263,7 +259,7 @@ bool GameMap::checkPropertiesPageSaveOptionsInput() {
 
 void GameMap::moveSelectBoxLocationToSaveProperties() {
 	Select_box_location.x = 50;
-	Select_box_location.y = 600;
+	Select_box_location.y = save_and_exit_y_coordinate;
 }
 
 void GameMap::moveSelectBoxLocationToGameProperties() {
@@ -310,11 +306,28 @@ void GameMap::drawPlayerMenuOptions() {
 	DrawText(exit_game_display.c_str(), 175, 400, 50, WHITE);
 }
 
+void GameMap::drawNavigationInstructions(bool isPropertiesMenu) {
+	string left_instruction{ "Increase: Left Arrow / A" };
+	string right_instruction{ "Decrease: Right Arrow / D" };
+	string up_instruction{ "Move Up: Up Arrow / W" };
+	string down_instruction{ "Move Down: Down Arrow / S" };
+	string select_instructions{ "Select: Enter" };
+
+	DrawText(up_instruction.c_str(), 45, window_dimensions[1] - 15, 15, RED);
+	DrawText(down_instruction.c_str(), 255, window_dimensions[1] - 15, 15, RED);
+	DrawText(select_instructions.c_str(), 500, window_dimensions[1] - 15, 15, RED);
+
+	if (isPropertiesMenu) {
+		DrawText(left_instruction.c_str(), 100, window_dimensions[1] - 40, 15, RED);
+		DrawText(right_instruction.c_str(), 350, window_dimensions[1] - 40, 15, RED);
+	}
+
+}
+
 void GameMap::drawProperty(shared_ptr<Node<Property>> property) {
 	int y_position = properties_starting_y_coordinate + (property->Data->getLocation() - Property_selector_coordinate) * properties_spacing;
 	DrawText(property->Data->getName().c_str(), 25, y_position, properties_font_size, WHITE);
 
-	//int value_x_position = property->Data->getPropertyWidth(properties_font_size) + 15; // Spacinge is not working as expected
 	int value_x_position = 450; // Spacinge is not working as expected
 
 	// Draw property value. 
@@ -350,10 +363,8 @@ void GameMap::drawPlayerPropertyOptions() {
 	
 	while (current_property) {
 		drawProperty(current_property);
-		if (current_property->Data->getLocation() == Property_selector_coordinate && Select_box_location.y < 600) {
-			//width = current_property->Data->getPropertyWidth(properties_font_size); 
+		if (current_property->Data->getLocation() == Property_selector_coordinate && Select_box_location.y < save_and_exit_y_coordinate) {
 			drawPropertyDescription(current_property);
-			// Incorporate Description (include min, max, and default value logic)
 		}
 
 		current_property = current_property->Next;
@@ -361,8 +372,6 @@ void GameMap::drawPlayerPropertyOptions() {
 	}
 	
 	drawSaveAndExitOptions();
-
-	//return width;
 }
 
 void GameMap::drawLives() {
@@ -399,6 +408,8 @@ void GameMap::displayHomeMenu(map<string, Texture2D> textures, const float dT) {
 
 	drawPlayerMenuOptions();
 
+	drawNavigationInstructions(false);
+
 	// Move and Render Player Select Box
 	bool has_player_selected_option = playerMainScreenTick();
 
@@ -429,11 +440,9 @@ void GameMap::displayHomeMenu(map<string, Texture2D> textures, const float dT) {
 	* Play music on home screen
 	* Use is_music_on to determine if music should be played
 	* 
-	* implement a should_projectiles_collide check and do not destroy projectiles if false
-	* 
-	* Provide menu navigation instructions
 	* High Score can log first three initials
-	* After death, either wait 5 seconds or press enter to continue to main screen
+	* 
+	* BUG: Change to Props does not take effect until second play through. 
 	* 
 	* Should Mage Speed increase per round? (mage_level_acceleration_in_pixels_per_second)
 	*/
@@ -446,11 +455,13 @@ void GameMap::displayPropertiesMenu(map<string, Texture2D> textures, const float
 
 	drawMainScreen(textures, dT);
 
+	drawNavigationInstructions(true);
+
 	// Move Player Select Box, Populate and Render Options, Render Player Select Box
 	bool has_player_selected_option = playerPropertiesScreenTick();
 
 	// Decide what actions to take
-	if (has_player_selected_option && Select_box_location.y == 600) {
+	if (has_player_selected_option && Select_box_location.y == save_and_exit_y_coordinate) {
 		saveOrRestorDefaults();
 
 		clearVisibleProperties();
@@ -460,6 +471,7 @@ void GameMap::displayPropertiesMenu(map<string, Texture2D> textures, const float
 		Is_properties_screen = false;
 		Is_main_screen = true;
 	}
+
 }
 
 void GameMap::setIsIntro(const bool b) { Is_intro = b; }
@@ -680,7 +692,7 @@ bool GameMap::playerPropertiesScreenTick() {
 	// Move Options based on user input
 	bool is_selected{ false };
 	
-	if (Select_box_location.y < 600) {
+	if (Select_box_location.y < save_and_exit_y_coordinate) {
 		checkPropertiesPageUserInput();
 	}
 	else {
@@ -691,7 +703,7 @@ bool GameMap::playerPropertiesScreenTick() {
 	drawPlayerPropertyOptions();
 
 	int width{};
-	if (Select_box_location.y < 600) { width = 525;	}
+	if (Select_box_location.y < save_and_exit_y_coordinate) { width = 525;	}
 	else if (Select_box_location.x <= 50) { width = 115; }
 	else { width = 135; }
 
@@ -784,7 +796,9 @@ void GameMap::moveDemonProjectiles(const float dT, Mage& mage) {
 				mageTakesDamage();
 			}
 			else {
-				checkDemonProjectileForMageProjectilesCollision(current_node);
+				if (Props.getBoolPropertyValue("Should_projectiles_collide")) {
+					checkDemonProjectileForMageProjectilesCollision(current_node);
+				}
 				checkDemonProjectilForShieldCollision(current_node);
 			}
 			current_node = current_node->Next;
