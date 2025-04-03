@@ -2,6 +2,7 @@
 
 #include "Demon.h"
 #include "DoubleLinkedList.h"
+#include "GameMusic.h"
 #include "Mage.h"
 #include "Projectile.h"
 #include "Properties.h"
@@ -60,7 +61,7 @@ class GameMap {
 	int Properties_scroller_offset{ 0 };
 	int Property_selector_coordinate{ 1 };
 	
-	// Game Map Properties
+	// Game Map Templates
 	Texture2D Background;
 	Texture2D Midground;
 	Texture2D Foreground;
@@ -68,6 +69,12 @@ class GameMap {
 	Texture2D Regular_shield;
 	Texture2D Revive_shield;
 
+	// Game Music
+	shared_ptr<GameMusic> Main_screen_music;
+	shared_ptr<GameMusic> End_game_music;
+	DoubleLinkedList<shared_ptr<GameMusic>> Mid_game_music_list;
+
+	// Character Objects
 	Mage mage;
 	shared_ptr<Demon> Special_demon; // Can this be a unique_ptr?
 
@@ -124,6 +131,7 @@ class GameMap {
 	void moveReviveShield(const float dT);
 	void destroySpecialDemon(const bool is_killed);
 	void generateRandomDemon(map<string, Texture2D> textures);
+	void generateMusicList(shared_ptr<GameMusic> music);
 	void updateBackgroundTextures(map<string, Texture2D> textures);
 	bool shouldNodeBeDeleted();
 	bool hasCollision(shared_ptr<Demon> demon);
@@ -146,7 +154,7 @@ class GameMap {
 
 
 public:
-	GameMap(map<string, Texture2D> textures);
+	GameMap(map<string, Texture2D> textures, map<string, shared_ptr<GameMusic>> music);
 	//~GameMap();
 
 	bool hasDemons();

@@ -21,17 +21,24 @@ constexpr int end_game_screen_pause_time{ 3 }; // seconds
 
 // Declares generateTexture() in Hell_Invaders.cpp.
 map<string, Texture2D> generateTexture();
+map<string, shared_ptr<GameMusic>> generateMusic();
 
 int main() {
     srand(time(0));
+    
     InitWindow(window_dimensions[0], window_dimensions[1], "Hell Invaders");
+    InitAudioDevice();
+
     SetTargetFPS(targetFps);
 
     float time_on_screen{};
+	float timePlayed{ 0.0f };
 
     // Create Textures
     map<string, Texture2D> textures = generateTexture();
-    GameMap map(textures);
+	map<string, shared_ptr<GameMusic>> music = generateMusic();
+    GameMap map(textures, music);
+
 
     while (!WindowShouldClose() && !map.getIsEndGameRequested()) {
         BeginDrawing();
@@ -51,7 +58,7 @@ int main() {
             map.drawEndGame();
             if (time_on_screen >= end_game_screen_pause_time) { 
                 time_on_screen = 0;
-                map = GameMap(textures); 
+                map = GameMap(textures, music); 
             }
         }
         else if (map.getIsIntro()) {
@@ -90,6 +97,9 @@ int main() {
         EndDrawing();
     }
 
+	CleanUpResources(textures, music); // to include UnloadMusicStream(music); and UnloadTexture(textures);
+
+    CloseAudioDevice();
     CloseWindow();
 }
 
@@ -114,4 +124,26 @@ map<string, Texture2D> generateTexture() {
         { "fledge", LoadTexture("textures\\Enemies\\FledglingDemon.png") },
         { "eye", LoadTexture("textures\\Enemies\\FloatingEye.png") },
     };
+}
+
+map<string, shared_ptr<GameMusic>> generateMusic() {
+    GameMusic main_screen(LoadMusicStream("audio\\main_screen.mp3"), "main_screen");
+    GameMusic game_play_1(LoadMusicStream("audio\\metal-headed.mp3"), "game_play_1");
+    GameMusic game_play_2(LoadMusicStream("audio\\fierce.mp3"), "game_play_2");
+    GameMusic game_play_3(LoadMusicStream("audio\\doom-extreme-metal-rock.mp3"), "game_play_3");
+    GameMusic game_play_4(LoadMusicStream("audio\\metal-header.mp3"), "game_play_4");
+    GameMusic game_play_5(LoadMusicStream("audio\\rise-of-the-zombies.mp3"), "game_play_5");
+    GameMusic game_play_6(LoadMusicStream("audio\\we-can-win.mp3"), "game_play_6");
+    GameMusic end_game(LoadMusicStream("audio\\end_game.mp3"), "end_game");
+
+    return map<string, shared_ptr<GameMusic>> {
+		{ "main_screen", make_shared<GameMusic>(main_screen)},
+		{ "game_play_1", make_shared<GameMusic>(game_play_1) },
+        { "game_play_2", make_shared<GameMusic>(game_play_2) },
+        { "game_play_3", make_shared<GameMusic>(game_play_3) },
+        { "game_play_4", make_shared<GameMusic>(game_play_4) },
+        { "game_play_5", make_shared<GameMusic>(game_play_5) },
+        { "game_play_6", make_shared<GameMusic>(game_play_6) },
+		{ "end_game", make_shared<GameMusic>(end_game) }
+	};
 }

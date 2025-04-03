@@ -49,6 +49,16 @@ constexpr int mage_speed_in_pixels_per_second{ 200 }; // pixels per second
 constexpr int mage_attack_rate_in_millisecond{ 150 }; // milliseconds per attack
 constexpr int mage_projectile_speed_in_pixels_per_second{ 300 }; // pixels per second
 
+// Music Properties
+constexpr bool is_main_screen_on{ true };
+constexpr bool is_end_game_on{ true };
+constexpr bool is_game_play_1_on{ true };
+constexpr bool is_game_play_2_on{ true };
+constexpr bool is_game_play_3_on{ true };
+constexpr bool is_game_play_4_on{ true };
+constexpr bool is_game_play_5_on{ true };
+constexpr bool is_game_play_6_on{ true };
+
 
 class Property {
 	string Key;

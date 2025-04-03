@@ -1,9 +1,12 @@
 #include "GameMap.h"
 
-GameMap::GameMap(map<string, Texture2D> textures)
+GameMap::GameMap(map<string, Texture2D> textures, map<string, shared_ptr<GameMusic>> music)
 	: Background(textures["main_background_1"]), Midground(textures["main_background_2"]), Foreground(textures["main_background_3"]), 
-	  mage(textures["mage"], textures["magic"], Props), Regular_shield(textures["full_shield"]), Revive_shield(textures["revive_shield"]) 
-{}
+	  mage(textures["mage"], textures["magic"], Props), Regular_shield(textures["full_shield"]), Revive_shield(textures["revive_shield"]),
+	  Main_screen_music(music["main_screen"]), End_game_music(music["end_game"])
+{
+	generateMusicList(music);
+}
 
 
 bool GameMap::hasDemons() { return Demons_columns.getCount() > 0; }
@@ -651,6 +654,10 @@ void GameMap::generateRandomDemon(map<string, Texture2D> textures) {
 		shared_ptr<Demon> demon = generateDemonWithRandomTexture(textures, random);
 		Demons_columns.getHead()->Data->insertAtEnd(make_shared<Node<Demon>>(generateDemonWithRandomTexture(textures, random)));
 	}
+}
+
+void GameMap::generateMusicList(shared_ptr<GameMusic> music) {
+	// TODO: Populate Mid_game_music_list
 }
 
 void GameMap::updateBackgroundTextures(map<string, Texture2D> textures) {
