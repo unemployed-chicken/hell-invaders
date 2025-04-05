@@ -5,18 +5,23 @@
 using std::shared_ptr;
 using std::string;
 
-class GameMusic {
+extern const bool debugging;
+
+class GamingMusic
+{
 	Music Song;
 	string Name;
 	float Time_played{ 0.0f };
-	bool Is_off{ false };
+	bool Is_on{ true };
 
 public:
-	GameMusic(Music song, string name);
-	GameMusic();
-	void playMusic();
+	GamingMusic(Music song, string name);
+	GamingMusic();
 	void stopMusic();
 
 	float getTimePlayed();
+	bool playMusic();
+	bool getIsOn();
+	Music getSong();
 };
 

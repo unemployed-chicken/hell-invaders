@@ -3,7 +3,7 @@
 using std::shared_ptr;
 
 
-template < class T>
+template <class T>
 struct Node : public std::enable_shared_from_this<Node<T>> {
     shared_ptr<T> Data;
     shared_ptr<Node<T>> Previous = nullptr;

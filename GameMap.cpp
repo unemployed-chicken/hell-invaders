@@ -1,11 +1,17 @@
 #include "GameMap.h"
 
-GameMap::GameMap(map<string, Texture2D> textures, map<string, shared_ptr<GameMusic>> music)
+GameMap::GameMap(map<string, Texture2D> textures, map<string, GamingMusic> music)
 	: Background(textures["main_background_1"]), Midground(textures["main_background_2"]), Foreground(textures["main_background_3"]), 
-	  mage(textures["mage"], textures["magic"], Props), Regular_shield(textures["full_shield"]), Revive_shield(textures["revive_shield"]),
-	  Main_screen_music(music["main_screen"]), End_game_music(music["end_game"])
+	  mage(textures["mage"], textures["magic"], Props), Regular_shield(textures["full_shield"]), Revive_shield(textures["revive_shield"])
 {
+	Main_screen_music = make_shared<Node<GamingMusic>>(make_shared<GamingMusic>(music["main_screen"]));
+	End_game_music = make_shared<Node<GamingMusic>>(make_shared<GamingMusic>(music["end_game"]));
 	generateMusicList(music);
+
+	if (Props.getBoolPropertyValue("Is_music_on")) {
+		Current_music = Main_screen_music;
+		playCurrentMusic(); 
+	}
 }
 
 
@@ -18,11 +24,27 @@ bool GameMap::getIsEndGameRequested() { return Is_end_game_requested; }
 bool GameMap::getPropertiesShouldStartGameWithShieldsActive() {	return Props.getBoolPropertyValue("Should_start_with_shields_active"); }
 bool GameMap::getIsPropertiesScreen() {	return Is_properties_screen; }
 Mage& GameMap::getMage() { return mage; }
+shared_ptr<Node<GamingMusic>> GameMap::getCurrentMusic() { return Current_music; }
 void GameMap::setHasSpecialDemonInvaded(const bool b) { has_special_demon_spawned = false; }
 int GameMap::getDemonsMovedDownCount() { return demons_moved_down_count; }
 void GameMap::resetProperties() { Props = Properties(); }
 void GameMap::setResetShieldCountToStartingAmount() { mage.setShieldCountToStartingAmount(Props.getIntPropertyValue("Number_of_starting_shields")); }
 void GameMap::clearAllShields() { Shields.deleteAllNodes(); }
+
+void GameMap::setCurrentMusicToGameplayMusic() {
+	if (Current_music) { Current_music->Data->stopMusic(); }
+	if (Props.getBoolPropertyValue("Is_music_on")) {
+		Current_music = Mid_game_music_list.getHead();
+		playCurrentMusic();
+	}
+	else {
+		Current_music = nullptr;
+	}
+}
+
+void GameMap::playCurrentMusic() {
+	if (Current_music) PlayMusicStream(Current_music->Data->getSong());
+}
 
 void GameMap::updatePropertySelectorCoordinate(int x) {
 	Property_selector_coordinate += x;
@@ -98,6 +120,11 @@ void GameMap::appendProjectile(shared_ptr<Demon> demon) {
 }
 
 void GameMap::tick(const float dT){
+	if (Current_music) { 
+		bool is_song_complete = Current_music->Data->playMusic(); 
+		if (is_song_complete) { rotateMusic(); }
+	}
+
 	// Move Character // Always First
 	mage.tick(dT);
 	
@@ -407,6 +434,9 @@ void GameMap::drawInstructions() {
 
 void GameMap::displayHomeMenu(map<string, Texture2D> textures, const float dT) {
 	Select_box_movement_cooldown += dT;
+
+	if (Props.getBoolPropertyValue("Is_music_on")) Current_music->Data->playMusic();
+
 	drawMainScreen(textures, dT);
 
 	drawPlayerMenuOptions();
@@ -440,12 +470,14 @@ void GameMap::displayHomeMenu(map<string, Texture2D> textures, const float dT) {
 
 	/*
 	* TODO: 
-	* Play music on home screen
-	* Use is_music_on to determine if music should be played
+
+	* Provide user option to lower volume
 	* 
 	* High Score can log first three initials
 	* 
-	* BUG: Change to Props does not take effect until second play through. 
+	* BUGS: 
+	    Change to Props does not take effect until second play through. 
+		Changing audio output crashes game?
 	* 
 	* Should Mage Speed increase per round? (mage_level_acceleration_in_pixels_per_second)
 	*/
@@ -453,6 +485,8 @@ void GameMap::displayHomeMenu(map<string, Texture2D> textures, const float dT) {
 
 void GameMap::displayPropertiesMenu(map<string, Texture2D> textures, const float dT) {
 	Select_box_movement_cooldown += dT;
+
+	if (Props.getBoolPropertyValue("Is_music_on")) Current_music->Data->playMusic();
 
 	if (Visible_properties.getCount() < 1) { populateVisibleProperties(); }
 
@@ -651,19 +685,39 @@ void GameMap::generateRandomDemon(map<string, Texture2D> textures) {
 	}
 	else if (Demons_columns.getCount() > 0 && Demons_columns.getHead()->Data->getCount() < 7 && random % 2500 <= 10) {
 		// Populate existing column with a demon
-		shared_ptr<Demon> demon = generateDemonWithRandomTexture(textures, random);
 		Demons_columns.getHead()->Data->insertAtEnd(make_shared<Node<Demon>>(generateDemonWithRandomTexture(textures, random)));
 	}
 }
 
-void GameMap::generateMusicList(shared_ptr<GameMusic> music) {
-	// TODO: Populate Mid_game_music_list
+void GameMap::generateMusicList(map<string, GamingMusic> music) {
+	Mid_game_music_list.insertAtEnd(make_shared<Node<GamingMusic>>(make_shared<GamingMusic>(music["game_play_1"])));
+	Mid_game_music_list.insertAtEnd(make_shared<Node<GamingMusic>>(make_shared<GamingMusic>(music["game_play_2"])));
+	Mid_game_music_list.insertAtEnd(make_shared<Node<GamingMusic>>(make_shared<GamingMusic>(music["game_play_3"])));
+	Mid_game_music_list.insertAtEnd(make_shared<Node<GamingMusic>>(make_shared<GamingMusic>(music["game_play_4"])));
+	Mid_game_music_list.insertAtEnd(make_shared<Node<GamingMusic>>(make_shared<GamingMusic>(music["game_play_5"])));
+	Mid_game_music_list.insertAtEnd(make_shared<Node<GamingMusic>>(make_shared<GamingMusic>(music["game_play_6"])));
+
+	Mid_game_music_list.getHead()->Previous = Mid_game_music_list.getTail();
+	Mid_game_music_list.getTail()->Next = Mid_game_music_list.getHead();
 }
 
 void GameMap::updateBackgroundTextures(map<string, Texture2D> textures) {
 	Background = textures["background"];
 	Midground = textures["midground"];
 	Foreground = textures["foreground"];
+}
+
+void GameMap::rotateMusic() {
+	Current_music->Data->stopMusic();
+	Current_music = Current_music->Next;
+
+	playCurrentMusic();
+}
+
+void GameMap::setCurrentMusicToEndgameMusic() {
+	Current_music->Data->stopMusic();
+	Current_music = End_game_music;
+	playCurrentMusic();
 }
 
 bool GameMap::shouldNodeBeDeleted() {
@@ -753,6 +807,9 @@ void GameMap::generateReviveShield() {
 bool GameMap::hasCollision(shared_ptr<Demon> demon) {
 	if (CheckCollisionRecs(mage.getCollisionRectangle(), demon->getCollisionRectangle())) {
 		has_invaded = true;
+		if (Props.getBoolPropertyValue("Is_music_on")) {
+			setCurrentMusicToEndgameMusic();
+		}
 		return false;
 	}
 
@@ -801,6 +858,9 @@ void GameMap::moveDemonProjectiles(const float dT, Mage& mage) {
 			else if (!is_mage_invulnerable && CheckCollisionRecs(current_node->Data->getCollisionRectangle(), mage.getCollisionRectangle())) {
 				current_node->Data->setIsActive(false);
 				mageTakesDamage();
+				if (mage.getLives() == 0 && Props.getBoolPropertyValue("Is_music_on")) {
+					setCurrentMusicToEndgameMusic();
+				}
 			}
 			else {
 				if (Props.getBoolPropertyValue("Should_projectiles_collide")) {

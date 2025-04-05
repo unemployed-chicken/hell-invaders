@@ -180,5 +180,19 @@
         "increment": 10,
         "min": 10,
         "max": 1000
+    },
+    "is_main_screen_on": {
+        "name": "Main Screen Music",
+        "description": "Play music on Main screen.",
+        "increment": 1,
+        "min": 0,
+        "max": 1
+    },
+    "is_end_game_on": {
+        "name": "End Game Music",
+        "description": "Play end game music at end of game.",
+        "increment": 1,
+        "min": 0,
+        "max": 1
     }
 }

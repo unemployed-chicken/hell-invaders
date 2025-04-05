@@ -2,7 +2,7 @@
 
 #include "Demon.h"
 #include "DoubleLinkedList.h"
-#include "GameMusic.h"
+#include "GamingMusic.h"
 #include "Mage.h"
 #include "Projectile.h"
 #include "Properties.h"
@@ -70,9 +70,10 @@ class GameMap {
 	Texture2D Revive_shield;
 
 	// Game Music
-	shared_ptr<GameMusic> Main_screen_music;
-	shared_ptr<GameMusic> End_game_music;
-	DoubleLinkedList<shared_ptr<GameMusic>> Mid_game_music_list;
+	shared_ptr<Node<GamingMusic>> Current_music = nullptr;
+	shared_ptr<Node<GamingMusic>> Main_screen_music = nullptr;
+	shared_ptr<Node<GamingMusic>> End_game_music = nullptr;
+	DoubleLinkedList<GamingMusic> Mid_game_music_list;
 
 	// Character Objects
 	Mage mage;
@@ -131,8 +132,10 @@ class GameMap {
 	void moveReviveShield(const float dT);
 	void destroySpecialDemon(const bool is_killed);
 	void generateRandomDemon(map<string, Texture2D> textures);
-	void generateMusicList(shared_ptr<GameMusic> music);
+	void generateMusicList(map<string, GamingMusic> music);
 	void updateBackgroundTextures(map<string, Texture2D> textures);
+	void rotateMusic();
+	void setCurrentMusicToEndgameMusic();
 	bool shouldNodeBeDeleted();
 	bool hasCollision(shared_ptr<Demon> demon);
 	bool checkPropertiesPageSaveOptionsInput();
@@ -154,7 +157,7 @@ class GameMap {
 
 
 public:
-	GameMap(map<string, Texture2D> textures, map<string, shared_ptr<GameMusic>> music);
+	GameMap(map<string, Texture2D> textures, map<string, GamingMusic> music);
 	//~GameMap();
 
 	bool hasDemons();
@@ -166,6 +169,7 @@ public:
 	bool getPropertiesShouldStartGameWithShieldsActive();
 	bool getIsPropertiesScreen();
 	Mage& getMage();
+	shared_ptr<Node<GamingMusic>> getCurrentMusic();
 	void tick(const float dT);
 	void generateDemonsList(map<string, Texture2D> textures);
 	void generateShields();
@@ -179,6 +183,8 @@ public:
 	void resetProperties();
 	void setResetShieldCountToStartingAmount();
 	void clearAllShields();
+	void setCurrentMusicToGameplayMusic();
+	void playCurrentMusic();
 	int getDemonsMovedDownCount();
 };
 

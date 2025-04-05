@@ -17,11 +17,18 @@ const int targetFps{ 60 };
 
 // General
 const bool is_windows_os{ true };
-constexpr int end_game_screen_pause_time{ 3 }; // seconds
+constexpr int end_game_screen_pause_time{ 10 }; // seconds
 
-// Declares generateTexture() in Hell_Invaders.cpp.
+const string game_play_songs[6]{
+    "audio\\metal-headed.mp3", "audio\\fierce.mp3", "audio\\doom-extreme-metal-rock.mp3",
+    "audio\\metal-header.mp3", "audio\\rise-of-the-zombies.mp3", "audio\\we-can-win.mp3"
+};
+
+
+// Function Declaration. Defined at the bottom of the page
 map<string, Texture2D> generateTexture();
-map<string, shared_ptr<GameMusic>> generateMusic();
+map<string, GamingMusic> generateMusic();
+void cleanUpResources(map<string, Texture2D> textures, map<string, GamingMusic> music);
 
 int main() {
     srand(time(0));
@@ -36,9 +43,8 @@ int main() {
 
     // Create Textures
     map<string, Texture2D> textures = generateTexture();
-	map<string, shared_ptr<GameMusic>> music = generateMusic();
+	map<string, GamingMusic> music = generateMusic();
     GameMap map(textures, music);
-
 
     while (!WindowShouldClose() && !map.getIsEndGameRequested()) {
         BeginDrawing();
@@ -55,6 +61,7 @@ int main() {
         else if (map.getMage().getLives() == 0 || map.hasInvaded()) {
             // Draw Game Over
             time_on_screen += GetFrameTime();
+            if (map.getCurrentMusic()) { map.getCurrentMusic()->Data->playMusic(); }
             map.drawEndGame();
             if (time_on_screen >= end_game_screen_pause_time) { 
                 time_on_screen = 0;
@@ -69,6 +76,7 @@ int main() {
             map.drawInstructions();
 
             if (IsKeyPressed(KEY_ENTER)) {
+                map.setCurrentMusicToGameplayMusic();
                 map.clearAllShields();
                 map.setResetShieldCountToStartingAmount();
                 map.setIsIntro(false);
@@ -97,13 +105,11 @@ int main() {
         EndDrawing();
     }
 
-	CleanUpResources(textures, music); // to include UnloadMusicStream(music); and UnloadTexture(textures);
+	cleanUpResources(textures, music); 
 
     CloseAudioDevice();
     CloseWindow();
 }
-
-
 
 
 map<string, Texture2D> generateTexture() {
@@ -126,24 +132,46 @@ map<string, Texture2D> generateTexture() {
     };
 }
 
-map<string, shared_ptr<GameMusic>> generateMusic() {
-    GameMusic main_screen(LoadMusicStream("audio\\main_screen.mp3"), "main_screen");
-    GameMusic game_play_1(LoadMusicStream("audio\\metal-headed.mp3"), "game_play_1");
-    GameMusic game_play_2(LoadMusicStream("audio\\fierce.mp3"), "game_play_2");
-    GameMusic game_play_3(LoadMusicStream("audio\\doom-extreme-metal-rock.mp3"), "game_play_3");
-    GameMusic game_play_4(LoadMusicStream("audio\\metal-header.mp3"), "game_play_4");
-    GameMusic game_play_5(LoadMusicStream("audio\\rise-of-the-zombies.mp3"), "game_play_5");
-    GameMusic game_play_6(LoadMusicStream("audio\\we-can-win.mp3"), "game_play_6");
-    GameMusic end_game(LoadMusicStream("audio\\end_game.mp3"), "end_game");
+map<string, GamingMusic> generateMusic() {  
+   // Create music map with constants  
+   map<string, GamingMusic> loaded_music = {};  
+   loaded_music["main_screen"] = GamingMusic(LoadMusicStream("audio\\main_screen.mp3"), "main_screen");  
+   loaded_music["end_game"] = GamingMusic(LoadMusicStream("audio\\end_game.mp3"), "end_game");  
 
-    return map<string, shared_ptr<GameMusic>> {
-		{ "main_screen", make_shared<GameMusic>(main_screen)},
-		{ "game_play_1", make_shared<GameMusic>(game_play_1) },
-        { "game_play_2", make_shared<GameMusic>(game_play_2) },
-        { "game_play_3", make_shared<GameMusic>(game_play_3) },
-        { "game_play_4", make_shared<GameMusic>(game_play_4) },
-        { "game_play_5", make_shared<GameMusic>(game_play_5) },
-        { "game_play_6", make_shared<GameMusic>(game_play_6) },
-		{ "end_game", make_shared<GameMusic>(end_game) }
-	};
+   // Add gameplay music to map in random order  
+   // Keys determine the order music is played and remains constant. The music assigned to that key is randomized.  
+   int numbs[6]{10,10,10,10,10,10};  
+
+   int i = 0;  
+   while (i < 6) {  
+       int r = rand() % 6;
+       bool already_in_numbs = false;  
+       for (int x : numbs) {  
+           if (r == x) {  
+               already_in_numbs = true;  
+               break;  
+           }  
+       }  
+
+       if (!already_in_numbs) {  
+           numbs[i] = r;  
+           i++;  
+           string name = "game_play_";  
+           name.append(to_string(i));
+           loaded_music[name] = GamingMusic(LoadMusicStream(game_play_songs[r].c_str()), name);  
+       }  
+   }  
+
+   return loaded_music;  
+}
+
+
+void cleanUpResources(map<string, Texture2D> textures, map<string, GamingMusic> music) {
+	for (auto& texture : textures) {
+		UnloadTexture(texture.second);
+	}
+
+	for (auto& music : music) {
+		UnloadMusicStream(music.second.getSong());
+	}
 }

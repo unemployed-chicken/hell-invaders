@@ -1,0 +1,20 @@
+#include "GamingMusic.h"
+
+GamingMusic::GamingMusic(Music song, string name) : Song(song), Name(name){}
+GamingMusic::GamingMusic() {}
+
+bool GamingMusic::playMusic() {
+	UpdateMusicStream(Song);
+	float current_time_played = GetMusicTimePlayed(Song) / GetMusicTimeLength(Song);
+	if (current_time_played < Time_played) {
+		return true;
+	}
+	Time_played = current_time_played;
+	return false;
+}
+
+void GamingMusic::stopMusic() {}
+
+float GamingMusic::getTimePlayed() { return Time_played; }
+bool GamingMusic::getIsOn() { return Is_on; }
+Music GamingMusic::getSong() { return Song; }
