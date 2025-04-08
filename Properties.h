@@ -10,6 +10,7 @@
 #include <string>
 using std::map;
 using std::string;
+using std::pair;
 using std::make_pair;
 using std::make_shared;
 
@@ -89,6 +90,7 @@ public:
 
 
 class Properties {
+	rapidjson::Document High_scores;
 	rapidjson::Document Properties_document;
 	map<string, shared_ptr<Node<Property>>> Props{};
 	int count{ 0 };
@@ -97,6 +99,7 @@ class Properties {
 	int genertateBoolProperty(string document_key, string props_key, bool default_value, int count, shared_ptr<Node<Property>> previous, rapidjson::Document& properties_details);
 	//int genertateFloatProperty(string document_key, string props_key, float default_value, int count, shared_ptr<Node<Property>> previous, rapidjson::Document& properties_details);
 	void assignPreviousandNext(shared_ptr<Node<Property>> previous, shared_ptr<Node<Property>> next);
+	void generateHighScores();
 	rapidjson::Document generatePropertyDescriptions();
 
 public:
@@ -110,10 +113,11 @@ public:
 
 	int getCount();
 
-	bool getBoolPropertyValue(string property);
-	int getIntPropertyValue(string property);
-	float getFloatPropertyValue(string property);
-	float getPerSecondPropertyValue(string property);
+	bool getBoolPropertyValue(const string property);
+	int getIntPropertyValue(const string property);
+	float getFloatPropertyValue(const string property);
+	float getPerSecondPropertyValue(const string property);
+	std::pair<string, int> getScore(const string position);
 	shared_ptr<Node<Property>> getPropertyByPosition(int property_position);
 	shared_ptr<Node<Property>> getPropertyByName(string property); 
 };

@@ -15,6 +15,7 @@
 #include <map>
 using std::cout;
 using std::map;
+using std::pair;
 using std::shared_ptr;
 using std::string;
 using std::make_shared;
@@ -37,7 +38,7 @@ constexpr float mage_projectile_collision_offset_y{ -31.0 };
 constexpr float mage_projectile_collision_scale_x{ 1.5 };
 constexpr float mage_projectile_collision_scale_y{ 2.0 };
 constexpr float mage_projectile_rotation{ -90.0 };
-constexpr float end_game_coordinates_offset[2]{.15, .40};
+constexpr float end_game_coordinates_offset[2]{.15, .35};
 constexpr float end_game_text_size{ 75 };
 constexpr float shield_starting_x_coordinate{ 50 };
 constexpr float shield_spacing{ 225 };
@@ -47,7 +48,12 @@ constexpr int properties_starting_y_coordinate{ 300 };
 constexpr int properties_spacing{ 60 };
 constexpr int properties_font_size{ 15 };
 constexpr int save_and_exit_y_coordinate{ 525 };
-
+constexpr int end_game_screen_pause_time{ 5 }; // seconds
+constexpr int high_scores_x_location{ 225 };
+constexpr int high_scores_y_starting_location{ 315 };
+constexpr int high_scores_y_spacing{ 35 };
+constexpr int high_scores_font_size{ 25 };
+constexpr int initails_and_score_spacing{ 100 };
 
 const float demons_x_range[2]{ 5.0f, window_dimensions[1] - (16.f * character_scale) + 5.f}; // First is Left Limit, Second is Right Limit
 
@@ -72,7 +78,6 @@ class GameMap {
 	// Game Music
 	shared_ptr<Node<GamingMusic>> Current_music = nullptr;
 	shared_ptr<Node<GamingMusic>> Main_screen_music = nullptr;
-	shared_ptr<Node<GamingMusic>> End_game_music = nullptr;
 	DoubleLinkedList<GamingMusic> Mid_game_music_list;
 
 	// Character Objects
@@ -88,11 +93,13 @@ class GameMap {
 	bool has_special_demon_spawned{ false };
 	int level{ 0 };
 	int demons_moved_down_count{ 0 };
+	float time_on_screen{ 0 };
 
 	bool Is_main_screen{ true };
 	bool Is_properties_screen{ false };
 	bool Is_intro{ false };
-	bool Is_new_high_score_screen{ false };
+	bool Is_game_over_screen{ false };
+	bool Is_high_score{ false };
 	bool Is_end_game_requested{ false };
 	
 	void drawPlayerPropertyOptions();
@@ -122,6 +129,7 @@ class GameMap {
 	void moveMageProjectiles(const float dT);
 	void moveDemonProjectiles(const float dT, Mage& mage);
 	void moveAllDemons(const float dT, const bool is_main_screen = false);
+	void drawHighScores();
 	void allDemonCollisionCheckAndAppendDemonProjectiles();
 	void checkDemonProjectileForMageProjectilesCollision(shared_ptr<Node<Projectile>> demon_projectiles);
 	void checkDemonProjectilForShieldCollision(shared_ptr<Node<Projectile>> demon_projectiles);
@@ -135,7 +143,7 @@ class GameMap {
 	void generateMusicList(map<string, GamingMusic> music);
 	void updateBackgroundTextures(map<string, Texture2D> textures);
 	void rotateMusic();
-	void setCurrentMusicToEndgameMusic();
+	void setIsGameOverValues();
 	bool shouldNodeBeDeleted();
 	bool hasCollision(shared_ptr<Demon> demon);
 	bool checkPropertiesPageSaveOptionsInput();
@@ -168,6 +176,7 @@ public:
 	bool getIsEndGameRequested();
 	bool getPropertiesShouldStartGameWithShieldsActive();
 	bool getIsPropertiesScreen();
+	bool getIsGameOverScreen();
 	Mage& getMage();
 	shared_ptr<Node<GamingMusic>> getCurrentMusic();
 	void tick(const float dT);
@@ -179,6 +188,7 @@ public:
 	void drawInstructions();
 	void displayHomeMenu(map<string, Texture2D> textures, const float dT);
 	void displayPropertiesMenu(map<string, Texture2D> textures, const float dT);
+	bool displayGameOverScreen(const float dT);
 	void setIsIntro(const bool b);
 	void resetProperties();
 	void setResetShieldCountToStartingAmount();

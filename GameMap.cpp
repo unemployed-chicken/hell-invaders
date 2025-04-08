@@ -5,7 +5,6 @@ GameMap::GameMap(map<string, Texture2D> textures, map<string, GamingMusic> music
 	  mage(textures["mage"], textures["magic"], Props), Regular_shield(textures["full_shield"]), Revive_shield(textures["revive_shield"])
 {
 	Main_screen_music = make_shared<Node<GamingMusic>>(make_shared<GamingMusic>(music["main_screen"]));
-	End_game_music = make_shared<Node<GamingMusic>>(make_shared<GamingMusic>(music["end_game"]));
 	generateMusicList(music);
 
 	if (Props.getBoolPropertyValue("Is_music_on")) {
@@ -23,6 +22,7 @@ bool GameMap::getIsIntro() { return Is_intro; }
 bool GameMap::getIsEndGameRequested() { return Is_end_game_requested; }
 bool GameMap::getPropertiesShouldStartGameWithShieldsActive() {	return Props.getBoolPropertyValue("Should_start_with_shields_active"); }
 bool GameMap::getIsPropertiesScreen() {	return Is_properties_screen; }
+bool GameMap::getIsGameOverScreen() { return Is_game_over_screen; }
 Mage& GameMap::getMage() { return mage; }
 shared_ptr<Node<GamingMusic>> GameMap::getCurrentMusic() { return Current_music; }
 void GameMap::setHasSpecialDemonInvaded(const bool b) { has_special_demon_spawned = false; }
@@ -32,7 +32,7 @@ void GameMap::setResetShieldCountToStartingAmount() { mage.setShieldCountToStart
 void GameMap::clearAllShields() { Shields.deleteAllNodes(); }
 
 void GameMap::setCurrentMusicToGameplayMusic() {
-	if (Current_music) { Current_music->Data->stopMusic(); }
+	if (Current_music) { Current_music->Data->restartMusic(); }
 	if (Props.getBoolPropertyValue("Is_music_on")) {
 		Current_music = Mid_game_music_list.getHead();
 		playCurrentMusic();
@@ -231,7 +231,6 @@ void GameMap::checkPropertiesPageUserInput() {
 		shared_ptr<Node<Property>> current_property = Props.getPropertyByPosition(Property_selector_coordinate);
 		current_property->Data->incrementValue(-1);
 		Props.updateIntProperty(current_property->Data->getKey(), static_cast<int>(current_property->Data->getValue()));
-		// TODO: Do we need updateFloatProperty or UpdateBoolProperty?
 	}
 	else if ((IsKeyPressed(KEY_RIGHT) || IsKeyPressed(KEY_D)) && (Select_box_movement_cooldown >= select_box_movement_minimum_cooldown)) {
 		shared_ptr<Node<Property>> current_property = Props.getPropertyByPosition(Property_selector_coordinate);
@@ -511,6 +510,63 @@ void GameMap::displayPropertiesMenu(map<string, Texture2D> textures, const float
 
 }
 
+bool GameMap::displayGameOverScreen(const float dT) {
+	/*
+	WORK FLOW : 
+		* Play Music
+		* draw background 
+		* if not is_high_score: 
+			* display high scores
+			* Check for user input or close screen after end_game_screen_pause_time
+		* else:
+			* tick: 
+				* Print "NEW HIGH SCORE!"
+				* User can scroll through letters and selects an initail
+				* After they select the three initials, they are prompted to confirm
+				* Once confirmed:
+					* save score
+					* set Is_high_score to false
+			* 
+	*/ 
+
+	if (Current_music) { Current_music->Data->playMusic(); }
+	drawEndGame();
+	time_on_screen += dT;
+	if (!Is_high_score) { 
+
+		drawHighScores();	
+
+		if ((time_on_screen >= end_game_screen_pause_time) || IsKeyPressed(KEY_ENTER)) {
+			if (Current_music) {
+				Current_music->Data->restartMusic();
+			}
+			return true;
+		}
+	}
+	else {
+		// Refactor to a tick function.
+		// Tick will
+		// Player Inputs their intials using a scroll method
+		// sets is_high_score to false to display all high scores
+
+		/*
+		* tick: 
+				* Print "NEW HIGH SCORE!"
+				* User can scroll through letters and selects an initail
+				* After they select the three initials, they are prompted to confirm
+				* Once confirmed:
+					* save score
+					* set Is_high_score to false
+			* 
+		*/
+		if (IsKeyPressed(KEY_ENTER)) {
+			Is_high_score = false;
+		}		
+	}
+
+	return false;
+}
+
 void GameMap::setIsIntro(const bool b) { Is_intro = b; }
 
 void GameMap::generateDemonsList(map<string, Texture2D> textures) {
@@ -562,6 +618,16 @@ void GameMap::drawEndGame() {
 	DrawText("GAME OVER", window_dimensions[0] * end_game_coordinates_offset[0], window_dimensions[1] * end_game_coordinates_offset[1], end_game_text_size, RED);
 }
 
+
+void GameMap::drawHighScores() {
+	pair<string, int> scores[3] = { Props.getScore("1"), Props.getScore("2"), Props.getScore("3") };
+	
+	for (int i = 0; i < 3; ++i) {
+		string str_score{};
+		DrawText(scores[i].first.c_str(), high_scores_x_location, high_scores_y_starting_location + high_scores_y_spacing * i, high_scores_font_size, WHITE);
+		DrawText(to_string(scores[i].second).c_str(), high_scores_x_location + initails_and_score_spacing, high_scores_y_starting_location + high_scores_y_spacing * i, high_scores_font_size, WHITE);
+	}
+}
 
 void GameMap::allDemonCollisionCheckAndAppendDemonProjectiles() {
 	shared_ptr<Node<DoubleLinkedList<Demon>>> current_column = Demons_columns.getHead();
@@ -708,16 +774,17 @@ void GameMap::updateBackgroundTextures(map<string, Texture2D> textures) {
 }
 
 void GameMap::rotateMusic() {
-	Current_music->Data->stopMusic();
+	Current_music->Data->restartMusic();
 	Current_music = Current_music->Next;
 
 	playCurrentMusic();
 }
 
-void GameMap::setCurrentMusicToEndgameMusic() {
-	Current_music->Data->stopMusic();
-	Current_music = End_game_music;
-	playCurrentMusic();
+void GameMap::setIsGameOverValues() {
+	Is_game_over_screen = true;
+	if (mage.getScore() > Props.getScore("3").second) {
+		Is_high_score = true;
+	}
 }
 
 bool GameMap::shouldNodeBeDeleted() {
@@ -807,9 +874,7 @@ void GameMap::generateReviveShield() {
 bool GameMap::hasCollision(shared_ptr<Demon> demon) {
 	if (CheckCollisionRecs(mage.getCollisionRectangle(), demon->getCollisionRectangle())) {
 		has_invaded = true;
-		if (Props.getBoolPropertyValue("Is_music_on")) {
-			setCurrentMusicToEndgameMusic();
-		}
+		setIsGameOverValues();
 		return false;
 	}
 
@@ -858,8 +923,8 @@ void GameMap::moveDemonProjectiles(const float dT, Mage& mage) {
 			else if (!is_mage_invulnerable && CheckCollisionRecs(current_node->Data->getCollisionRectangle(), mage.getCollisionRectangle())) {
 				current_node->Data->setIsActive(false);
 				mageTakesDamage();
-				if (mage.getLives() == 0 && Props.getBoolPropertyValue("Is_music_on")) {
-					setCurrentMusicToEndgameMusic();
+				if (mage.getLives() == 0) {
+					setIsGameOverValues();
 				}
 			}
 			else {

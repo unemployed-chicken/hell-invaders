@@ -6,8 +6,29 @@ void Properties::assignPreviousandNext(shared_ptr<Node<Property>> previous, shar
 	if (next) {	next->Previous = previous; }
 }
 
+void Properties::generateHighScores() {
+    FILE* fp;
+    is_windows_os ? fopen_s(&fp, "properties\\high_scores.json", "rb") : fopen_s(&fp, "properties/high_scores.json", "r"); // non-Windows use "r" 
+
+    if (fp) {
+        char readBuffer[65536];
+        rapidjson::FileReadStream is(fp, readBuffer, sizeof(readBuffer));
+        High_scores.ParseStream(is);
+        fclose(fp);
+    }
+    else {
+        High_scores.SetObject();
+    }
+
+    if (High_scores.HasParseError() || !High_scores.IsObject()) {
+        High_scores.SetObject();
+    }
+}
+
 
 Properties::Properties() {
+    generateHighScores();
+
 	rapidjson::Document properties_details = generatePropertyDescriptions();
 	FILE* fp;
     is_windows_os ? fopen_s(&fp, "properties\\user_defined_properties.json", "rb") : fopen_s(&fp, "properties/user_defined_properties.json", "r"); // non-Windows use "r" 
@@ -152,23 +173,23 @@ int Properties::genertateBoolProperty(string document_key, string props_key, boo
     return count;
 }
 
-//int Properties::genertateFloatProperty(string document_key, string props_key, float default_value, int count, shared_ptr<Node<Property>> previous, rapidjson::Document& properties_details) {
-//    count++;
-//    float value;
-//
-//    Properties_document.HasMember(document_key.c_str()) ? value = Properties_document[document_key.c_str()].GetFloat() : value = default_value;
-//
-//    shared_ptr<Property> prop = make_shared<Property>(props_key, value, count, default_value, properties_details);
-//    Props[props_key] = make_shared<Node<Property>>(prop);
-//    assignPreviousandNext(previous, Props[props_key]);
-//    return count;
-//}
 
 int Properties::getCount() { return count; }
-bool Properties::getBoolPropertyValue(string property) { return static_cast<bool>(Props[property]->Data->getValue()); }
-int Properties::getIntPropertyValue(string property) { return static_cast<int>(Props[property]->Data->getValue()); }
-float Properties::getFloatPropertyValue(string property) { return Props[property]->Data->getValue(); }
-float Properties::getPerSecondPropertyValue(string property) { return 1.0 / Props[property]->Data->getValue(); }
+bool Properties::getBoolPropertyValue(const string property) { return static_cast<bool>(Props[property]->Data->getValue()); }
+int Properties::getIntPropertyValue(const string property) { return static_cast<int>(Props[property]->Data->getValue()); }
+float Properties::getFloatPropertyValue(const string property) { return Props[property]->Data->getValue(); }
+float Properties::getPerSecondPropertyValue(const string property) { return 1.0 / Props[property]->Data->getValue(); }
+
+std::pair<string, int> Properties::getScore(const string position) { 
+    string initials;
+    int score;
+
+    if (High_scores.HasMember(position.c_str())) {
+        initials = High_scores[position.c_str()]["initials"].GetString();
+        score = High_scores[position.c_str()]["score"].GetInt();
+    }
+    return std::pair<string, int>(initials, score);
+}
 
 shared_ptr<Node<Property>> Properties::getPropertyByPosition(int property_position) {
     for (auto prop : Props) {

@@ -13,8 +13,7 @@ bool GamingMusic::playMusic() {
 	return false;
 }
 
-void GamingMusic::stopMusic() {}
-
+void GamingMusic::restartMusic() { StopMusicStream(Song); }
 float GamingMusic::getTimePlayed() { return Time_played; }
 bool GamingMusic::getIsOn() { return Is_on; }
 Music GamingMusic::getSong() { return Song; }

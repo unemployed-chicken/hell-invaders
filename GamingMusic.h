@@ -17,7 +17,7 @@ class GamingMusic
 public:
 	GamingMusic(Music song, string name);
 	GamingMusic();
-	void stopMusic();
+	void restartMusic();
 
 	float getTimePlayed();
 	bool playMusic();

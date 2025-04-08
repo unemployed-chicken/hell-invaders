@@ -17,7 +17,6 @@ const int targetFps{ 60 };
 
 // General
 const bool is_windows_os{ true };
-constexpr int end_game_screen_pause_time{ 10 }; // seconds
 
 const string game_play_songs[6]{
     "audio\\metal-headed.mp3", "audio\\fierce.mp3", "audio\\doom-extreme-metal-rock.mp3",
@@ -38,9 +37,6 @@ int main() {
 
     SetTargetFPS(targetFps);
 
-    float time_on_screen{};
-	float timePlayed{ 0.0f };
-
     // Create Textures
     map<string, Texture2D> textures = generateTexture();
 	map<string, GamingMusic> music = generateMusic();
@@ -58,14 +54,13 @@ int main() {
             float properties_dT{ GetFrameTime() };
             map.displayPropertiesMenu(textures, properties_dT);
         }
-        else if (map.getMage().getLives() == 0 || map.hasInvaded()) {
+        else if (map.getIsGameOverScreen()) {
             // Draw Game Over
-            time_on_screen += GetFrameTime();
-            if (map.getCurrentMusic()) { map.getCurrentMusic()->Data->playMusic(); }
-            map.drawEndGame();
-            if (time_on_screen >= end_game_screen_pause_time) { 
-                time_on_screen = 0;
-                map = GameMap(textures, music); 
+            float end_game_dt = GetFrameTime();
+            bool go_to_home_screen = map.displayGameOverScreen(end_game_dt);
+            if (go_to_home_screen) {
+                map.getCurrentMusic()->Data->restartMusic();
+                map = GameMap(textures, music);
             }
         }
         else if (map.getIsIntro()) {
@@ -136,7 +131,6 @@ map<string, GamingMusic> generateMusic() {
    // Create music map with constants  
    map<string, GamingMusic> loaded_music = {};  
    loaded_music["main_screen"] = GamingMusic(LoadMusicStream("audio\\main_screen.mp3"), "main_screen");  
-   loaded_music["end_game"] = GamingMusic(LoadMusicStream("audio\\end_game.mp3"), "end_game");  
 
    // Add gameplay music to map in random order  
    // Keys determine the order music is played and remains constant. The music assigned to that key is randomized.  
