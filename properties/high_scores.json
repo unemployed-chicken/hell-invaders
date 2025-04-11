@@ -1,14 +1,1 @@
-{
-    "1": {
-        "score": 333,
-        "initials": "AAA"
-    },
-    "2": {
-        "score": 222,
-        "initials": "BBB"
-    },
-    "3": {
-        "score": 111,
-        "initials": "CCC"
-    }
-}
+{"1":{"score":300,"initials":"ONE"},"2":{"score":250,"initials":"JEF"},"3":{"score":250,"initials":"JAR"}}

@@ -49,11 +49,18 @@ constexpr int properties_spacing{ 60 };
 constexpr int properties_font_size{ 15 };
 constexpr int save_and_exit_y_coordinate{ 525 };
 constexpr int end_game_screen_pause_time{ 5 }; // seconds
-constexpr int high_scores_x_location{ 225 };
+constexpr int high_scores_x_location{ 250 };
 constexpr int high_scores_y_starting_location{ 315 };
 constexpr int high_scores_y_spacing{ 35 };
 constexpr int high_scores_font_size{ 25 };
 constexpr int initails_and_score_spacing{ 100 };
+constexpr int initials_first_x_coordinate{ 290 };
+constexpr int initials_second_x_coordinate{ 315 };
+constexpr int initials_third_x_coordinate{ 340 };
+constexpr int initials_y_coordiate{ 375 };
+constexpr int initials_x_spacing{ initials_second_x_coordinate - initials_first_x_coordinate };
+constexpr int initials_box_x_padding{ 4 };
+constexpr Vector2 high_score_select_box_start_location{ initials_first_x_coordinate - initials_box_x_padding, initials_y_coordiate - 2 };
 
 const float demons_x_range[2]{ 5.0f, window_dimensions[1] - (16.f * character_scale) + 5.f}; // First is Left Limit, Second is Right Limit
 
@@ -100,7 +107,10 @@ class GameMap {
 	bool Is_intro{ false };
 	bool Is_game_over_screen{ false };
 	bool Is_high_score{ false };
+	bool Is_ready_to_confirm_initials{ false };
 	bool Is_end_game_requested{ false };
+
+	string High_score_position{ "3" };
 	
 	void drawPlayerPropertyOptions();
 	void drawPlayerMenuOptions();
@@ -108,6 +118,7 @@ class GameMap {
 	void drawProperty(shared_ptr<Node<Property>> property);
 	void drawPropertyDescription(shared_ptr<Node<Property>> property);
 	void drawBackground();
+	void drawNewHighScore();
 	void drawSaveAndExitOptions();
 	void drawLives();
 	void drawShieldCount();
@@ -144,6 +155,10 @@ class GameMap {
 	void updateBackgroundTextures(map<string, Texture2D> textures);
 	void rotateMusic();
 	void setIsGameOverValues();
+	void selectInitialsUserInput();
+	void confirmInitialsUserInput();
+	void drawConfirmationOptions();
+	void newHighScoreTick();
 	bool shouldNodeBeDeleted();
 	bool hasCollision(shared_ptr<Demon> demon);
 	bool checkPropertiesPageSaveOptionsInput();

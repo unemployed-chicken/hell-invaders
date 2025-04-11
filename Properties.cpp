@@ -86,6 +86,20 @@ Properties::Properties() {
     count = i;
 }
 
+void Properties::saveScores() {
+    FILE* fp;
+    is_windows_os ? fopen_s(&fp, "properties\\high_scores.json", "wb") : fopen_s(&fp, "properties/high_scores.json", "w"); // non-Windows use "w" 
+
+    if (fp) {
+        char writeBuffer[65536];
+        rapidjson::FileWriteStream os(fp, writeBuffer,
+            sizeof(writeBuffer));
+        rapidjson::Writer<rapidjson::FileWriteStream> writer(os);
+        High_scores.Accept(writer);
+        fclose(fp);
+    }
+}
+
 void Properties::saveProperties() {
     FILE* fp;
     is_windows_os ? fopen_s(&fp, "properties\\user_defined_properties.json", "wb") : fopen_s(&fp, "properties/user_defined_properties.json", "w"); // non-Windows use "w" 
@@ -149,6 +163,17 @@ void Properties::updateFloatProperty(string key, float value) {
     }
 }
 
+void Properties::setScore(pair<string, int> score, const string position) { 
+    // Possibly rapidjson::MemoryPoolAllocator
+    auto& allocator = High_scores.GetAllocator();
+    rapidjson::Value& score_entry = High_scores[position.c_str()];
+
+    rapidjson::Value initials;
+    initials.SetString(score.first.c_str(), static_cast<rapidjson::SizeType>(score.first.length()), allocator);
+    score_entry["initials"] = initials;
+    score_entry["score"].SetInt(score.second);
+}
+
 int Properties::genertateIntProperty(string document_key, string props_key, int default_value, int count, shared_ptr<Node<Property>> previous, rapidjson::Document& properties_details) {
     count++;
     int value;
@@ -180,7 +205,7 @@ int Properties::getIntPropertyValue(const string property) { return static_cast<
 float Properties::getFloatPropertyValue(const string property) { return Props[property]->Data->getValue(); }
 float Properties::getPerSecondPropertyValue(const string property) { return 1.0 / Props[property]->Data->getValue(); }
 
-std::pair<string, int> Properties::getScore(const string position) { 
+pair<string, int> Properties::getScore(const string position) { 
     string initials;
     int score;
 

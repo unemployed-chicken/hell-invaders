@@ -176,6 +176,18 @@ void GameMap::drawBackground() {
 	drawShieldCount();
 }
 
+void GameMap::drawNewHighScore() {
+	string initials = Props.getScore(High_score_position).first;
+	string first = string(1, initials[0]);
+	string second = string(1, initials[1]);
+	string third = string(1, initials[2]);
+
+	DrawText("NEW HIGH SCORE!", 215, 325, 25, WHITE);
+	DrawText(first.c_str(), initials_first_x_coordinate, initials_y_coordiate, high_scores_font_size, WHITE);
+	DrawText(second.c_str(), initials_second_x_coordinate, initials_y_coordiate, high_scores_font_size, WHITE);
+	DrawText(third.c_str(), initials_third_x_coordinate, initials_y_coordiate, high_scores_font_size, WHITE);
+}
+
 void GameMap::drawSaveAndExitOptions() {
 	string save{ "Save and Exit" };
 	string restore_defaults{ "Restore Defaults" };
@@ -472,13 +484,9 @@ void GameMap::displayHomeMenu(map<string, Texture2D> textures, const float dT) {
 
 	* Provide user option to lower volume
 	* 
-	* High Score can log first three initials
-	* 
 	* BUGS: 
-	    Change to Props does not take effect until second play through. 
+	    Change to Props does not take effect until second play through.
 		Changing audio output crashes game?
-	* 
-	* Should Mage Speed increase per round? (mage_level_acceleration_in_pixels_per_second)
 	*/
 }
 
@@ -511,29 +519,10 @@ void GameMap::displayPropertiesMenu(map<string, Texture2D> textures, const float
 }
 
 bool GameMap::displayGameOverScreen(const float dT) {
-	/*
-	WORK FLOW : 
-		* Play Music
-		* draw background 
-		* if not is_high_score: 
-			* display high scores
-			* Check for user input or close screen after end_game_screen_pause_time
-		* else:
-			* tick: 
-				* Print "NEW HIGH SCORE!"
-				* User can scroll through letters and selects an initail
-				* After they select the three initials, they are prompted to confirm
-				* Once confirmed:
-					* save score
-					* set Is_high_score to false
-			* 
-	*/ 
-
 	if (Current_music) { Current_music->Data->playMusic(); }
 	drawEndGame();
-	time_on_screen += dT;
 	if (!Is_high_score) { 
-
+		time_on_screen += dT;
 		drawHighScores();	
 
 		if ((time_on_screen >= end_game_screen_pause_time) || IsKeyPressed(KEY_ENTER)) {
@@ -544,25 +533,8 @@ bool GameMap::displayGameOverScreen(const float dT) {
 		}
 	}
 	else {
-		// Refactor to a tick function.
-		// Tick will
-		// Player Inputs their intials using a scroll method
-		// sets is_high_score to false to display all high scores
-
-		/*
-		* tick: 
-				* Print "NEW HIGH SCORE!"
-				* User can scroll through letters and selects an initail
-				* After they select the three initials, they are prompted to confirm
-				* Once confirmed:
-					* save score
-					* set Is_high_score to false
-			* 
-		*/
-		if (IsKeyPressed(KEY_ENTER)) {
-			Is_high_score = false;
-		}		
-	}
+		newHighScoreTick();
+	}	
 
 	return false;
 }
@@ -782,9 +754,74 @@ void GameMap::rotateMusic() {
 
 void GameMap::setIsGameOverValues() {
 	Is_game_over_screen = true;
-	if (mage.getScore() > Props.getScore("3").second) {
+	pair<string, int> new_score{ "AAA", mage.getScore() };
+
+	if (new_score.second > Props.getScore("3").second) {
 		Is_high_score = true;
+		Select_box_location = high_score_select_box_start_location;
+
+		if (new_score.second > Props.getScore("1").second) {
+			Props.setScore(Props.getScore("2"), "3");
+			Props.setScore(Props.getScore("1"), "2");
+			Props.setScore(new_score, "1");
+			High_score_position = "1";
+		}
+		else if (new_score.second > Props.getScore("2").second) {
+			Props.setScore(Props.getScore("2"), "3");
+			Props.setScore(new_score, "2");
+			High_score_position = "2";
+		}
+		else {
+			Props.setScore(new_score, "3");
+			High_score_position = "3";
+		}
 	}
+	
+}
+
+void GameMap::selectInitialsUserInput() {
+	bool is_initial_changed = false;
+	pair<string, int> score_object = Props.getScore(High_score_position);
+
+	char* initial;
+	if (Select_box_location.x + initials_box_x_padding == initials_first_x_coordinate) { initial = &score_object.first[0]; }
+	else if (Select_box_location.x + initials_box_x_padding == initials_second_x_coordinate) { initial = &score_object.first[1]; }
+	else { initial = &score_object.first[2]; }
+
+
+	if (IsKeyPressed(KEY_UP) || IsKeyPressed(KEY_W)) {
+		(*initial) < 90 ? (*initial) += 1 : (*initial) = 65;
+		is_initial_changed = true;
+	}
+	else if (IsKeyPressed(KEY_DOWN) || IsKeyPressed(KEY_S)) {
+		(*initial) > 65 ? (*initial) -= 1 : (*initial) = 90;
+		is_initial_changed = true;
+	}
+
+	if ((IsKeyPressed(KEY_RIGHT) || IsKeyPressed(KEY_D)) && Select_box_location.x < initials_third_x_coordinate - 10 ) {
+		Select_box_location.x += initials_x_spacing;
+	}
+	else if ((IsKeyPressed(KEY_LEFT) || IsKeyPressed(KEY_A)) && Select_box_location.x > initials_first_x_coordinate ) {
+		Select_box_location.x -= initials_x_spacing;
+	}
+
+	if (IsKeyPressed(KEY_ENTER)) { Is_ready_to_confirm_initials = true;	}
+	if (is_initial_changed) { Props.setScore(score_object, High_score_position); }
+}
+
+void GameMap::confirmInitialsUserInput() {
+	drawConfirmationOptions();
+
+	if (IsKeyPressed(KEY_ENTER)) { 
+		Is_high_score = false; 
+		Props.saveScores();
+	}
+	else if (IsKeyPressed(KEY_BACKSPACE)) { Is_ready_to_confirm_initials = false; }
+}
+
+void GameMap::drawConfirmationOptions() {
+	DrawText("Is this correct?", 225, 425, 25, WHITE);
+	DrawText("Enter to confirm. Backspace to cancel.", 100, 450, 25, WHITE);
 }
 
 bool GameMap::shouldNodeBeDeleted() {
@@ -839,6 +876,19 @@ bool GameMap::playerPropertiesScreenTick() {
 	DrawRectangleLines(Select_box_location.x - 5, Select_box_location.y - 5, width, properties_font_size + 10, RED);
 
 	return is_selected;
+}
+
+void GameMap::newHighScoreTick() {
+	drawNewHighScore();
+
+	if (Is_ready_to_confirm_initials) {
+		confirmInitialsUserInput();
+	} 
+	else {
+		DrawRectangleLines(Select_box_location.x, Select_box_location.y, 25, 26, RED);
+		selectInitialsUserInput();
+	}
+
 }
 
 shared_ptr<Demon> GameMap::generateDemonWithRandomTexture(map<string, Texture2D> textures, const int random) {

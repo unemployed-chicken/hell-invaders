@@ -105,11 +105,13 @@ class Properties {
 public:
 	Properties(rapidjson::Document& properties_details_document);
 	Properties();
+	void saveScores();
 	void saveProperties();
 	void restoreDefaults();
 	void updateIntProperty(string key, int value);
 	void updateBoolProperty(string key, bool value);
 	void updateFloatProperty(string key, float value);
+	void setScore(pair<string, int> score, const string position);
 
 	int getCount();
 
@@ -117,7 +119,7 @@ public:
 	int getIntPropertyValue(const string property);
 	float getFloatPropertyValue(const string property);
 	float getPerSecondPropertyValue(const string property);
-	std::pair<string, int> getScore(const string position);
+	pair<string, int> getScore(const string position);
 	shared_ptr<Node<Property>> getPropertyByPosition(int property_position);
 	shared_ptr<Node<Property>> getPropertyByName(string property); 
 };
