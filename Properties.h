@@ -25,6 +25,7 @@ constexpr bool should_skip_intro{ false };
 constexpr bool should_start_with_shields_active{ true };
 constexpr bool should_projectiles_collide{ true };
 constexpr bool is_music_on{ true };
+constexpr int music_volume{ 100 };
 
 // Demon Properties
 constexpr int number_of_demon_columns{ 6 };
@@ -95,8 +96,8 @@ class Properties {
 	map<string, shared_ptr<Node<Property>>> Props{};
 	int count{ 0 };
 
-	int genertateIntProperty(string document_key, string props_key, int default_value, int count, shared_ptr<Node<Property>> previous, rapidjson::Document& properties_details);
-	int genertateBoolProperty(string document_key, string props_key, bool default_value, int count, shared_ptr<Node<Property>> previous, rapidjson::Document& properties_details);
+	int generateIntProperty(string document_key, string props_key, int default_value, int count, shared_ptr<Node<Property>> previous, rapidjson::Document& properties_details);
+	int generateBoolProperty(string document_key, string props_key, bool default_value, int count, shared_ptr<Node<Property>> previous, rapidjson::Document& properties_details);
 	//int genertateFloatProperty(string document_key, string props_key, float default_value, int count, shared_ptr<Node<Property>> previous, rapidjson::Document& properties_details);
 	void assignPreviousandNext(shared_ptr<Node<Property>> previous, shared_ptr<Node<Property>> next);
 	void generateHighScores();

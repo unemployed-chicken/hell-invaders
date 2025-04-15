@@ -2,8 +2,8 @@
 
 #include "Demon.h"
 #include "DoubleLinkedList.h"
-#include "GamingMusic.h"
 #include "Mage.h"
+#include "MusicController.h"
 #include "Projectile.h"
 #include "Properties.h"
 #include "raylib.h"
@@ -83,9 +83,7 @@ class GameMap {
 	Texture2D Revive_shield;
 
 	// Game Music
-	shared_ptr<Node<GamingMusic>> Current_music = nullptr;
-	shared_ptr<Node<GamingMusic>> Main_screen_music = nullptr;
-	DoubleLinkedList<GamingMusic> Mid_game_music_list;
+	MusicController Music_controller;
 
 	// Character Objects
 	Mage mage;
@@ -151,9 +149,7 @@ class GameMap {
 	void moveReviveShield(const float dT);
 	void destroySpecialDemon(const bool is_killed);
 	void generateRandomDemon(map<string, Texture2D> textures);
-	void generateMusicList(map<string, GamingMusic> music);
 	void updateBackgroundTextures(map<string, Texture2D> textures);
-	void rotateMusic();
 	void setIsGameOverValues();
 	void selectInitialsUserInput();
 	void confirmInitialsUserInput();
@@ -180,7 +176,7 @@ class GameMap {
 
 
 public:
-	GameMap(map<string, Texture2D> textures, map<string, GamingMusic> music);
+	GameMap(map<string, Texture2D> textures);
 	//~GameMap();
 
 	bool hasDemons();
@@ -193,7 +189,7 @@ public:
 	bool getIsPropertiesScreen();
 	bool getIsGameOverScreen();
 	Mage& getMage();
-	shared_ptr<Node<GamingMusic>> getCurrentMusic();
+	MusicController getMusicController();
 	void tick(const float dT);
 	void generateDemonsList(map<string, Texture2D> textures);
 	void generateShields();
@@ -208,8 +204,6 @@ public:
 	void resetProperties();
 	void setResetShieldCountToStartingAmount();
 	void clearAllShields();
-	void setCurrentMusicToGameplayMusic();
-	void playCurrentMusic();
 	int getDemonsMovedDownCount();
 };
 

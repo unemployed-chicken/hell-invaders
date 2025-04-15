@@ -3,18 +3,11 @@ cpp project recreating space invaders
 
 
 TODO:
-	- Change for following properties:
-		- casting_texture_update_rate_per_second
-		- demon_attack_chance
-	- In game Stuff
-		- Save High Score
-		- add music
-		- Add User Changes properties to fine tune game as desired
-			- make saveable 
 	- Shipping Game:
 		- Figure out how to ship to steam
 	- Bug Fixes: 
-
+		- Change to Props does not take effect until second play through.
+		- Changing audio output crashes game?
 
 
 Properties to be refactored

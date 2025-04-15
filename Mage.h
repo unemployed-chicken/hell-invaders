@@ -65,6 +65,7 @@ public:
 	void setIsShieldReady(const bool b);
 	void setIsReviveShieldActive(const bool b);
 	void setIsCastingShield(const bool b);
+	void reloadPropertyImpactedValues(Properties& properties);
 
 	virtual void render() override; 
 	virtual void setTexturePosition() override;

@@ -50,38 +50,39 @@ Properties::Properties() {
     int i{ 0 };
 
     // General Game Properties
-    i = genertateIntProperty("number_of_starting_lives", "Number_of_starting_lives", number_of_starting_lives, i, nullptr, properties_details);
-	i = genertateIntProperty("number_of_starting_shields", "Number_of_starting_shields", number_of_starting_shields, i, Props["Number_of_starting_lives"], properties_details);
-	i = genertateIntProperty("number_of_texure_updates_rate_per_second", "Number_of_texure_updates_rate_per_second", number_of_texure_updates_rate_per_second, i, Props["Number_of_starting_shields"], properties_details);
-	i = genertateIntProperty("revive_shield_movement_speed_in_pixels_per_second", "Revive_shield_movement_speed_in_pixels_per_second", revive_shield_movement_speed_in_pixels_per_second, i, Props["Number_of_texure_updates_rate_per_second"], properties_details);
-	i = genertateBoolProperty("should_skip_intro", "Should_skip_intro", should_skip_intro, i, Props["Revive_shield_movement_speed_in_pixels_per_second"], properties_details);
-	i = genertateBoolProperty("should_start_with_shields_active", "Should_start_with_shields_active", should_start_with_shields_active, i, Props["Should_skip_intro"], properties_details);
-	i = genertateBoolProperty("should_projectiles_collide", "Should_projectiles_collide", should_projectiles_collide, i, Props["Should_start_with_shields_active"], properties_details);
-	i = genertateBoolProperty("is_music_on", "Is_music_on", is_music_on, i, Props["Should_projectiles_collide"], properties_details);
+    i = generateIntProperty("number_of_starting_lives", "Number_of_starting_lives", number_of_starting_lives, i, nullptr, properties_details);
+	i = generateIntProperty("number_of_starting_shields", "Number_of_starting_shields", number_of_starting_shields, i, Props["Number_of_starting_lives"], properties_details);
+	i = generateIntProperty("number_of_texure_updates_rate_per_second", "Number_of_texure_updates_rate_per_second", number_of_texure_updates_rate_per_second, i, Props["Number_of_starting_shields"], properties_details);
+	i = generateIntProperty("revive_shield_movement_speed_in_pixels_per_second", "Revive_shield_movement_speed_in_pixels_per_second", revive_shield_movement_speed_in_pixels_per_second, i, Props["Number_of_texure_updates_rate_per_second"], properties_details);
+	i = generateBoolProperty("should_skip_intro", "Should_skip_intro", should_skip_intro, i, Props["Revive_shield_movement_speed_in_pixels_per_second"], properties_details);
+	i = generateBoolProperty("should_start_with_shields_active", "Should_start_with_shields_active", should_start_with_shields_active, i, Props["Should_skip_intro"], properties_details);
+	i = generateBoolProperty("should_projectiles_collide", "Should_projectiles_collide", should_projectiles_collide, i, Props["Should_start_with_shields_active"], properties_details);
+	i = generateBoolProperty("is_music_on", "Is_music_on", is_music_on, i, Props["Should_projectiles_collide"], properties_details);
+    i = generateIntProperty("music_volume", "Music_volume", music_volume, i, Props["Is_music_on"], properties_details);
 
 	// Demon Properties
-	i = genertateIntProperty("number_of_demon_columns", "Number_of_demon_columns", number_of_demon_columns, i, Props["Is_music_on"], properties_details);
-	i = genertateIntProperty("number_of_rows_before_speed_boost", "Number_of_rows_before_speed_boost", number_of_rows_before_speed_boost, i, Props["Number_of_demon_columns"], properties_details);
-	i = genertateIntProperty("demon_base_points", "Demon_base_points", demon_base_points, i, Props["Number_of_rows_before_speed_boost"], properties_details);
-	i = genertateIntProperty("scamp_score_multiplier", "Scamp_score_multiplier", scamp_score_multiplier, i, Props["Demon_base_points"], properties_details);
-	i = genertateIntProperty("fledgling_score_multiplier", "Fledgling_score_multiplier", fledgling_score_multiplier, i, Props["Scamp_score_multiplier"], properties_details);
-	i = genertateIntProperty("skull_score_multiplier", "Skull_score_multiplier", skull_score_multiplier, i, Props["Fledgling_score_multiplier"], properties_details);
-	i = genertateIntProperty("eye_score_multipler", "Eye_score_multipler", eye_score_multipler, i, Props["Skull_score_multiplier"], properties_details);
+	i = generateIntProperty("number_of_demon_columns", "Number_of_demon_columns", number_of_demon_columns, i, Props["Music_volume"], properties_details);
+	i = generateIntProperty("number_of_rows_before_speed_boost", "Number_of_rows_before_speed_boost", number_of_rows_before_speed_boost, i, Props["Number_of_demon_columns"], properties_details);
+	i = generateIntProperty("demon_base_points", "Demon_base_points", demon_base_points, i, Props["Number_of_rows_before_speed_boost"], properties_details);
+	i = generateIntProperty("scamp_score_multiplier", "Scamp_score_multiplier", scamp_score_multiplier, i, Props["Demon_base_points"], properties_details);
+	i = generateIntProperty("fledgling_score_multiplier", "Fledgling_score_multiplier", fledgling_score_multiplier, i, Props["Scamp_score_multiplier"], properties_details);
+	i = generateIntProperty("skull_score_multiplier", "Skull_score_multiplier", skull_score_multiplier, i, Props["Fledgling_score_multiplier"], properties_details);
+	i = generateIntProperty("eye_score_multipler", "Eye_score_multipler", eye_score_multipler, i, Props["Skull_score_multiplier"], properties_details);
 
     // Demon Mechanic Properties
-	i = genertateIntProperty("demon_base_speed_in_pixels_per_second", "Demon_base_speed_in_pixels_per_second", demon_base_speed_in_pixels_per_second, i, Props["Eye_score_multipler"], properties_details);
-	i = genertateIntProperty("demon_acceleration_in_pixels_per_second", "Demon_acceleration_in_pixels_per_second", demon_acceleration_in_pixels_per_second, i, Props["Demon_base_speed_in_pixels_per_second"], properties_details);
-	i = genertateIntProperty("demon_level_acceleration_in_pixels_per_second", "Demon_level_acceleration_in_pixels_per_second", demon_level_acceleration_in_pixels_per_second, i, Props["Demon_acceleration_in_pixels_per_second"], properties_details);
-	i = genertateIntProperty("demon_projectile_speed_in_pixels_per_second", "Demon_projectile_speed_in_pixels_per_second", demon_projectile_speed_in_pixels_per_second, i, Props["Demon_level_acceleration_in_pixels_per_second"], properties_details);
-    i = genertateIntProperty("demon_attack_rate_in_milliseconds", "Demon_attack_rate_in_milliseconds", demon_attack_rate_in_milliseconds, i, Props["Demon_projectile_speed_in_pixels_per_second"], properties_details);
-    i = genertateIntProperty("demon_attack_chance_percentage", "Demon_attack_chance_percentage", demon_attack_chance_percentage, i, Props["Demon_attack_rate_in_milliseconds"], properties_details);
+	i = generateIntProperty("demon_base_speed_in_pixels_per_second", "Demon_base_speed_in_pixels_per_second", demon_base_speed_in_pixels_per_second, i, Props["Eye_score_multipler"], properties_details);
+	i = generateIntProperty("demon_acceleration_in_pixels_per_second", "Demon_acceleration_in_pixels_per_second", demon_acceleration_in_pixels_per_second, i, Props["Demon_base_speed_in_pixels_per_second"], properties_details);
+	i = generateIntProperty("demon_level_acceleration_in_pixels_per_second", "Demon_level_acceleration_in_pixels_per_second", demon_level_acceleration_in_pixels_per_second, i, Props["Demon_acceleration_in_pixels_per_second"], properties_details);
+	i = generateIntProperty("demon_projectile_speed_in_pixels_per_second", "Demon_projectile_speed_in_pixels_per_second", demon_projectile_speed_in_pixels_per_second, i, Props["Demon_level_acceleration_in_pixels_per_second"], properties_details);
+    i = generateIntProperty("demon_attack_rate_in_milliseconds", "Demon_attack_rate_in_milliseconds", demon_attack_rate_in_milliseconds, i, Props["Demon_projectile_speed_in_pixels_per_second"], properties_details);
+    i = generateIntProperty("demon_attack_chance_percentage", "Demon_attack_chance_percentage", demon_attack_chance_percentage, i, Props["Demon_attack_rate_in_milliseconds"], properties_details);
 
     // Mage Properties
-	i = genertateIntProperty("attack_texture_update_rate_per_second", "Attack_texture_update_rate_per_second", attack_texture_update_rate_per_second, i, Props["Demon_attack_chance_percentage"], properties_details);
-	i = genertateIntProperty("casting_shield_texture_update_rate_per_second", "Casting_shield_texture_update_rate_per_second", casting_shield_texture_update_rate_per_second, i, Props["Attack_texture_update_rate_per_second"], properties_details);
-	i = genertateIntProperty("mage_speed_in_pixels_per_second", "Mage_speed_in_pixels_per_second", mage_speed_in_pixels_per_second, i, Props["Casting_shield_texture_update_rate_per_second"], properties_details);
-	i = genertateIntProperty("mage_attack_rate_in_millisecond", "Mage_attack_rate_in_millisecond", mage_attack_rate_in_millisecond, i, Props["Mage_speed_in_pixels_per_second"], properties_details);
-	i = genertateIntProperty("mage_projectile_speed_in_pixels_per_second", "Mage_projectile_speed_in_pixels_per_second", mage_projectile_speed_in_pixels_per_second, i, Props["Mage_attack_rate_in_millisecond"], properties_details);
+	i = generateIntProperty("attack_texture_update_rate_per_second", "Attack_texture_update_rate_per_second", attack_texture_update_rate_per_second, i, Props["Demon_attack_chance_percentage"], properties_details);
+	i = generateIntProperty("casting_shield_texture_update_rate_per_second", "Casting_shield_texture_update_rate_per_second", casting_shield_texture_update_rate_per_second, i, Props["Attack_texture_update_rate_per_second"], properties_details);
+	i = generateIntProperty("mage_speed_in_pixels_per_second", "Mage_speed_in_pixels_per_second", mage_speed_in_pixels_per_second, i, Props["Casting_shield_texture_update_rate_per_second"], properties_details);
+	i = generateIntProperty("mage_attack_rate_in_millisecond", "Mage_attack_rate_in_millisecond", mage_attack_rate_in_millisecond, i, Props["Mage_speed_in_pixels_per_second"], properties_details);
+	i = generateIntProperty("mage_projectile_speed_in_pixels_per_second", "Mage_projectile_speed_in_pixels_per_second", mage_projectile_speed_in_pixels_per_second, i, Props["Mage_attack_rate_in_millisecond"], properties_details);
 
     count = i;
 }
@@ -174,7 +175,7 @@ void Properties::setScore(pair<string, int> score, const string position) {
     score_entry["score"].SetInt(score.second);
 }
 
-int Properties::genertateIntProperty(string document_key, string props_key, int default_value, int count, shared_ptr<Node<Property>> previous, rapidjson::Document& properties_details) {
+int Properties::generateIntProperty(string document_key, string props_key, int default_value, int count, shared_ptr<Node<Property>> previous, rapidjson::Document& properties_details) {
     count++;
     int value;
 	
@@ -186,7 +187,7 @@ int Properties::genertateIntProperty(string document_key, string props_key, int 
     return count;
 }
 
-int Properties::genertateBoolProperty(string document_key, string props_key, bool default_value, int count, shared_ptr<Node<Property>> previous, rapidjson::Document& properties_details) {
+int Properties::generateBoolProperty(string document_key, string props_key, bool default_value, int count, shared_ptr<Node<Property>> previous, rapidjson::Document& properties_details) {
     count++;
     bool value;
 

@@ -34,6 +34,17 @@ void Mage::setIsShieldReady(const bool b) { Is_shield_ready = b; }
 void Mage::setIsReviveShieldActive(const bool b) { Is_revive_shield_active = b; }
 void Mage::setIsCastingShield(const bool b) { Is_casting_shield = false; }
 
+void Mage::reloadPropertyImpactedValues(Properties& properties) {
+	Lives = properties.getIntPropertyValue("Number_of_starting_lives");
+	Shield_count = properties.getIntPropertyValue("Number_of_starting_shields");
+	Base_Texture_update_rate = properties.getPerSecondPropertyValue("Number_of_texure_updates_rate_per_second");
+	Attack_texture_update_rate_per_second = properties.getPerSecondPropertyValue("Attack_texture_update_rate_per_second");
+	Casting_texture_update_rate_per_second = properties.getPerSecondPropertyValue("Casting_shield_texture_update_rate_per_second");
+	Speed = properties.getFloatPropertyValue("Mage_speed_in_pixels_per_second");
+	Texture_update_rate = properties.getFloatPropertyValue("Mage_attack_rate_in_millisecond");
+	Attack_rate = properties.getPerSecondPropertyValue("Number_of_texure_updates_rate_per_second");
+}
+
 void Mage::takeDamage() {
 	Last_texture_update = 0.0f;
 	Is_hurt = true;

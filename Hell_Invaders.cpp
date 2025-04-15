@@ -18,16 +18,11 @@ const int targetFps{ 60 };
 // General
 const bool is_windows_os{ true };
 
-const string game_play_songs[6]{
-    "audio\\metal-headed.mp3", "audio\\fierce.mp3", "audio\\doom-extreme-metal-rock.mp3",
-    "audio\\metal-header.mp3", "audio\\rise-of-the-zombies.mp3", "audio\\we-can-win.mp3"
-};
-
 
 // Function Declaration. Defined at the bottom of the page
 map<string, Texture2D> generateTexture();
-map<string, GamingMusic> generateMusic();
-void cleanUpResources(map<string, Texture2D> textures, map<string, GamingMusic> music);
+//map<string, GamingMusic> generateMusic();
+void cleanUpResources(map<string, Texture2D> textures);
 
 int main() {
     srand(time(0));
@@ -39,12 +34,14 @@ int main() {
 
     // Create Textures
     map<string, Texture2D> textures = generateTexture();
-	map<string, GamingMusic> music = generateMusic();
-    GameMap map(textures, music);
+	//map<string, GamingMusic> music = generateMusic();
+    GameMap map(textures);
 
     while (!WindowShouldClose() && !map.getIsEndGameRequested()) {
         BeginDrawing();
         ClearBackground(WHITE);
+
+        map.getMusicController().playCurrentMusic(!map.getIsMainScreen() && !map.getIsPropertiesScreen() && !map.getIsIntro());
 
         if (map.getIsMainScreen()) {
             float menu_dT{ GetFrameTime() };
@@ -59,8 +56,7 @@ int main() {
             float end_game_dt = GetFrameTime();
             bool go_to_home_screen = map.displayGameOverScreen(end_game_dt);
             if (go_to_home_screen) {
-                map.getCurrentMusic()->Data->restartMusic();
-                map = GameMap(textures, music);
+                map = GameMap(textures);
             }
         }
         else if (map.getIsIntro()) {
@@ -71,7 +67,7 @@ int main() {
             map.drawInstructions();
 
             if (IsKeyPressed(KEY_ENTER)) {
-                map.setCurrentMusicToGameplayMusic();
+                map.getMusicController().setCurrentMusicToGameplayMusic();
                 map.clearAllShields();
                 map.setResetShieldCountToStartingAmount();
                 map.setIsIntro(false);
@@ -100,7 +96,8 @@ int main() {
         EndDrawing();
     }
 
-	cleanUpResources(textures, music); 
+    cleanUpResources(textures);
+    map.getMusicController().cleanUpMusic();
 
     CloseAudioDevice();
     CloseWindow();
@@ -127,45 +124,10 @@ map<string, Texture2D> generateTexture() {
     };
 }
 
-map<string, GamingMusic> generateMusic() {  
-   // Create music map with constants  
-   map<string, GamingMusic> loaded_music = {};  
-   loaded_music["main_screen"] = GamingMusic(LoadMusicStream("audio\\main_screen.mp3"), "main_screen");  
-
-   // Add gameplay music to map in random order  
-   // Keys determine the order music is played and remains constant. The music assigned to that key is randomized.  
-   int numbs[6]{10,10,10,10,10,10};  
-
-   int i = 0;  
-   while (i < 6) {  
-       int r = rand() % 6;
-       bool already_in_numbs = false;  
-       for (int x : numbs) {  
-           if (r == x) {  
-               already_in_numbs = true;  
-               break;  
-           }  
-       }  
-
-       if (!already_in_numbs) {  
-           numbs[i] = r;  
-           i++;  
-           string name = "game_play_";  
-           name.append(to_string(i));
-           loaded_music[name] = GamingMusic(LoadMusicStream(game_play_songs[r].c_str()), name);  
-       }  
-   }  
-
-   return loaded_music;  
-}
 
 
-void cleanUpResources(map<string, Texture2D> textures, map<string, GamingMusic> music) {
+void cleanUpResources(map<string, Texture2D> textures) {
 	for (auto& texture : textures) {
 		UnloadTexture(texture.second);
-	}
-
-	for (auto& music : music) {
-		UnloadMusicStream(music.second.getSong());
 	}
 }
