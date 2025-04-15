@@ -176,7 +176,9 @@ class GameMap {
 
 
 public:
-	GameMap(map<string, Texture2D> textures);
+	//GameMap(map<string, Texture2D> textures);
+	GameMap(map<string, Texture2D> textures, MusicController& music_controller);
+
 	//~GameMap();
 
 	bool hasDemons();

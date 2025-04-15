@@ -1,10 +1,17 @@
 #include "GameMap.h"
 
-GameMap::GameMap(map<string, Texture2D> textures)
-	: Background(textures["main_background_1"]), Midground(textures["main_background_2"]), Foreground(textures["main_background_3"]), 
-	  mage(textures["mage"], textures["magic"], Props), Regular_shield(textures["full_shield"]), Revive_shield(textures["revive_shield"]),
-	  Music_controller(Props.getFloatPropertyValue("Music_volume"), Props.getBoolPropertyValue("Is_music_on"))
+//GameMap::GameMap(map<string, Texture2D> textures)
+//	: Background(textures["main_background_1"]), Midground(textures["main_background_2"]), Foreground(textures["main_background_3"]), 
+//	  mage(textures["mage"], textures["magic"], Props), Regular_shield(textures["full_shield"]), Revive_shield(textures["revive_shield"]),
+//	  Music_controller(Props.getFloatPropertyValue("Music_volume"), Props.getBoolPropertyValue("Is_music_on"))
+//{}
+
+GameMap::GameMap(map<string, Texture2D> textures, MusicController& music_controller)
+	: Background(textures["main_background_1"]), Midground(textures["main_background_2"]), Foreground(textures["main_background_3"]),
+	mage(textures["mage"], textures["magic"], Props), Regular_shield(textures["full_shield"]), Revive_shield(textures["revive_shield"]),
+	Music_controller(music_controller)
 {}
+
 
 
 bool GameMap::hasDemons() { return Demons_columns.getCount() > 0; }
