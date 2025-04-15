@@ -19,7 +19,7 @@ public:
 	//GamingMusic(Music song, string name); // TODO: Do I need name?
 	GamingMusic(Music song, float volume);
 	GamingMusic();
-	void restartMusic();
+	void stopMusic();
 	void reloadMusicVolume();
 	void setVolume(float volume);
 	void cleanUpSong();

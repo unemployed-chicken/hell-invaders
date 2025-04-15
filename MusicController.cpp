@@ -5,22 +5,20 @@ MusicController::MusicController(float volume, bool is_music_on): Master_volume(
 	generateMusic();
 
 	// Start Music
-	if (is_music_on) playCurrentMusic(false);
+	if (is_music_on) PlayMusicStream(Current_music->Data->getSong());
 }
 
 shared_ptr<Node<GamingMusic>> MusicController::getCurrentMusic() { return Current_music; }
 
 void MusicController::setCurrentMusicToGameplayMusic() {
-	Current_music->Data->restartMusic();
+	Current_music->Data->stopMusic();
 	Current_music = Mid_game_music_list.getHead();
 	if (Is_music_on) {
-		playCurrentMusic(true);
+		PlayMusicStream(Current_music->Data->getSong());
 	}
 }
 
 void MusicController::playCurrentMusic(bool is_game_play) {
-	PlayMusicStream(Current_music->Data->getSong());
-
 	bool is_song_complete = Current_music->Data->playMusic();
 	if (is_song_complete) { rotateMusic(is_game_play); }
 }
@@ -31,7 +29,7 @@ void MusicController::reloadPropertyImpactedValues(Properties& properties) {
 }
 
 void MusicController::restartCurrentMusic() {
-	Current_music->Data->restartMusic();
+	Current_music->Data->stopMusic();
 }
 
 void MusicController::cleanUpMusic() {
@@ -46,10 +44,9 @@ void MusicController::cleanUpMusic() {
 }
 
 void MusicController::rotateMusic(bool is_game_play) {
-	Current_music->Data->restartMusic();
-	if (is_game_play) Current_music = Current_music->Next;
-
-	playCurrentMusic(is_game_play); // TODO: Confirm if I should playCurrentMusicHere
+	Current_music->Data->stopMusic();
+	Current_music = Current_music->Next;
+	PlayMusicStream(Current_music->Data->getSong());
 }
 
 void MusicController::updateAllMusicVolume() {
@@ -61,18 +58,6 @@ void MusicController::updateAllMusicVolume() {
 		current_song = current_song->Next;
 	} while (current_song != Mid_game_music_list.getHead());
 }
-
-//void MusicController::generateMidGameMusicList(map<string, GamingMusic>& music) {
-//	Mid_game_music_list.insertAtEnd(make_shared<Node<GamingMusic>>(make_shared<GamingMusic>(music["game_play_1"])));
-//	Mid_game_music_list.insertAtEnd(make_shared<Node<GamingMusic>>(make_shared<GamingMusic>(music["game_play_2"])));
-//	Mid_game_music_list.insertAtEnd(make_shared<Node<GamingMusic>>(make_shared<GamingMusic>(music["game_play_3"])));
-//	Mid_game_music_list.insertAtEnd(make_shared<Node<GamingMusic>>(make_shared<GamingMusic>(music["game_play_4"])));
-//	Mid_game_music_list.insertAtEnd(make_shared<Node<GamingMusic>>(make_shared<GamingMusic>(music["game_play_5"])));
-//	Mid_game_music_list.insertAtEnd(make_shared<Node<GamingMusic>>(make_shared<GamingMusic>(music["game_play_6"])));
-//
-//	Mid_game_music_list.getHead()->Previous = Mid_game_music_list.getTail();
-//	Mid_game_music_list.getTail()->Next = Mid_game_music_list.getHead();
-//}
 
 void MusicController::generateMidGameMusicList() {
 	// Add gameplay music to map in random order  
@@ -96,7 +81,6 @@ void MusicController::generateMidGameMusicList() {
 		if (!already_in_numbs) {
 			numbs[i] = r;
 			i++;
-
 			Mid_game_music_list.insertAtEnd(make_shared<Node<GamingMusic>>(make_shared<GamingMusic>(GamingMusic(LoadMusicStream(game_play_songs[r].c_str()), Master_volume))));
 		}
 	}

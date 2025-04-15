@@ -21,7 +21,6 @@ const bool is_windows_os{ true };
 
 // Function Declaration. Defined at the bottom of the page
 map<string, Texture2D> generateTexture();
-//map<string, GamingMusic> generateMusic();
 void cleanUpResources(map<string, Texture2D> textures);
 
 int main() {
@@ -34,14 +33,14 @@ int main() {
 
     // Create Textures
     map<string, Texture2D> textures = generateTexture();
-	//map<string, GamingMusic> music = generateMusic();
     GameMap map(textures);
 
     while (!WindowShouldClose() && !map.getIsEndGameRequested()) {
         BeginDrawing();
         ClearBackground(WHITE);
 
-        map.getMusicController().playCurrentMusic(!map.getIsMainScreen() && !map.getIsPropertiesScreen() && !map.getIsIntro());
+        bool t = !map.getIsMainScreen() && !map.getIsPropertiesScreen() && !map.getIsIntro();
+        map.getMusicController().playCurrentMusic(t);
 
         if (map.getIsMainScreen()) {
             float menu_dT{ GetFrameTime() };

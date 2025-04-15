@@ -176,8 +176,8 @@ class GameMap {
 
 
 public:
-	//GameMap(map<string, Texture2D> textures);
-	GameMap(map<string, Texture2D> textures, MusicController& music_controller);
+	GameMap(map<string, Texture2D> textures);
+	//GameMap(map<string, Texture2D> textures, MusicController& music_controller);
 
 	//~GameMap();
 
@@ -191,7 +191,7 @@ public:
 	bool getIsPropertiesScreen();
 	bool getIsGameOverScreen();
 	Mage& getMage();
-	MusicController getMusicController();
+	MusicController& getMusicController();
 	void tick(const float dT);
 	void generateDemonsList(map<string, Texture2D> textures);
 	void generateShields();

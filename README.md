@@ -6,16 +6,9 @@ TODO:
 	- Shipping Game:
 		- Figure out how to ship to steam
 	- Bug Fixes: 
-		- Change to Props does not take effect until second play through.
 		- Changing audio output crashes game?
 
 
-Properties to be refactored
-	- Add in a key to control demon attack chance
-	- constexpr float skull_points{ base_demon_points * skull_multiplier }; (Remove this and move it to creation)
-	- constexpr float fledge_points{ base_demon_points * fledgling_multiplier }; (remove this and move it to creation)
-	- constexpr float scamp_points{ base_demon_points * scamp_multiplier }; (remove this and move it to creation)
-	- constexpr float special_demon_points{ base_demon_points * special_demon_multiplier }; (remove this and move it to creation)
 
 /*
 * Workflow for Properties: 

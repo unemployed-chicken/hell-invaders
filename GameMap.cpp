@@ -1,18 +1,10 @@
 #include "GameMap.h"
 
-//GameMap::GameMap(map<string, Texture2D> textures)
-//	: Background(textures["main_background_1"]), Midground(textures["main_background_2"]), Foreground(textures["main_background_3"]), 
-//	  mage(textures["mage"], textures["magic"], Props), Regular_shield(textures["full_shield"]), Revive_shield(textures["revive_shield"]),
-//	  Music_controller(Props.getFloatPropertyValue("Music_volume"), Props.getBoolPropertyValue("Is_music_on"))
-//{}
-
-GameMap::GameMap(map<string, Texture2D> textures, MusicController& music_controller)
-	: Background(textures["main_background_1"]), Midground(textures["main_background_2"]), Foreground(textures["main_background_3"]),
-	mage(textures["mage"], textures["magic"], Props), Regular_shield(textures["full_shield"]), Revive_shield(textures["revive_shield"]),
-	Music_controller(music_controller)
+GameMap::GameMap(map<string, Texture2D> textures)
+	: Background(textures["main_background_1"]), Midground(textures["main_background_2"]), Foreground(textures["main_background_3"]), 
+	  mage(textures["mage"], textures["magic"], Props), Regular_shield(textures["full_shield"]), Revive_shield(textures["revive_shield"]),
+	  Music_controller(Props.getFloatPropertyValue("Music_volume") / 100, Props.getBoolPropertyValue("Is_music_on"))
 {}
-
-
 
 bool GameMap::hasDemons() { return Demons_columns.getCount() > 0; }
 bool GameMap::hasInvaded() { return has_invaded; }
@@ -24,13 +16,20 @@ bool GameMap::getPropertiesShouldStartGameWithShieldsActive() {	return Props.get
 bool GameMap::getIsPropertiesScreen() {	return Is_properties_screen; }
 bool GameMap::getIsGameOverScreen() { return Is_game_over_screen; }
 Mage& GameMap::getMage() { return mage; }
-MusicController GameMap::getMusicController() { return Music_controller; }
+MusicController& GameMap::getMusicController() { return Music_controller; }
 void GameMap::setHasSpecialDemonInvaded(const bool b) { has_special_demon_spawned = false; }
 int GameMap::getDemonsMovedDownCount() { return demons_moved_down_count; }
 void GameMap::resetProperties() { Props = Properties(); }
 void GameMap::setResetShieldCountToStartingAmount() { mage.setShieldCountToStartingAmount(Props.getIntPropertyValue("Number_of_starting_shields")); }
 void GameMap::clearAllShields() { Shields.deleteAllNodes(); }
 
+
+/*
+TODO: Music should stop immediately once turned off
+	  Music should turn on immediately once turned on
+	  Music should change volume immediately
+	  Test Music for Crashing
+*/
 
 void GameMap::updatePropertySelectorCoordinate(int x) {
 	Property_selector_coordinate += x;
@@ -106,9 +105,6 @@ void GameMap::appendProjectile(shared_ptr<Demon> demon) {
 }
 
 void GameMap::tick(const float dT){
-	// TODO: Music Should be playing before entering this section
-
-
 	// Move Character // Always First
 	mage.tick(dT);
 	
@@ -429,7 +425,6 @@ void GameMap::drawInstructions() {
 
 void GameMap::displayHomeMenu(map<string, Texture2D> textures, const float dT) {
 	Select_box_movement_cooldown += dT;
-	// TODO: Play Music Here // Music should be playing before entering this section
 
 	drawMainScreen(textures, dT);
 
@@ -467,7 +462,6 @@ void GameMap::displayHomeMenu(map<string, Texture2D> textures, const float dT) {
 void GameMap::displayPropertiesMenu(map<string, Texture2D> textures, const float dT) {
 	Select_box_movement_cooldown += dT;
 
-	// TODO: Play Music // Music should be played before entering this
 
 	if (Visible_properties.getCount() < 1) { populateVisibleProperties(); }
 
@@ -493,7 +487,6 @@ void GameMap::displayPropertiesMenu(map<string, Texture2D> textures, const float
 }
 
 bool GameMap::displayGameOverScreen(const float dT) {
-	// TODO: Play Music // Music should be playing prior to entering this section
 	drawEndGame();
 	if (!Is_high_score) { 
 		time_on_screen += dT;
