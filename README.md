@@ -4,9 +4,12 @@ cpp project recreating space invaders
 
 TODO:
 	- Shipping Game:
-		- Figure out how to ship to steam
+		- Figure out how to ship to itch
+	- Setup Testing:
+		- Test Music for Crashing
 	- Bug Fixes: 
 		- Changing audio output crashes game?
+		- While recording with obs in game mode (issue does not occur during window mode), closing game crashes game
 
 
 

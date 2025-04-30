@@ -10,7 +10,6 @@ extern const bool debugging;
 class GamingMusic
 {
 	Music Song;
-	//string Name; // TODO: Do I need name?
 	float Time_played{ 0.0f };
 	bool Is_on{ true };
 	float Volume;

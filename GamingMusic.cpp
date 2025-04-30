@@ -20,7 +20,9 @@ void GamingMusic::stopMusic() {
 	StopMusicStream(Song); 
 	Time_played = 0.0f;
 }
-void GamingMusic::reloadMusicVolume() { SetMusicVolume(Song, Volume); }
+void GamingMusic::reloadMusicVolume() { 
+	SetMusicVolume(Song, Volume); 
+}
 void GamingMusic::setVolume(float volume) { Volume = volume; }
 void GamingMusic::cleanUpSong() { UnloadMusicStream(Song); }
 float GamingMusic::getTimePlayed() { return Time_played; }

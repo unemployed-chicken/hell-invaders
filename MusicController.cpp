@@ -19,12 +19,16 @@ void MusicController::setCurrentMusicToGameplayMusic() {
 }
 
 void MusicController::playCurrentMusic(bool is_game_play) {
-	bool is_song_complete = Current_music->Data->playMusic();
-	if (is_song_complete) { rotateMusic(is_game_play); }
+	if (Is_music_on) {
+		bool is_song_complete = Current_music->Data->playMusic();
+		if (is_song_complete) { rotateMusic(is_game_play); }
+	}
+
 }
 
 void MusicController::reloadPropertyImpactedValues(Properties& properties) {
 	Master_volume = properties.getFloatPropertyValue("Music_volume") / 100.f;
+	updateAllMusicVolume();
 	Is_music_on = properties.getBoolPropertyValue("Is_music_on");
 }
 
@@ -43,17 +47,22 @@ void MusicController::cleanUpMusic() {
 	while (Current_music != Mid_game_music_list.getHead());
 }
 
+void MusicController::setIsMusicOn(const bool is_music_on) { Is_music_on = is_music_on; }
+
 void MusicController::rotateMusic(bool is_game_play) {
 	Current_music->Data->stopMusic();
-	Current_music = Current_music->Next;
+	if (is_game_play) Current_music = Current_music->Next;
 	PlayMusicStream(Current_music->Data->getSong());
 }
 
 void MusicController::updateAllMusicVolume() {
 	shared_ptr<Node<GamingMusic>> current_song = Mid_game_music_list.getHead();
+	
+	Main_screen_music->Data->setVolume(Master_volume);
 	Main_screen_music->Data->reloadMusicVolume();
 
 	do {
+		current_song->Data->setVolume(Master_volume);
 		current_song->Data->reloadMusicVolume();
 		current_song = current_song->Next;
 	} while (current_song != Mid_game_music_list.getHead());
@@ -77,7 +86,6 @@ void MusicController::generateMidGameMusicList() {
 			}
 		}
 
-		// 
 		if (!already_in_numbs) {
 			numbs[i] = r;
 			i++;

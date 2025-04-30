@@ -24,13 +24,6 @@ void GameMap::setResetShieldCountToStartingAmount() { mage.setShieldCountToStart
 void GameMap::clearAllShields() { Shields.deleteAllNodes(); }
 
 
-/*
-TODO: Music should stop immediately once turned off
-	  Music should turn on immediately once turned on
-	  Music should change volume immediately
-	  Test Music for Crashing
-*/
-
 void GameMap::updatePropertySelectorCoordinate(int x) {
 	Property_selector_coordinate += x;
 	if (shouldNodeBeDeleted()) {
@@ -223,11 +216,20 @@ void GameMap::checkPropertiesPageUserInput() {
 		shared_ptr<Node<Property>> current_property = Props.getPropertyByPosition(Property_selector_coordinate);
 		current_property->Data->incrementValue(-1);
 		Props.updateIntProperty(current_property->Data->getKey(), static_cast<int>(current_property->Data->getValue()));
+
+		// Changes music temporarily to new value
+		if (current_property->Data->getKey() == "Music_volume") {
+			Music_controller.getCurrentMusic()->Data->setVolume(current_property->Data->getValue() / 100.f);
+			Music_controller.getCurrentMusic()->Data->reloadMusicVolume();
+		}
+		else if (current_property->Data->getKey() == "Is_music_on") { Music_controller.setIsMusicOn(static_cast<bool>(current_property->Data->getValue())); }
+
 	}
 	else if ((IsKeyPressed(KEY_RIGHT) || IsKeyPressed(KEY_D)) && (Select_box_movement_cooldown >= select_box_movement_minimum_cooldown)) {
 		shared_ptr<Node<Property>> current_property = Props.getPropertyByPosition(Property_selector_coordinate);
 		current_property->Data->incrementValue(1);
 
+		// Possibly no need for this complexity. Check in a refactor
 		if (current_property->Data->getIsFloat()) {
 			Props.updateFloatProperty(current_property->Data->getKey(), current_property->Data->getValue());
 		}
@@ -237,6 +239,13 @@ void GameMap::checkPropertiesPageUserInput() {
 		else {
 			Props.updateIntProperty(current_property->Data->getKey(), static_cast<int>(current_property->Data->getValue()));
 		}
+
+		// Changes music temporarily to new value
+		if (current_property->Data->getKey() == "Music_volume") {
+			Music_controller.getCurrentMusic()->Data->setVolume(current_property->Data->getValue() / 100.f);
+			Music_controller.getCurrentMusic()->Data->reloadMusicVolume();
+		}
+		else if (current_property->Data->getKey() == "Is_music_on") { Music_controller.setIsMusicOn(static_cast<bool>(current_property->Data->getValue())); }
 	}
 }
 
@@ -476,8 +485,8 @@ void GameMap::displayPropertiesMenu(map<string, Texture2D> textures, const float
 	if (has_player_selected_option && Select_box_location.y == save_and_exit_y_coordinate) {
 		saveOrRestorDefaults();
 		mage.reloadPropertyImpactedValues(Props);
+		Music_controller.reloadPropertyImpactedValues(Props);
 		clearVisibleProperties();
-
 		moveSelectBoxLocationToGamePlayOptions();
 
 		Is_properties_screen = false;

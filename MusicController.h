@@ -28,9 +28,6 @@ class MusicController {
 	void generateMusic();
 
 
-
-
-
 public:
 	MusicController(float volume, bool is_music_on);
 
@@ -40,9 +37,6 @@ public:
 	void reloadPropertyImpactedValues(Properties& properties);
 	void restartCurrentMusic();
 	void cleanUpMusic();
-
-
-
-
+	void setIsMusicOn(const bool is_music_on);
 };
 
