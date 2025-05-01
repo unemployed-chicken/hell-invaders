@@ -53,7 +53,7 @@ Color Shield::getShieldColor() {
 }
 
 void Shield::tick(const float dT){
-	Y_coordinate += revive_shield_movement_speed * dT;
+	Y_coordinate += Revive_shield_movement_speed * dT;
 	render();
 
 	if (Y_coordinate <= 0) { Is_active = false; }

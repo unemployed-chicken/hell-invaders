@@ -327,10 +327,12 @@ void GameMap::drawMainScreenBackground() {
 }
 
 void GameMap::drawPlayerMenuOptions() {
+	string title{ "Hell Invaders" };
 	string start_game{ "Start Game" };
 	string game_options{ "Game Options" };
 	string exit_game_display{ "Exit" };
 
+	DrawText(title.c_str(), 75, 75, 75, RED);
 	DrawText(start_game.c_str(), 175, 200, 50, WHITE);
 	DrawText(game_options.c_str(), 175, 300, 50, WHITE);
 	DrawText(exit_game_display.c_str(), 175, 400, 50, WHITE);
