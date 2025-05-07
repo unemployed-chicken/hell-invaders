@@ -682,11 +682,11 @@ void GameMap::moveReviveShield(const float dT) {
 }
 
 void GameMap::destroySpecialDemon(const bool is_killed) {
-	Special_demon = nullptr;
-	
 	if (is_killed) {
 		mage.incrementShieldCount();
+		mage.addScore(Special_demon->getPoints());
 	}
+	Special_demon = nullptr;
 }
 
 void GameMap::generateRandomDemon(map<string, Texture2D> textures) {
