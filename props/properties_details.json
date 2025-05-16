@@ -1,0 +1,205 @@
+{
+    "number_of_starting_lives": {
+        "name": "Lives",
+        "description": "Number of lives player starts with.",
+        "increment": 1,
+        "min": 1,
+        "max":100
+    },
+    "number_of_starting_shields": {
+        "name": "Shields to Start",
+        "description": "Number of shields player starts with.",
+        "increment": 1,
+        "min": 0,
+        "max": 100
+    },
+    "number_of_texure_updates_rate_per_second": {
+        "name": "Sprite Update Rate",
+        "description": "How many times sprites update per second.",
+        "increment": 1,
+        "min": 6,
+        "max": 30
+    },
+    "revive_shield_movement_speed_in_pixels_per_second": {
+        "name": "Revive Shield Speed",
+        "description": "The speed of the revive shield moving through the map. \nNumber indicates pixels per second",
+        "increment": 10,
+        "min": 100,
+        "max": 1000
+    },
+    "should_skip_intro": {
+        "name": "Skip Intro",
+        "description": "Determines whether a new game should skip the instructions stage.",
+        "increment": 1,
+        "min": 0,
+        "max": 1
+    },
+    "should_start_with_shields_active": {
+        "name": "Start With Shields",
+        "description": "Determines whether a new game should start with shields activated.",
+        "increment": 1,
+        "min": 0,
+        "max": 1
+    },
+    "should_projectiles_collide": {
+        "name": "Projectile Collision",
+        "description": "When turned on, magic attack and fire attacks collide and destroy each other.",
+        "increment": 1,
+        "min": 0,
+        "max": 1
+    },
+    "is_music_on": {
+        "name": "Music",
+        "description": "Determines whether music will play during playthrough.",
+        "increment": 1,
+        "min": 0,
+        "max": 1
+    },
+    "music_volume": {
+        "name": "Music Volume",
+        "description": "Sets the volume of the music.",
+        "increment": 5,
+        "min": 0,
+        "max": 100
+    },
+    "number_of_demon_columns": {
+        "name": "Demon Columns",
+        "description": "The number of demon columns a round should have. A column contains 6 demons.",
+        "increment": 1,
+        "min": 1,
+        "max": 10
+    },
+    "number_of_rows_before_speed_boost": {
+        "name": "Rows At Speed",
+        "description": "The number of rows the demons will travel before increasing their speed.",
+        "increment": 1,
+        "min": 1,
+        "max": 100
+    },
+    "demon_base_points": {
+        "name": "Demon Points",
+        "description": "The base number of points a demon is worth. \nThis number will be multiplied during the game.",
+        "increment": 5,
+        "min": 1,
+        "max": 1000
+    },
+    "scamp_score_multiplier": {
+        "name": "Front Row Multiplier",
+        "description": "This number is multiplied by Demon Points and the level to calculate the points \nfor the demons in the first two rows.",
+        "increment": 1,
+        "min": 1,
+        "max": 100
+    },
+    "fledgling_score_multiplier": {
+        "name": "Middle Row Multiplier",
+        "description": "This number is multiplied by Demon Points and the level to calculate the points \nfor the demons in the middle two rows.",
+        "increment": 1,
+        "min": 1,
+        "max": 100
+    },
+    "skull_score_multiplier": {
+        "name": "Last Row Multiplier",
+        "description": "This number is multiplied by Demon Points and the level to calculate the points \nfor the demons in the last two rows.",
+        "increment": 1,
+        "min": 1,
+        "max": 100
+    },
+    "eye_score_multipler": {
+        "name": "Special Demon Multiplier",
+        "description": "This number is multiplied by Demon Points and the level to calculate the points \nof the special demon.",
+        "increment": 1,
+        "min": 1,
+        "max": 100
+    },
+    "demon_base_speed_in_pixels_per_second": {
+        "name": "Base Demon Speed",
+        "description": "The starting speed at the beginning of the first level. \nThis base speed will be increased with each row and level.",
+        "increment": 5,
+        "min": 1,
+        "max": 100
+    },
+    "demon_acceleration_in_pixels_per_second": {
+        "name": "Demon Row Acceleration",
+        "description": "The speed increase of the demons after they have moved a certain number of \nrows, which is identified by 'Rows At Speed'. This is in pixels per second.",
+        "increment": 1,
+        "min": 0,
+        "max": 100
+    },
+    "demon_level_acceleration_in_pixels_per_second": {
+        "name": "Level Acceleration",
+        "description": "The number of pixels per second the demons at the beginning of each new level.",
+        "increment": 2,
+        "min": 2,
+        "max": 100
+    },
+    "demon_attack_rate_in_milliseconds": {
+        "name": "Demon Attack Rate",
+        "description": "How many milliseconds a demon will wait before being allowed to attack. \nThe demon may not decide to attack at this time.",
+        "increment": 250,
+        "min": 250,
+        "max": 10000
+    },
+    "demon_projectile_speed_in_pixels_per_second": {
+        "name": "Fire Speed",
+        "description": "The speed at which the demons projectiles move, in pixels per second.",
+        "increment": 10,
+        "min": 1,
+        "max": 500
+    },
+    "demon_attack_chance_percentage": {
+        "name": "Attack Rate",
+        "description": "A value setting how likely a demon will be to attack after pausing after \nthe previous attack, which is determined by 'Demon Attack Rate'",
+        "increment": 5,
+        "min": 5,
+        "max": 95
+    },
+    "attack_texture_update_rate_per_second": {
+        "name": "Attack Animation Speed",
+        "description": "How many times the player sprite updates per second when casting attack magic.",
+        "increment": 1,
+        "min": 6,
+        "max": 30
+    },
+    "casting_shield_texture_update_rate_per_second": {
+        "name": "Shield Animation Speed",
+        "description": "How many times the player sprite updates per second when casting a shield.",
+        "increment": 1,
+        "min": 6,
+        "max": 30
+    },
+    "mage_speed_in_pixels_per_second": {
+        "name": "Player Speed",
+        "description": "How quickly the player can move left and right",
+        "increment": 10,
+        "min": 50,
+        "max": 500
+    },
+    "mage_attack_rate_in_millisecond": {
+        "name": "Player Attack Rate",
+        "description": "How long the player must wait in between attacks.",
+        "increment": 10,
+        "min": 10,
+        "max": 2000
+    },
+    "mage_projectile_speed_in_pixels_per_second": {
+        "name": "Magic Speed",
+        "description": "The speed at which the players projectiles move, in pixels per second.",
+        "increment": 10,
+        "min": 10,
+        "max": 1000
+    },
+    "is_main_screen_on": {
+        "name": "Main Screen Music",
+        "description": "Play music on Main screen.",
+        "increment": 1,
+        "min": 0,
+        "max": 1
+    },
+    "is_end_game_on": {
+        "name": "End Game Music",
+        "description": "Play end game music at end of game.",
+        "increment": 1,
+        "min": 0,
+        "max": 1
+    }
+}
