@@ -23,6 +23,7 @@ using std::to_string;
 
 extern const float window_dimensions[2];
 extern const bool debugging;
+extern const string version;
 
 // Backgrounds Properties
 const float background_scale{ 3.0f };
@@ -63,6 +64,8 @@ constexpr int initials_box_x_padding{ 4 };
 constexpr Vector2 high_score_select_box_start_location{ initials_first_x_coordinate - initials_box_x_padding, initials_y_coordiate - 2 };
 
 const float demons_x_range[2]{ 5.0f, window_dimensions[1] - (16.f * character_scale) + 5.f}; // First is Left Limit, Second is Right Limit
+const Color demon_colors[7]{ LIGHTGRAY, WHITE, GREEN, BEIGE, YELLOW, ORANGE, RED };
+
 
 class GameMap {
 	Properties Props{};
@@ -206,6 +209,7 @@ public:
 	void resetProperties();
 	void setResetShieldCountToStartingAmount();
 	void clearAllShields();
+	void drawVersion();
 	int getDemonsMovedDownCount();
 };
 

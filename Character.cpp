@@ -19,6 +19,7 @@ Character::Character(
 void Character::moveCharacter(const float dT){}
 Texture2D Character::getProjectileTexture() { return Projectile_texture; }
 Texture2D Character::getActiveTexture() { return Active_texture; }
+Color Character::getCharacterColor(){ return Character_color; }
 float Character::getXCoordinate() { return X_coordinate; }
 float Character::getYCoordinate() { return Y_coordinate; }
 int Character::getAttackDirection(){ return Attack_direction; }
@@ -39,7 +40,7 @@ void Character::render() {
 	Vector2 origin{ Width * demon_origin_whitespace_offset_x, Width * demon_origin_whitespace_offset_y };
 
 	Rectangle collision_rectangle = getCollisionRectangle();
-    DrawTexturePro(Active_texture, source, destination, origin, 0.0f, WHITE);
+    DrawTexturePro(Active_texture, source, destination, origin, 0.0f, Character_color);
 	if (debugging) {
 		DrawRectangleLines(collision_rectangle.x, collision_rectangle.y, collision_rectangle.width, collision_rectangle.height, RED);
 	};
@@ -55,4 +56,5 @@ float Character::getHeight() { return Height; }
 void Character::setSpeed(const float speed) { Speed = speed; }
 void Character::setTextureUpdateRate(float update_rate) { Texture_update_rate = update_rate; }
 void Character::setLeftRight(int left_right) { Left_Right = left_right; }
+void Character::setCharacterColor(const Color c) { Character_color = c; }
 void Character::tick(const float dT){}

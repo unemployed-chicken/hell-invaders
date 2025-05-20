@@ -36,12 +36,14 @@ protected:
 	float Height{};
 	float Scale{ character_scale };
 	float Left_Right{ 1 }; 
+	Color Character_color{ WHITE };
 
 
 public:
 	Character(Texture2D character_texture, Texture2D projectile_texture, float pos_x, float pos_y, float speed, float attack_rate, int attack_direction, float texture_update_rate);
 	Texture2D getProjectileTexture();
 	Texture2D getActiveTexture();
+	Color getCharacterColor();
 	int getAttackDirection();
 	float getXCoordinate();
 	float getYCoordinate();
@@ -53,6 +55,7 @@ public:
 	void setIsProjectileReady(const bool b);
 	void setTextureUpdateRate(float update_rate);
 	void setLeftRight(int left_right);
+	void setCharacterColor(const Color c);
 
 
 	/* 

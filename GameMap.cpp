@@ -23,6 +23,12 @@ void GameMap::resetProperties() { Props = Properties(); }
 void GameMap::setResetShieldCountToStartingAmount() { mage.setShieldCountToStartingAmount(Props.getIntPropertyValue("Number_of_starting_shields")); }
 void GameMap::clearAllShields() { Shields.deleteAllNodes(); }
 
+void GameMap::drawVersion() {
+	string version_string{ "verion: " };
+	version_string.append(version);
+	DrawText(version_string.c_str(), 270, 30, 15, RED);
+}
+
 
 void GameMap::updatePropertySelectorCoordinate(int x) {
 	Property_selector_coordinate += x;
@@ -87,7 +93,7 @@ void GameMap::appendProjectile() {
 
 
 void GameMap::appendProjectile(shared_ptr<Demon> demon) {
-	if (demon->isProjectileReady()) {
+	if (demon->isProjectileReady() && level != 1) {
 		shared_ptr<Projectile> projectile = make_shared<Projectile>(demon->getProjectileTexture(), Props, fire_projectile_count_x, fire_projectile_count_y, demon->getXCoordinate(), demon->getYCoordinate() + demon->getHeight(),
 			demon_attack_direction, fire_white_space_pixels_x, fire_white_space_pixels_y, fire_projectile_scale,
 			fire_projectile_scale, fire_projectile_rotation, false
@@ -144,7 +150,7 @@ void GameMap::drawBackground() {
 	score_display.append(to_string(mage.getScore()));
 
 	DrawText(level_display.c_str(), 550, 10, 15, WHITE);
-	DrawText(score_display.c_str(), 300, 10, 15, WHITE);
+	DrawText(score_display.c_str(), 275, 10, 15, WHITE);
 	drawLives();
 	drawShieldCount();
 }
@@ -531,16 +537,23 @@ void GameMap::generateDemonsList(map<string, Texture2D> textures) {
 		int fledge_points = Props.getIntPropertyValue("Demon_base_points") * Props.getIntPropertyValue("Fledgling_score_multiplier");
 		int scamp_points = Props.getIntPropertyValue("Demon_base_points") * Props.getIntPropertyValue("Scamp_score_multiplier");
 		
+		float color_picker = level / 5;
+		if (color_picker >= 7) color_picker = 6.0;
+
+
 		for (int j = 0; j < 6; ++j) {
 			shared_ptr<Demon> demon;
 			if (j < 2) {
 				demon = make_shared<Demon>(Demon(textures["skull"], textures["fire"], Props, x_pos, y_pos, number_of_demon_textures, skull_points * level, demon_speed));
+				if (color_picker >= 0) demon->setCharacterColor(demon_colors[static_cast<int>(color_picker)]);
 			}
 			else if (j < 4) {
 				demon = make_shared<Demon>(Demon(textures["fledge"], textures["fire"], Props, x_pos, y_pos, number_of_demon_textures, fledge_points * level, demon_speed));
+				if (color_picker >= 0) demon->setCharacterColor(demon_colors[static_cast<int>(color_picker)]);
 			}
 			else {
 				demon = make_shared<Demon>(Demon(textures["scamp"], textures["fire"], Props, x_pos, y_pos, number_of_demon_textures, scamp_points * level, demon_speed));
+				if (color_picker >= 0) demon->setCharacterColor(demon_colors[static_cast<int>(color_picker)]);
 			}
 			row.insertAtEnd(make_shared<Node<Demon>>(demon));
 			y_pos += 50;
@@ -1009,6 +1022,8 @@ void GameMap::generateSpecialDemon(map<string, Texture2D> textures) {
 
 	Special_demon = make_shared<Demon>(Demon(textures["eye"], textures["fire"], Props, x_coordinate, 20, 4, 500, 75));
 	Special_demon->setLeftRight(left_right);
+	if (level >= 30) Special_demon->setCharacterColor(GREEN);
+
 }
 
 

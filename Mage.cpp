@@ -159,7 +159,7 @@ void Mage::render() {
 	
 	Rectangle collision_rectangle = getCollisionRectangle();
 
-	DrawTexturePro(Active_texture, source, destination, origin, 0.0f, WHITE);
+	DrawTexturePro(Active_texture, source, destination, origin, 0.0f, Character_color);
 	if (debugging) { 
 		DrawRectangleLines(collision_rectangle.x, collision_rectangle.y, collision_rectangle.width, collision_rectangle.height, RED); 
 	};

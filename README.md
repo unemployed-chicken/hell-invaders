@@ -2,11 +2,15 @@
 cpp project recreating space invaders
 
 
-TODO:
-	- Shipping Game:
-		- Figure out how to ship to itch
-	- Bug Fixes: 
-		- While recording with obs in game mode (issue does not occur during window mode), closing game crashes game
+Steps for Building Release Version on Windows:
+	- Build Release version using x64
+		- The release folder can be found at hell-invaders\x64\Release
+	- Copy over the following files into the release folder
+		- hell-invaders\audio\Lean\audio
+		- hell-invaders\textures\Lean\textures
+		- hell-invaders\properties
+			- Make sure High-score and user_defined_properties.json are zero'ed out
+	- Move release folder and rename to  Hell_Invaders_Win_x.x.x
 
 
 

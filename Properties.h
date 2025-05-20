@@ -39,7 +39,7 @@ constexpr int eye_score_multipler{ 10 };
 // Demon Mechanic Properties
 constexpr int demon_base_speed_in_pixels_per_second{ 50 }; // pixels per second 
 constexpr int demon_acceleration_in_pixels_per_second{ 5 }; // pixels per second
-constexpr int demon_level_acceleration_in_pixels_per_second{ 10 };
+constexpr int demon_level_acceleration_in_pixels_per_second{ 5 };
 constexpr int demon_projectile_speed_in_pixels_per_second{ 150 }; // pixels per second
 constexpr int demon_attack_rate_in_milliseconds{ 3000 }; // How long a demon will pause after an attack before looking to attack again
 constexpr int demon_attack_chance_percentage{ 20 }; // This is a percentage (aka, divided by 100)

@@ -10,6 +10,7 @@ using std::string;
 
 // DEBUGGING:
 const bool debugging{ false };
+const string version{ "beta.0.1" };
 
 // Window Properties
 const float window_dimensions[2]{ 640.0f , 640.0f }; // Width * Height
@@ -91,6 +92,8 @@ int main() {
             // Move and Draw all Objects
             map.tick(dT);
         }
+
+        map.drawVersion();
 
         EndDrawing();
     }
