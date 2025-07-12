@@ -1,4 +1,5 @@
 #include "GameMap.h"
+#include <unistd.h>
 
 GameMap::GameMap(map<string, Texture2D> textures)
 	: Background(textures["main_background_1"]), Midground(textures["main_background_2"]), Foreground(textures["main_background_3"]), 

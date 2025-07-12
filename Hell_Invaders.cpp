@@ -9,7 +9,9 @@ using std::map;
 using std::string;
 
 
-const string base_path{ "/Applications/Hell_Invaders_Mac_1.1.0/"};
+const string base_path{ "/Applications/Hell_Invaders/"};
+// const string base_path{ "./Hell_Invaders_Mac_beta_Collin/"};
+
 
 // DEBUGGING:
 const bool debugging{ false };

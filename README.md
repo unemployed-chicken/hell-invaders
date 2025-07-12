@@ -1,12 +1,13 @@
 # hell-invaders
 cpp project recreating space invaders
 
-
-TODO:
-	- Shipping Game:
-		- Figure out how to ship to itch
-	- Bug Fixes: 
-		- While recording with obs in game mode (issue does not occur during window mode), closing game crashes game
+Setting up a Mac Release File:
+- Pull any necessary changes (Not sure how this will work the first time. Good Luck)
+- Change base_path to new release number in Hell_Invaders.cpp
+- Terminal > Run Task > Build Release
+- Move newly compiled file to applications\Hell_Invaders_Mac_x.x.x 
+	- This may require using the old folder and removing the old executable command file and replacing it with the new one then changing the folder name to the new version
+- Change the icon (once you figure out how to change the icon)
 
 
 
