@@ -93,7 +93,7 @@ int main() {
             map.tick(dT);
         }
 
-        map.drawVersion();
+        //map.drawVersion();
 
         EndDrawing();
     }
